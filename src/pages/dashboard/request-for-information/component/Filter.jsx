@@ -41,6 +41,8 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Badge } from "@/components/ui/badge";
+import DatePicker from "./DatePicker";
+import ScheduleDateTime from "./ScheduleDateAndTime";
 
 const Filter = () => {
   const {
@@ -57,15 +59,36 @@ const Filter = () => {
     onSelectionChange,
     ContentLibrary,
     setContentLibrary,
+    docGenTemplate,
+    setDocGenTemplate,
   } = useContext(RequestInfoContext);
   const disabledSearchButton =
     domain.length === 0 || category.length === 0 || templates.length === 0;
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [openAIAgentDropDown, setOpenAIAgentDropDown] = useState(false);
-  const [docGenTemplate, setDocGenTemplate] = useState({ name: "", type: "" });
   const [openContenLibraryDocument, setOpenContentLibraryDocument] =
     useState(false);
-  // Get available categories based on selected domain
+  const [openDocGenDropDown, setOpenDocGenDropDown] = useState(false);
+
+  const handleSelectDocGen = (templateType) => {
+    setDocGenTemplate((prev) => {
+      const isSelected = prev.includes(templateType);
+
+      if (isSelected) {
+        return prev.filter((type) => type !== templateType);
+      } else {
+        return [...prev, templateType];
+      }
+    });
+  };
+
+  const handleRemoveDocGen = (templateType) => {
+    setDocGenTemplate((prev) => prev.filter((type) => type !== templateType));
+  };
+
+  const handleClearAllDocGen = () => {
+    setDocGenTemplate([]);
+  };
   const availableCategories = useMemo(() => {
     if (!domain || domain === "all_domains") {
       return Object.values(categoryOptions).flat();
@@ -121,9 +144,11 @@ const Filter = () => {
     setSelectedResult(null);
     setContentLibrary("");
     onSelectionChange([]);
+    setDocGenTemplate([]);
   };
 
   const handleSearch = () => {
+    console.log(docGenTemplate);
     performSearch();
   };
 
@@ -140,7 +165,7 @@ const Filter = () => {
 
   return (
     <div className="bg-gradient-to-r from-blue-50  to-blue-100/50 rounded-lg border border-blue-200 shadow-sm p-6 mb-8">
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-x-6 w-full mb-4">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-x-6 w-full mb-4">
         {/* Domain Filter */}
         <div className="space-y-2">
           <label
@@ -206,13 +231,13 @@ const Filter = () => {
           </div>
         </div>
 
-        {/* Templates Filter */}
+        {/* Questioner template Filter */}
         <div className="space-y-2">
           <label
             htmlFor="templates"
             className="block text-sm font-medium text-blue-700"
           >
-            Templates
+            Questioner template
           </label>
           <div className="w-full overflow-x-hidden">
             <Select
@@ -232,48 +257,6 @@ const Filter = () => {
                 {availableTemplates.map((template, index) => (
                   <SelectItem key={index} value={template.name}>
                     {template.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        {/* DocGen Template */}
-        <div className="space-y-2">
-          <label
-            htmlFor="docGen_templates"
-            className="block text-sm font-medium text-blue-700"
-          >
-            DocGen Template
-          </label>
-          <div className="w-full overflow-x-hidden bg-none">
-            <Select
-              value={docGenTemplate.name}
-              onValueChange={setDocGenTemplate}
-              disabled={!domain || domain === ""}
-            >
-              <SelectTrigger className="h-10 bg-white border-blue-200 shadow-sm w-full hover:border-blue-300 focus:ring-blue-300 focus:border-blue-300">
-                <div className="flex items-center">
-                  <Menu className="mr-2 h-4 w-4 text-muted-foreground" />
-                  <SelectValue placeholder="Select DocGen Template" />
-                </div>
-              </SelectTrigger>
-              <SelectContent className="w-full">
-                {docGenTable.map((template, index) => (
-                  <SelectItem
-                    key={index}
-                    value={template.name}
-                    className="cursor-pointer hover:bg-blue-50"
-                  >
-                    <div className="flex items-center justify-between w-full">
-                      <span className="font- text-gray-900">
-                        {template.name}
-                      </span>
-                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full ml-2">
-                        {template.type}
-                      </span>
-                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -331,7 +314,7 @@ const Filter = () => {
       {showAdvancedFilters && (
         <>
           <hr className="my-4 bg-blue-700" />
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-x-10 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-6 gap-x-10 w-full">
             {/* Content Library */}
             <div className="space-y-2">
               <label
@@ -515,6 +498,135 @@ const Filter = () => {
                 </Popover>
               </div>
             </div>
+
+            {/* DocGen Template */}
+            <div className="space-y-2">
+              <label
+                htmlFor="docGen_templates"
+                className="block text-sm font-medium text-blue-700"
+              >
+                DocGen Template
+              </label>
+              <div className="w-full overflow-x-hidden">
+                <Popover
+                  open={openDocGenDropDown}
+                  onOpenChange={setOpenDocGenDropDown}
+                >
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      disabled={templates.length === 0}
+                      className="h-auto min-h-10 bg-white border-blue-200 shadow-sm w-full hover:border-blue-300 focus:ring-blue-300 justify-start p-2"
+                    >
+                      <div className="flex items-center flex-wrap gap-1 w-full">
+                        <Menu className="mr-2 h-4 w-4 text-muted-foreground flex-shrink-0" />
+
+                        {docGenTemplate.length === 0 ? (
+                          <span className="text-muted-foreground font-normal">
+                            Select DocGen Template
+                          </span>
+                        ) : (
+                          <div className="flex flex-wrap gap-1 flex-1">
+                            {docGenTemplate.slice(0, 1).map((templateType) => {
+                              const template = docGenTable.find(
+                                (t) => t.type === templateType
+                              );
+                              return (
+                                <Badge
+                                  key={templateType} // Fixed: use templateType as key
+                                  variant="secondary"
+                                  className="text-xs bg-blue-100 text-blue-800 hover:bg-blue-200 flex items-center gap-1"
+                                >
+                                  <span className="text-xs text-blue-700 px-1 rounded">
+                                    {template?.type}
+                                  </span>
+                                  <button
+                                    className="ml-1 hover:bg-blue-300 rounded-full p-0.5"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      handleRemoveDocGen(templateType); // Fixed: use templateType
+                                    }}
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </button>
+                                </Badge>
+                              );
+                            })}
+                            {docGenTemplate.length > 1 && (
+                              <Badge
+                                variant="secondary"
+                                className="text-xs bg-blue-100 text-blue-800"
+                              >
+                                +{docGenTemplate.length - 1} more
+                              </Badge>
+                            )}
+                          </div>
+                        )}
+
+                        <ChevronsUpDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
+                      </div>
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0" align="start">
+                    <Command className="w-full">
+                      <CommandList className="scroll-container">
+                        <CommandGroup>
+                          {docGenTemplate.length > 0 && (
+                            <div className="px-2 py-1.5 border-b">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleClearAllDocGen}
+                                className="h-6 text-xs text-muted-foreground hover:text-foreground"
+                              >
+                                Clear all ({docGenTemplate.length})
+                              </Button>
+                            </div>
+                          )}
+                          {docGenTable.map((template) => {
+                            const isSelected = docGenTemplate.includes(
+                              template.type
+                            ); // Fixed: check for template.type
+                            return (
+                              <CommandItem
+                                key={template.id}
+                                className="text-black cursor-pointer"
+                                value={template.name}
+                                onSelect={() =>
+                                  handleSelectDocGen(template.type)
+                                } // Fixed: pass template.type
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    isSelected ? "opacity-100" : "opacity-0"
+                                  )}
+                                />
+                                <div className="flex items-center justify-between w-full">
+                                  <span className="font-normal text-gray-800">
+                                    {templates}{" "}
+                                    {/* Fixed: use template.name instead of templates */}
+                                  </span>
+                                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full ml-2">
+                                    {template.type}
+                                  </span>
+                                </div>
+                              </CommandItem>
+                            );
+                          })}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+
+            <DatePicker dateHeader={"Start Date"} />
+            <DatePicker dateHeader={"Completion Date"} />
+            <ScheduleDateTime/>
           </div>
         </>
       )}

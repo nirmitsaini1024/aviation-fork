@@ -46,8 +46,19 @@ import {
   Menu,
   FolderOpen,
   EllipsisVertical,
+  Award,
+  SquareDashedBottomCode,
+  FileText,
+  Trash,
+  Trash2,
 } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -87,6 +98,7 @@ import EmailSender from "./SendEmail";
 import AIHints from "./AIHints";
 
 import CustomTable from "./CustomTable";
+import BadgePopover from "./BadgePopover";
 
 const AviationSearchResults = () => {
   const {
@@ -103,6 +115,7 @@ const AviationSearchResults = () => {
     isEditInternalANswer,
     setIsEditInternalAnswer,
     setSearchResults,
+    docGenTemplate,
   } = useContext(RequestInfoContext);
   const { searchAgainInternalQues } = useSearchAgainInternalQuestion();
   const [filteredResults, setFilteredResults] = useState([]);
@@ -145,6 +158,7 @@ const AviationSearchResults = () => {
   const [selectedProject, setSelectedProject] = useState("Select a project");
   const [newProjectName, setNewProjectName] = useState("");
   const [projects, setProjects] = useState(existingProjects);
+  const [openDeletePopOver, setOpenDeletePopOver] = useState(null);
 
   const handleCreateProject = () => {
     if (newProjectName.trim() && !projects.includes(newProjectName.trim())) {
@@ -611,6 +625,26 @@ const AviationSearchResults = () => {
                               >
                                 {result.answerFormat}
                               </Badge>
+                              {console.log(result)}
+                              {result.agents.length > 0 && (
+                                <BadgePopover
+                                  notifications={result.agents}
+                                  name={"Agents"}
+                                  icon={
+                                    <SquareDashedBottomCode className="w-3 h-3 font-semibold text-blue-500" />
+                                  }
+                                />
+                              )}
+                              {/* docGenTemplate */}
+                              {docGenTemplate.length > 0 && (
+                                <BadgePopover
+                                  notifications={docGenTemplate}
+                                  name={"DocGen"}
+                                  icon={
+                                    <FileText className="w-3 h-3 font-semibold text-blue-500" />
+                                  }
+                                />
+                              )}
                               <p className="text-xs text-slate-600">
                                 {result.type === "internal"
                                   ? `${result.answers.length} answer${
@@ -673,6 +707,20 @@ const AviationSearchResults = () => {
         </div>
       );
     }
+
+    const handleDeleteAnswer = (answer, documentName) => {
+      console.log("The answer is: ", answer);
+      console.log("The doucment name is: ", documentName);
+      console.log("The selected question is: ", selectedResult);
+
+      setSelectedResult((prev) => {
+        return {
+          ...prev, 
+          answers: prev.answers.filter((ans) => ans.answer !== answer),
+        };
+      });
+      setOpenDeletePopOver(null)
+    };
 
     return (
       <div className="w-full flex flex-col h-full">
@@ -902,6 +950,66 @@ const AviationSearchResults = () => {
                                         <span>Save</span>
                                       </Badge>
                                     )}
+                                    <div className="">
+                                      <CircleX
+                                        className="h-4 w-4 ml-3 text-red-600"
+                                        onClick={() =>
+                                          setOpenDeletePopOver(answerItem.answer)
+                                        }
+                                      />
+
+                                      {/* Full Screen Modal */}
+                                      {openDeletePopOver === answerItem.answer && (
+                                        <div className="fixed inset-0 z-50 flex items-center justify-center">
+                                          {/* Blurred Background Overlay */}
+                                          <div
+                                            className="absolute inset-0 bg-black/30"
+                                            onClick={() =>
+                                              setOpenDeletePopOver(answerItem.answer)
+                                            }
+                                          />
+
+                                          {/* Confirmation Card */}
+                                          <Card className="relative z-10 w-full max-w-md mx-4 shadow-2xl">
+                                            <CardHeader className="text-center">
+                                              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+                                                <CircleX className="h-6 w-6 text-red-600" />
+                                              </div>
+                                              <CardTitle className="text-xl">
+                                                Confirm Delete
+                                              </CardTitle>
+                                              <CardDescription>
+                                                Are you sure you want to delete
+                                                this answer? This action cannot
+                                                be undone.
+                                              </CardDescription>
+                                            </CardHeader>
+                                            <CardFooter className="flex gap-3 justify-end">
+                                              <Button
+                                                variant="outline"
+                                                onClick={() =>
+                                                  setOpenDeletePopOver(null)
+                                                }
+                                              >
+                                                Cancel
+                                              </Button>
+                                              <Button
+                                                variant="destructive"
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  handleDeleteAnswer(
+                                                    answerItem.answer,
+                                                    answerItem.documentName
+                                                  );
+                                                }}
+                                              >
+                                                Delete
+                                              </Button>
+                                            </CardFooter>
+                                          </Card>
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
                                 </span>
                               </div>

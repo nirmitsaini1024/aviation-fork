@@ -4,9 +4,9 @@ import { useAviationSearch } from "../hooks/useSearch";
 export const RequestInfoContext = createContext();
 
 const RequestInfoProvider = ({ children }) => {
-  const [domain, setDomain] = useState("");
-  const [category, setCategory] = useState("");
-  const [templates, setTemplates] = useState("");
+  const [domain, setDomain] = useState("Airport");
+  const [category, setCategory] = useState("ASP");
+  const [templates, setTemplates] = useState("ASP (Airport Safety Program)");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -24,7 +24,7 @@ const RequestInfoProvider = ({ children }) => {
   const [selectedAgents, onSelectionChange] = useState([]);
   const [customAnswerFormat, setCustomAnswerFormat] = useState("");
   const [ContentLibrary, setContentLibrary] = useState("");
-
+  const [docGenTemplate, setDocGenTemplate] = useState([]);
   const performSearch = useCallback(() => {
     const filters = { domain, category, templates, selectedAgents };
     const results = searchFunction(searchQuery, filters);
@@ -75,6 +75,7 @@ const RequestInfoProvider = ({ children }) => {
     setContentLibrary,
     customAnswerFormat,
     setCustomAnswerFormat,
+    docGenTemplate, setDocGenTemplate
   };
 
   return (

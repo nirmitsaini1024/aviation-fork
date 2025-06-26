@@ -1851,7 +1851,7 @@ export const agentsMockData = [
   },
   {
     page: 2,
-    documentName: "Internet Agent",
+    documentName: "Web Agent",
     answer: "Fetched real-time weather conditions and delays for all international flights using public aviation APIs to help travelers plan accordingly and avoid unnecessary waiting at the airport."
   }
 ];
@@ -1878,17 +1878,17 @@ export const selectedAnswerOption = [
 export const docGenTable = [
   {
     id: 1,
-    name: "ASP (Airport Security)",
+    name: "Word Template",
     type: "Word"
   },
   {
     id: 2,
-    name: "Passenger Flow Report",
+    name: "PDF Template", 
     type: "PDF"
   },
   {
     id: 3,
-    name: "Flight Schedule Data",
+    name: "CSV Template",
     type: "CSV"
   }
 ];

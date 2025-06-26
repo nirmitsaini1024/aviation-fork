@@ -87,7 +87,7 @@ export default function CustomQuestion({ open, setOpen }) {
     setOpen(false);
     setInputValue("");
     setCustomCategory("");
-  }, [inputValue, customCategory, searchCustomQuestion, setOpen, customAnswerFormat]);
+  }, [inputValue, customCategory, searchCustomQuestion, setOpen, customAnswerFormat, selectedAgents]);
 
   const handleChangeValue = useCallback((e) => {
     setInputValue(e.target.value);

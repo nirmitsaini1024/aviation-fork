@@ -62,6 +62,9 @@ export const useAviationSearch = () => {
 
           let allAnswers = [...question.answer];
 
+
+          console.log(selectedAgents)
+
           // Add matching agents from agentsMockData if selectedAgents exist
           if (selectedAgents && selectedAgents.length > 0) {
             const matchingAgents = agentsMockData.filter((agent) =>
@@ -88,6 +91,7 @@ export const useAviationSearch = () => {
             searchedCategory: category,
             category: question.category,
             answers: allAnswers,
+            agents: selectedAgents,
             answerFormat:
               question.text ===
               "How are safety incidents investigated and reported?"
@@ -175,6 +179,7 @@ export const useSearchForCustomQuestion = () => {
         domain: domain === "all_domains" ? "All Domains" : domain,
         id: Date.now(),
         question: question,
+        agents: selectedAgents,
         searchedCategory: category,
         template: templates == "all_templates" ? "All Templates" : templates,
         type: "internal",
@@ -186,6 +191,7 @@ export const useSearchForCustomQuestion = () => {
       // console.log("custom Doc is: ", customDoc);
 
       setSearchResults((prev) => [...prev, customDoc]);
+
     },
     [customAnswerFormat]
   );
