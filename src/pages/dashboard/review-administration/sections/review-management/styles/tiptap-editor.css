@@ -1,0 +1,277 @@
+ .editor-container {
+          margin: 0px auto;
+          background: white;
+          position: relative;
+          border-radius: 12px;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+            0 2px 4px -2px rgba(0, 0, 0, 0.1);
+          overflow-x: hidden;
+          max-height: 700px;
+          overflow-y: scroll;
+          border: 1px solid #E5E4E2;
+          min-width: 100%;
+        }
+
+        .menu-bar {
+          display: flex;
+          position: sticky;
+          top: 0;
+          left: 0;
+          right: 0;
+          flex-wrap: wrap;
+          gap: 16px;
+          padding: 16px;
+          background: #f8fafc;
+          border-bottom: 1px solid #e2e8f0;
+          align-items: flex-start;
+          z-index: 10;
+          border-radius: 12px 12px 0 0;
+        }
+
+        .button-group {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .group-label {
+          font-size: 11px;
+          font-weight: 600;
+          color: #64748b;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: 2px;
+        }
+
+        .buttons {
+          display: flex;
+          gap: 2px;
+          background: white;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+          padding: 2px;
+          box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .ProseMirror p.is-editor-empty:first-child::before {
+          color: #adb5bd;
+          content: attr(data-placeholder);
+          float: left;
+          height: 0;
+          pointer-events: none;
+          font-style: italic;
+        }
+
+        .editor-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 32px;
+          height: 32px;
+          border: none;
+          border-radius: 6px;
+          background: transparent;
+          color: #64748b;
+          cursor: pointer;
+          transition: all 0.15s ease;
+          position: relative;
+          user-select: none;
+          -webkit-user-select: none;
+        }
+
+        .editor-btn:hover:not(.disabled) {
+          background: #f1f5f9;
+          color: #3b82f6;
+          transform: translateY(-1px);
+        }
+
+        .editor-btn.active {
+          background: #3b82f6;
+          color: white;
+          box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+        }
+
+        .editor-btn.disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+
+        .editor-btn:active:not(.disabled) {
+          transform: translateY(0);
+        }
+
+        .tiptap {
+          padding: 0px 24px 24px 24px;
+          min-height: 400px;
+          outline: none;
+          font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+            sans-serif;
+          line-height: 1.6;
+          color: #1e293b;
+        }
+
+        .tiptap:first-child {
+          margin-top: 0;
+        }
+
+        .tiptap h1,
+        .tiptap h2,
+        .tiptap h3,
+        .tiptap h4,
+        .tiptap h5,
+        .tiptap h6 {
+          line-height: 1.2;
+          margin-top: 2rem;
+          margin-bottom: 0.75rem;
+          font-weight: 600;
+          color: #0f172a;
+        }
+
+        .tiptap h1 {
+          font-size: 2rem;
+          margin-top: 0;
+        }
+
+        .tiptap h2 {
+          font-size: 1.5rem;
+        }
+
+        .tiptap h3 {
+          font-size: 1.25rem;
+        }
+
+        .tiptap h4,
+        .tiptap h5,
+        .tiptap h6 {
+          font-size: 1rem;
+        }
+
+        .tiptap p {
+          margin: 0.75rem 0;
+        }
+
+        /* FIXED LIST STYLES */
+        .tiptap ul {
+          list-style-type: disc;
+          padding-left: 1.5rem;
+          margin: 1rem 0;
+        }
+
+        .tiptap ol {
+          list-style-type: decimal;
+          padding-left: 1.5rem;
+          margin: 1rem 0;
+        }
+
+        .tiptap li {
+          margin: 0.25rem 0;
+          display: list-item;
+        }
+
+        .tiptap li p {
+          margin: 0.25rem 0;
+        }
+
+        /* Nested list styles */
+        .tiptap ul ul {
+          list-style-type: circle;
+          margin: 0.5rem 0;
+        }
+
+        .tiptap ul ul ul {
+          list-style-type: square;
+        }
+
+        .tiptap ol ol {
+          list-style-type: lower-alpha;
+          margin: 0.5rem 0;
+        }
+
+        .tiptap ol ol ol {
+          list-style-type: lower-roman;
+        }
+
+        /* Custom class styles if needed */
+        .tiptap .tiptap-bullet-list {
+          list-style-type: disc;
+        }
+
+        .tiptap .tiptap-ordered-list {
+          list-style-type: decimal;
+        }
+
+        .tiptap .tiptap-list-item {
+          display: list-item;
+        }
+
+        .tiptap code {
+          background: #f1f5f9;
+          border: 1px solid #e2e8f0;
+          border-radius: 4px;
+          color: #7c3aed;
+          font-size: 0.9em;
+          padding: 0.2em 0.4em;
+          font-family: "JetBrains Mono", "Fira Code", Consolas, monospace;
+        }
+
+        .tiptap pre {
+          background: #1e293b;
+          border-radius: 8px;
+          color: #e2e8f0;
+          font-family: "JetBrains Mono", "Fira Code", Consolas, monospace;
+          margin: 1.5rem 0;
+          padding: 1rem;
+          overflow-x: auto;
+          border: 1px solid #334155;
+        }
+
+        .tiptap pre code {
+          background: none;
+          border: none;
+          color: inherit;
+          font-size: 0.9rem;
+          padding: 0;
+        }
+
+        .tiptap blockquote {
+          border-left: 4px solid #3b82f6;
+          background: #f8fafc;
+          margin: 1.5rem 0;
+          padding: 1rem 1.5rem;
+          border-radius: 0 8px 8px 0;
+          font-style: italic;
+          color: #475569;
+        }
+
+        .tiptap hr {
+          border: none;
+          border-top: 2px solid #e2e8f0;
+          margin: 2rem 0;
+          border-radius: 1px;
+        }
+
+        .tiptap strong {
+          font-weight: 600;
+          color: #0f172a;
+        }
+
+        .tiptap em {
+          font-style: italic;
+          color: #475569;
+        }
+
+        @media (max-width: 768px) {
+          .menu-bar {
+            gap: 12px;
+            padding: 12px;
+          }
+
+          .tiptap {
+            padding: 12px;
+          }
+
+          .editor-container {
+            margin: 16px;
+            border-radius: 8px;
+          }
+        }
