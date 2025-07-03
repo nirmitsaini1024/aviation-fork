@@ -1,7 +1,7 @@
 // /components/comment-section/ExpandedCommentsContent.jsx
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Smile, Meh, Frown, Plus, RotateCcw } from "lucide-react";
+import { Sparkles, Smile, Meh, Frown, Plus, RotateCcw, AlertTriangle } from "lucide-react";
 import { enhancedSampleCommentsData, currentUser } from "../../mock-data/comments-data";
 import { CommentInputSection } from "./comment-input-section";
 import { CommentItem } from "./comment-item";
@@ -14,8 +14,7 @@ import {
   useVisibilityHandlers,
   useAttachmentHandlers // NEW: Import the new hook
 } from "../../utils/comment-utils";
-import WebViewerComponent from "@/components/docx-viewer";
-import PDFViewer from "@/components/doc-reviewer/pdf-viewer";
+import UniversalDocumentViewer from "@/components/universal-document-viewer";
 
 export function ExpandedCommentsContent({
   allowRating = true,
@@ -25,6 +24,9 @@ export function ExpandedCommentsContent({
   user,
   getSummary = () => "No summary available for this document.",
   getSentiment = () => "neutral",
+  getRiskScore = () => 55,
+  getRiskLevel = () => "Medium Risk",
+  getRiskDescription = () => "This recommendation carries a medium risk profile based on market volatility, asset correlation, and historical performance data.",
   readOnly = false,
   publicOnly = false,
   isUserLevelTask = false,
@@ -157,10 +159,30 @@ export function ExpandedCommentsContent({
     setSelectedFiles([]); // Clear all files
   };
 
+  const getRiskColor = (score) => {
+    if (score >= 70) return "text-red-600";
+    if (score >= 40) return "text-orange-600";
+    return "text-green-600";
+  };
+
+  const getRiskBorderColor = (score) => {
+    if (score >= 70) return "border-red-200";
+    if (score >= 40) return "border-orange-200";
+    return "border-green-200";
+  };
+
+  const getRiskBgColor = (score) => {
+    if (score >= 70) return "bg-red-50";
+    if (score >= 40) return "bg-orange-50";
+    return "bg-green-50";
+  };
+
   const visibleComments = getVisibleComments();
   const displayedComments = visibleComments.slice(0, visibleCommentsCount);
   const hasMoreComments = visibleCommentsCount < visibleComments.length;
   const showingAllComments = visibleCommentsCount >= visibleComments.length && visibleComments.length > 3;
+
+  const currentRiskScore = getRiskScore(documentId);
 
   return (
     <div className="pl-20 p-4 bg-gray-50">
@@ -198,6 +220,26 @@ export function ExpandedCommentsContent({
             <div className="text-sm text-gray-700 border-l-2 border-purple-200 pl-3">
               {getSummary(documentId)}
             </div>
+          </div>
+        </div>
+
+        {/* Risk Summary Section */}
+        <div className="mb-6 p-4 border border-gray-200 rounded-lg bg-white">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <AlertTriangle className="h-4 w-4 text-orange-500 mr-2" />
+              <span className="text-sm font-medium text-gray-900">Risk Summary</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="text-xs text-gray-500">Risk Score</span>
+              <span className="text-xs font-medium px-2 py-1 rounded-md bg-yellow-100 text-yellow-800">
+                <span className="text-brown font-semibold mr-1">{currentRiskScore}</span>
+                <span className="text-blue-900">{getRiskLevel(documentId)}</span>
+              </span>
+            </div>
+          </div>
+          <div className="mt-2 text-sm text-gray-600">
+            {getRiskDescription(documentId)}
           </div>
         </div>
 
@@ -308,12 +350,23 @@ export function ExpandedCommentsContent({
         {viewerFileType === 'pdf' ? (
           <div className="h-full">
             <h2 className="text-xl font-bold mb-4">PDF Viewer</h2>
-            <PDFViewer initialDoc={viewerFilePath} />
+            <UniversalDocumentViewer 
+              documentUrl={viewerFilePath}
+              documentType="pdf"
+              height="calc(100% - 60px)"
+              width="100%"
+            />
           </div>
         ) : viewerFileType === 'docx' || viewerFileType === 'doc' ? (
           <div className="h-full">
             <h2 className="text-xl font-bold mb-4">Document Viewer</h2>
-            <WebViewerComponent initialDoc={viewerFilePath} setSelectedText={() => {}} />
+            <UniversalDocumentViewer 
+              documentUrl={viewerFilePath}
+              documentType={viewerFileType}
+              height="calc(100% - 60px)"
+              width="100%"
+              enableEditing={false}
+            />
           </div>
         ) : viewerFileType === 'image' ? (
           <div className="flex justify-center items-center h-full">

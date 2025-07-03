@@ -1,5 +1,6 @@
 // /components/review-tasks/ReviewTasksTable.jsx
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, PaginationEllipsis } from "@/components/ui/pagination";
 import { ReviewTasksTableHeader } from "./review-tasks-table-header";
 import { ReviewTasksTableRow } from "./review-tasks-table-row";
 
@@ -16,6 +17,12 @@ export function ReviewTasksTable({
   filterStatus,
   reviewerTypeFilter,
   setReviewerTypeFilter,
+  // Pagination props
+  currentPage,
+  totalPages,
+  itemsPerPage,
+  totalItems,
+  handlePageChange,
   // Table row props
   toggleDocumentSelection,
   expandedDocumentSections,
@@ -126,6 +133,64 @@ export function ReviewTasksTable({
           )}
         </TableBody>
       </Table>
+      
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border-t border-gray-200">
+          <div className="text-sm text-gray-600">
+            Showing {Math.min((currentPage - 1) * itemsPerPage + 1, totalItems)} to{' '}
+            {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} entries
+          </div>
+          
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+              
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                if (
+                  page === 1 ||
+                  page === totalPages ||
+                  (page >= currentPage - 1 && page <= currentPage + 1)
+                ) {
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        onClick={() => handlePageChange(page)}
+                        isActive={currentPage === page}
+                        className="cursor-pointer"
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                } else if (
+                  page === currentPage - 2 ||
+                  page === currentPage + 2
+                ) {
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  );
+                }
+                return null;
+              })}
+              
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 }

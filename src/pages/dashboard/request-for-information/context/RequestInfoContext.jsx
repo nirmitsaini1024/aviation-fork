@@ -1,11 +1,13 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
 import { useAviationSearch } from "../hooks/useSearch";
+import { projectNameList, rfiNamesList, tableAllData } from "../mock-data/constant";
 
 export const RequestInfoContext = createContext();
 
 const RequestInfoProvider = ({ children }) => {
   const [domain, setDomain] = useState("Airport");
   const [category, setCategory] = useState("ASP");
+  const [selectedDepartment, setSelectedDepartment] = useState("");
   const [templates, setTemplates] = useState("ASP (Airport Safety Program)");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -25,8 +27,34 @@ const RequestInfoProvider = ({ children }) => {
   const [customAnswerFormat, setCustomAnswerFormat] = useState("");
   const [ContentLibrary, setContentLibrary] = useState("");
   const [docGenTemplate, setDocGenTemplate] = useState([]);
+  const [selectedDocGenTypes, setSelectedDocGenTypes] = useState([]);
+  const [startDate, setStartDate] = useState(null);
+  const [completionDate, setCompletionDate] = useState(null);
+  const [allRfiNames, setAllRfiNames] = useState(rfiNamesList);
+  const [allProjectNames, setAllProjectNames] = useState(projectNameList);
+  const [searchRFIDetails, setSearchRFIDetails] = useState(tableAllData);
+  const [rfiDetailsForUploadTemplate, setRfiDetailsForUploadTemplate] = useState(tableAllData);
+  const [editTemplateData, setEditTemplateData] = useState(null);
+  const [scheduleDate, setScheduleDate] = useState({
+    date: null,
+    time: null,
+    repeat: "Once",
+  });
+  const [rfiName, setRfiName] = useState("");
+  const [project, setProject] = useState("");
   const performSearch = useCallback(() => {
-    const filters = { domain, category, templates, selectedAgents };
+    const filters = {
+      domain,
+      category,
+      templates,
+      selectedAgents,
+      selectedDocGenTypes,
+      startDate,
+      ContentLibrary,
+      completionDate,
+      selectedDepartment,
+      scheduleDate,
+    };
     const results = searchFunction(searchQuery, filters);
     setSearchResults(results);
     console.log(results);
@@ -37,11 +65,18 @@ const RequestInfoProvider = ({ children }) => {
     templates,
     searchFunction,
     selectedAgents,
+    docGenTemplate,
+    selectedDocGenTypes,
+    startDate,
+    ContentLibrary,
+    completionDate,
+    scheduleDate,
+    selectedDepartment
   ]);
 
-  useEffect(() => {
-    console.log(isEditInternalAnswerId);
-  }, [isEditInternalAnswerId]);
+
+
+
 
   const value = {
     domain,
@@ -75,7 +110,26 @@ const RequestInfoProvider = ({ children }) => {
     setContentLibrary,
     customAnswerFormat,
     setCustomAnswerFormat,
-    docGenTemplate, setDocGenTemplate
+    docGenTemplate,
+    setDocGenTemplate,
+    selectedDocGenTypes,
+    setSelectedDocGenTypes,
+    startDate,
+    setStartDate,
+    completionDate,
+    setCompletionDate,
+    scheduleDate,
+    setScheduleDate,
+    rfiName,
+    setRfiName,
+    project,
+    setProject,
+    allRfiNames, setAllRfiNames,
+    allProjectNames, setAllProjectNames,
+    searchRFIDetails, setSearchRFIDetails,
+    selectedDepartment, setSelectedDepartment,
+    rfiDetailsForUploadTemplate, setRfiDetailsForUploadTemplate,
+    editTemplateData, setEditTemplateData
   };
 
   return (

@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // Add this import
 import { 
-  Edit, 
-  Trash2, 
   Search, 
   ChevronUp, 
   ChevronDown, 
@@ -11,9 +10,9 @@ import {
   Eye,
   FileText,
   File,
-  Loader2,
   Calendar,
-  HardDrive
+  HardDrive,
+  Clock
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -39,24 +38,50 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
-  Card,
-} from "@/components/ui/card";
-import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-// Mock files data
+// TimestampDisplay component
+function TimestampDisplay({ timestamp, size = "sm" }) {
+  if (!timestamp) return <span className="text-gray-400">-</span>;
+  
+  // Parse the timestamp
+  const [datePart, timePart] = timestamp.split(' ');
+  const iconSize = size === "sm" ? 12 : 14;
+  const textSize = size === "sm" ? "text-xs" : "text-sm";
+  
+  return (
+    <div className="flex flex-col space-y-1">
+      {/* Calendar icon + Date */}
+      <div className="flex items-center space-x-1">
+        <Calendar className={`h-${iconSize === 12 ? '3' : '4'} w-${iconSize === 12 ? '3' : '4'} text-blue-500`} />
+        <span className={`${textSize} text-blue-700 font-medium`}>
+          {datePart}
+        </span>
+      </div>
+      {/* Clock icon + Time */}
+      <div className="flex items-center space-x-1">
+        <Clock className={`h-${iconSize === 12 ? '3' : '4'} w-${iconSize === 12 ? '3' : '4'} text-gray-500`} />
+        <span className={`${textSize} text-gray-600`}>
+          {timePart}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// Updated mock files data with new timestamp format
 const mockFiles = [
   {
     id: "1",
     fileName: "users_wc_001.dat",
     fileType: "data",
     sizeBytes: 2048576,
-    createdAt: "2025-04-15T10:30:00Z",
-    lastUpdatedAt: "2025-04-15T11:30:00Z",
+    createdAt: "05-04-2025 10:30:00",
+    lastUpdatedAt: "05-04-2025 11:30:00",
     indexes: [
       { name: "user_profile_wc", type: "working_copy", description: "Primary user data index" },
       { name: "user_analytics_wc", type: "working_copy", description: "User analytics tracking" }
@@ -67,8 +92,8 @@ const mockFiles = [
     fileName: "users_wc_001.idx",
     fileType: "index",
     sizeBytes: 512000,
-    createdAt: "2025-04-15T10:30:00Z",
-    lastUpdatedAt: "2025-04-15T11:15:00Z",
+    createdAt: "05-04-2025 10:30:00",
+    lastUpdatedAt: "05-04-2025 11:15:00",
     indexes: [
       { name: "user_profile_wc", type: "working_copy", description: "Primary user data index" }
     ]
@@ -78,8 +103,8 @@ const mockFiles = [
     fileName: "users_metadata.json",
     fileType: "metadata",
     sizeBytes: 4096,
-    createdAt: "2025-04-15T10:30:00Z",
-    lastUpdatedAt: "2025-04-15T11:05:00Z",
+    createdAt: "05-04-2025 10:30:00",
+    lastUpdatedAt: "05-04-2025 11:05:00",
     indexes: [
       { name: "user_profile_wc", type: "working_copy", description: "Primary user data index" },
       { name: "metadata_ref", type: "reference", description: "Metadata reference index" }
@@ -90,8 +115,8 @@ const mockFiles = [
     fileName: "products_ref.dat",
     fileType: "data",
     sizeBytes: 15728640,
-    createdAt: "2025-04-12T14:22:00Z",
-    lastUpdatedAt: "2025-04-12T16:22:00Z",
+    createdAt: "05-03-2025 14:22:00",
+    lastUpdatedAt: "05-03-2025 16:22:00",
     indexes: [
       { name: "product_catalog_ref", type: "reference", description: "Product catalog reference" },
       { name: "inventory_linked", type: "linked", description: "Inventory management index" }
@@ -102,8 +127,8 @@ const mockFiles = [
     fileName: "products_ref.idx",
     fileType: "index",
     sizeBytes: 8388608,
-    createdAt: "2025-04-12T14:22:00Z",
-    lastUpdatedAt: "2025-04-12T16:15:00Z",
+    createdAt: "05-03-2025 14:22:00",
+    lastUpdatedAt: "05-03-2025 16:15:00",
     indexes: [
       { name: "product_catalog_ref", type: "reference", description: "Product catalog reference" }
     ]
@@ -113,8 +138,8 @@ const mockFiles = [
     fileName: "catalog_config.txt",
     fileType: "config",
     sizeBytes: 2048,
-    createdAt: "2025-04-12T14:22:00Z",
-    lastUpdatedAt: "2025-04-12T16:00:00Z",
+    createdAt: "05-03-2025 14:22:00",
+    lastUpdatedAt: "05-03-2025 16:00:00",
     indexes: [
       { name: "product_catalog_ref", type: "reference", description: "Product catalog reference" }
     ]
@@ -124,8 +149,8 @@ const mockFiles = [
     fileName: "product_schema.json",
     fileType: "metadata",
     sizeBytes: 4096,
-    createdAt: "2025-04-12T14:22:00Z",
-    lastUpdatedAt: "2025-04-12T16:30:00Z",
+    createdAt: "05-03-2025 14:22:00",
+    lastUpdatedAt: "05-03-2025 16:30:00",
     indexes: [
       { name: "product_catalog_ref", type: "reference", description: "Product catalog reference" },
       { name: "schema_validation_ref", type: "reference", description: "Schema validation index" }
@@ -136,8 +161,8 @@ const mockFiles = [
     fileName: "inventory_link.dat",
     fileType: "data",
     sizeBytes: 5242880,
-    createdAt: "2025-04-10T09:15:00Z",
-    lastUpdatedAt: "2025-04-10T12:15:00Z",
+    createdAt: "05-02-2025 09:15:00",
+    lastUpdatedAt: "05-02-2025 12:15:00",
     indexes: [
       { name: "inventory_linked", type: "linked", description: "Inventory management index" }
     ]
@@ -147,8 +172,8 @@ const mockFiles = [
     fileName: "inventory_link.idx",
     fileType: "index",
     sizeBytes: 1048576,
-    createdAt: "2025-04-10T09:15:00Z",
-    lastUpdatedAt: "2025-04-10T12:30:00Z",
+    createdAt: "05-02-2025 09:15:00",
+    lastUpdatedAt: "05-02-2025 12:30:00",
     indexes: [
       { name: "inventory_linked", type: "linked", description: "Inventory management index" }
     ]
@@ -158,8 +183,8 @@ const mockFiles = [
     fileName: "analytics_wc_agg.dat",
     fileType: "data",
     sizeBytes: 18874368,
-    createdAt: "2025-04-08T16:45:00Z",
-    lastUpdatedAt: "2025-04-08T18:45:00Z",
+    createdAt: "05-01-2025 16:45:00",
+    lastUpdatedAt: "05-01-2025 18:45:00",
     indexes: [
       { name: "analytics_wc_agg", type: "working_copy_aggregate", description: "Analytics aggregation index" },
       { name: "reporting_ref_agg", type: "reference_aggregate", description: "Reporting aggregation" }
@@ -174,17 +199,6 @@ const formatFileSize = (bytes) => {
   const sizes = ['B', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-};
-
-// Utility function to format date
-const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
 };
 
 // Get file type icon
@@ -220,6 +234,7 @@ const getIndexTypeBadge = (indexType) => {
 
 // Indexes Dialog Component
 const IndexesDialog = ({ file }) => {
+  const navigate = useNavigate(); // Add this hook
   const [indexSearchTerm, setIndexSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
@@ -228,6 +243,15 @@ const IndexesDialog = ({ file }) => {
     index.type.toLowerCase().includes(indexSearchTerm.toLowerCase()) ||
     index.description.toLowerCase().includes(indexSearchTerm.toLowerCase())
   );
+
+  // Updated navigation function
+  const handleIndexClick = (indexName) => {
+    setIsOpen(false);
+    // Store the target index name in sessionStorage
+    sessionStorage.setItem('targetIndexName', indexName);
+    // Navigate using React Router
+    navigate('/admin-dashboard/index-details');
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -263,12 +287,16 @@ const IndexesDialog = ({ file }) => {
           ) : (
             <div className="divide-y">
               {filteredIndexes.map((index, idx) => (
-                <div key={idx} className="p-4 hover:bg-gray-50">
+                <div 
+                  key={idx} 
+                  className="p-4 hover:bg-blue-50 cursor-pointer transition-colors"
+                  onClick={() => handleIndexClick(index.name)}
+                >
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-3">
                       <Database className="h-4 w-4 mt-1 text-gray-600" />
                       <div className="space-y-1">
-                        <p className="font-medium text-sm">{index.name}</p>
+                        <p className="font-medium text-sm text-blue-600 hover:text-blue-800">{index.name}</p>
                         <p className="text-xs text-gray-600">{index.description}</p>
                       </div>
                     </div>
@@ -305,13 +333,35 @@ export default function FileDetailsPage() {
   const [lastUpdatedSearchTerm, setLastUpdatedSearchTerm] = useState("");
   const [indexesSearchTerm, setIndexesSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: "fileName", direction: "ascending" });
-  const [openPopover, setOpenPopover] = useState(null);
   const [showNameSearch, setShowNameSearch] = useState(false);
   const [showTypeSearch, setShowTypeSearch] = useState(false);
   const [showSizeSearch, setShowSizeSearch] = useState(false);
   const [showCreatedSearch, setShowCreatedSearch] = useState(false);
   const [showLastUpdatedSearch, setShowLastUpdatedSearch] = useState(false);
   const [showIndexesSearch, setShowIndexesSearch] = useState(false);
+  const [highlightedFile, setHighlightedFile] = useState(null);
+
+  // Check for target file name on component mount
+  useEffect(() => {
+    const targetFileName = sessionStorage.getItem('targetFileName');
+    if (targetFileName) {
+      setHighlightedFile(targetFileName);
+      sessionStorage.removeItem('targetFileName');
+      
+      // Auto-scroll to the target file after a short delay
+      setTimeout(() => {
+        const targetRow = document.querySelector(`[data-filename="${targetFileName}"]`);
+        if (targetRow) {
+          targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+
+      // Remove highlight after 3 seconds
+      setTimeout(() => {
+        setHighlightedFile(null);
+      }, 3000);
+    }
+  }, []);
 
   // Table columns configuration
   const columns = [
@@ -332,12 +382,12 @@ export default function FileDetailsPage() {
     },
     {
       key: "createdAt",
-      label: "Created At",
+      label: "Created TS",
       sortValue: (file) => file.createdAt,
     },
     {
       key: "lastUpdatedAt",
-      label: "Last Updated At",
+      label: "Last Updated TS",
       sortValue: (file) => file.lastUpdatedAt || "",
     },
     {
@@ -357,8 +407,8 @@ export default function FileDetailsPage() {
         file.fileName.toLowerCase().includes(searchLower) ||
         file.fileType.toLowerCase().includes(searchLower) ||
         formatFileSize(file.sizeBytes).toLowerCase().includes(searchLower) ||
-        formatDate(file.createdAt).toLowerCase().includes(searchLower) ||
-        (file.lastUpdatedAt && formatDate(file.lastUpdatedAt).toLowerCase().includes(searchLower)) ||
+        (file.createdAt && file.createdAt.toLowerCase().includes(searchLower)) ||
+        (file.lastUpdatedAt && file.lastUpdatedAt.toLowerCase().includes(searchLower)) ||
         file.indexes.some(index => 
           index.name.toLowerCase().includes(searchLower) ||
           index.type.toLowerCase().includes(searchLower) ||
@@ -374,9 +424,9 @@ export default function FileDetailsPage() {
       const sizeMatch = sizeSearchTerm ?
         formatFileSize(file.sizeBytes).toLowerCase().includes(sizeSearchTerm.toLowerCase()) : true;
       const createdMatch = createdSearchTerm ?
-        formatDate(file.createdAt).toLowerCase().includes(createdSearchTerm.toLowerCase()) : true;
+        (file.createdAt && file.createdAt.toLowerCase().includes(createdSearchTerm.toLowerCase())) : true;
       const lastUpdatedMatch = lastUpdatedSearchTerm ?
-        (file.lastUpdatedAt && formatDate(file.lastUpdatedAt).toLowerCase().includes(lastUpdatedSearchTerm.toLowerCase())) : true;
+        (file.lastUpdatedAt && file.lastUpdatedAt.toLowerCase().includes(lastUpdatedSearchTerm.toLowerCase())) : true;
       const indexesMatch = indexesSearchTerm ?
         file.indexes.some(index => 
           index.name.toLowerCase().includes(indexesSearchTerm.toLowerCase()) ||
@@ -453,12 +503,6 @@ export default function FileDetailsPage() {
     setShowIndexesSearch(false);
   };
 
-  // Handle delete file
-  const handleDeleteFile = (fileId) => {
-    setFiles(files.filter((file) => file.id !== fileId));
-    setOpenPopover(null);
-  };
-
   return (
     <TooltipProvider>
       <div className="max-w-7xl mx-auto space-y-6 p-6">
@@ -498,10 +542,10 @@ export default function FileDetailsPage() {
         </div>
 
         {/* Files table */}
-        <div className="rounded-md border border-gray-400">
+        <div className="rounded-lg border border-gray-300 shadow-sm overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="hover:bg-blue-600">
+              <TableRow className="hover:bg-blue-600 bg-blue-600">
                 <TableHead className="text-white relative">
                   <div className="flex items-center gap-2">
                     <span>File Name</span>
@@ -788,97 +832,49 @@ export default function FileDetailsPage() {
                     </div>
                   </TableHead>
                 ))}
-                <TableHead className="text-right text-white">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {sortedAndFilteredFiles().length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                     No files found
                   </TableCell>
                 </TableRow>
               ) : (
                 sortedAndFilteredFiles().map((file) => (
-                  <TableRow key={file.id} className="hover:bg-gray-50">
-                    <TableCell>
-                      <div className="flex items-center">
+                  <TableRow 
+                    key={file.id} 
+                    className={`hover:bg-gray-50 border-b transition-colors ${
+                      highlightedFile === file.fileName ? 'bg-yellow-100 ring-2 ring-yellow-400' : ''
+                    }`}
+                    data-filename={file.fileName}
+                  >
+                    <TableCell className="py-4">
+                      <div className="flex items-center space-x-3">
                         {getFileIcon(file.fileName, file.fileType)}
-                        <span className="font-medium ml-2">{file.fileName}</span>
+                        <span className="font-medium text-gray-900">{file.fileName}</span>
                       </div>
                     </TableCell>
-                    <TableCell>
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getFileTypeBadge(file.fileType)}`}>
+                    <TableCell className="py-4">
+                      <span className={`px-3 py-1 text-xs font-medium rounded-full ${getFileTypeBadge(file.fileType)}`}>
                         {file.fileType}
                       </span>
                     </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <HardDrive className="h-3 w-3 text-gray-500" />
-                        <span className="text-sm">{formatFileSize(file.sizeBytes)}</span>
+                    <TableCell className="py-4">
+                      <div className="flex items-center gap-2">
+                        <HardDrive className="h-4 w-4 text-gray-500" />
+                        <span className="text-sm font-medium text-gray-700">{formatFileSize(file.sizeBytes)}</span>
                       </div>
                     </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1 text-gray-600">
-                        <Calendar className="h-3 w-3" />
-                        <span className="text-sm">{formatDate(file.createdAt)}</span>
-                      </div>
+                    <TableCell className="py-4">
+                      <TimestampDisplay timestamp={file.createdAt} size="sm" />
                     </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1 text-gray-600">
-                        <Calendar className="h-3 w-3" />
-                        <span className="text-sm">{formatDate(file.lastUpdatedAt)}</span>
-                      </div>
+                    <TableCell className="py-4">
+                      <TimestampDisplay timestamp={file.lastUpdatedAt} size="sm" />
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="py-4">
                       <IndexesDialog file={file} />
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Popover 
-                          open={openPopover === file.id} 
-                          onOpenChange={(open) => {
-                            if (open) {
-                              setOpenPopover(file.id);
-                            } else {
-                              setOpenPopover(null);
-                            }
-                          }}
-                        >
-                          <PopoverTrigger asChild>
-                            <Button variant="outline" size="icon">
-                              <Trash2 className="h-4 w-4 text-red-600" />
-                              <span className="sr-only">Delete</span>
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-60 p-4 mr-4" side="bottom">
-                            <div className="space-y-4">
-                              <div>
-                                <h4 className="font-medium">Are you sure?</h4>
-                                <p className="text-sm text-muted-foreground">
-                                  This will permanently delete "{file.fileName}" and affect {file.indexes.length} associated indexes.
-                                </p>
-                              </div>
-                              <div className="flex justify-end gap-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => setOpenPopover(null)}
-                                >
-                                  Cancel
-                                </Button>
-                                <Button
-                                  variant="destructive"
-                                  size="sm"
-                                  onClick={() => handleDeleteFile(file.id)}
-                                >
-                                  Delete
-                                </Button>
-                              </div>
-                            </div>
-                          </PopoverContent>
-                        </Popover>
-                      </div>
                     </TableCell>
                   </TableRow>
                 ))

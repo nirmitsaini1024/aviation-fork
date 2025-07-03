@@ -1,7 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Add this import
 import { 
-  Edit, 
-  Trash2, 
   Search, 
   ChevronUp, 
   ChevronDown, 
@@ -11,9 +10,9 @@ import {
   Eye,
   FileText,
   File,
-  Loader2,
   Calendar,
-  HardDrive
+  HardDrive,
+  Clock
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -45,14 +44,34 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-// Mock index types data
-const indexTypes = [
-  { id: "1", name: "working_copy", description: "Working copy index for live data" },
-  { id: "2", name: "reference", description: "Reference index for lookup data" },
-  { id: "3", name: "linked", description: "Linked index connecting multiple sources" },
-  { id: "4", name: "working_copy_aggregate", description: "Aggregated working copy data" },
-  { id: "5", name: "reference_aggregate", description: "Aggregated reference data" },
-];
+// TimestampDisplay component
+function TimestampDisplay({ timestamp, size = "sm" }) {
+  if (!timestamp) return <span className="text-gray-400">-</span>;
+  
+  // Parse the timestamp
+  const [datePart, timePart] = timestamp.split(' ');
+  const iconSize = size === "sm" ? 12 : 14;
+  const textSize = size === "sm" ? "text-xs" : "text-sm";
+  
+  return (
+    <div className="flex flex-col space-y-1">
+      {/* Calendar icon + Date */}
+      <div className="flex items-center space-x-1">
+        <Calendar className={`h-${iconSize === 12 ? '3' : '4'} w-${iconSize === 12 ? '3' : '4'} text-blue-500`} />
+        <span className={`${textSize} text-blue-700 font-medium`}>
+          {datePart}
+        </span>
+      </div>
+      {/* Clock icon + Time */}
+      <div className="flex items-center space-x-1">
+        <Clock className={`h-${iconSize === 12 ? '3' : '4'} w-${iconSize === 12 ? '3' : '4'} text-gray-500`} />
+        <span className={`${textSize} text-gray-600`}>
+          {timePart}
+        </span>
+      </div>
+    </div>
+  );
+}
 
 // Utility function to format file size
 const formatFileSize = (bytes) => {
@@ -61,18 +80,6 @@ const formatFileSize = (bytes) => {
   const sizes = ['B', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-};
-
-// Utility function to format date
-const formatDate = (dateString) => {
-  if (!dateString) return '-';
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
 };
 
 // Get file type icon
@@ -95,8 +102,20 @@ const getIndexTypeBadge = (indexType) => {
   return badgeStyles[indexType] || 'bg-gray-100 text-gray-800';
 };
 
+// Get file type badge styling
+const getFileTypeBadge = (fileType) => {
+  const badgeStyles = {
+    'data': 'bg-blue-100 text-blue-800',
+    'index': 'bg-green-100 text-green-800',
+    'metadata': 'bg-purple-100 text-purple-800',
+    'config': 'bg-orange-100 text-orange-800'
+  };
+  return badgeStyles[fileType] || 'bg-gray-100 text-gray-800';
+};
+
 // Files Dialog Component with table view
 const FilesDialog = ({ index }) => {
+  const navigate = useNavigate(); // Add this hook
   const [fileSearchTerm, setFileSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [sortConfig, setSortConfig] = useState({ 
@@ -158,8 +177,8 @@ const FilesDialog = ({ index }) => {
       file.name.toLowerCase().includes(fileSearchTerm.toLowerCase()) ||
       file.type.toLowerCase().includes(fileSearchTerm.toLowerCase()) ||
       formatFileSize(file.size).toLowerCase().includes(fileSearchTerm.toLowerCase()) ||
-      (file.createdAt && formatDate(file.createdAt).toLowerCase().includes(fileSearchTerm.toLowerCase())) ||
-      (file.lastUpdatedAt && formatDate(file.lastUpdatedAt).toLowerCase().includes(fileSearchTerm.toLowerCase()))
+      (file.createdAt && file.createdAt.toLowerCase().includes(fileSearchTerm.toLowerCase())) ||
+      (file.lastUpdatedAt && file.lastUpdatedAt.toLowerCase().includes(fileSearchTerm.toLowerCase()))
     );
 
     if (sortConfig) {
@@ -178,6 +197,15 @@ const FilesDialog = ({ index }) => {
     return filtered;
   };
 
+  // Updated navigation function
+  const handleFileClick = (fileName) => {
+    setIsOpen(false);
+    // Store the target file name in sessionStorage
+    sessionStorage.setItem('targetFileName', fileName);
+    // Navigate using React Router
+    navigate('/admin-dashboard/file-details');
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -186,7 +214,7 @@ const FilesDialog = ({ index }) => {
           <span className="text-sm font-medium">{index.files.length} files</span>
         </div>
       </DialogTrigger>
-      <DialogContent className="w-full max-w-[95vw] max-h-[90vh] flex flex-col">
+      <DialogContent className="max-w-[90vw] w-[90vw] max-h-[90vh] flex flex-col" style={{width: '90vw', maxWidth: '90vw'}}>
         <DialogHeader>
           <DialogTitle>Files for {index.indexName}</DialogTitle>
         </DialogHeader>
@@ -204,62 +232,73 @@ const FilesDialog = ({ index }) => {
         </div>
 
         {/* Files Table */}
-        <div className="flex-1 overflow-auto">
-          <Table className="min-w-full">
-            <TableHeader className="sticky top-0 z-10">
-              <TableRow className="hover:bg-blue-600">
-                {fileColumns.map((column) => (
-                  <TableHead key={column.key} className="whitespace-nowrap">
-                    <div className="flex items-center gap-1">
-                      <span>{column.label}</span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 w-6 p-0"
-                        onClick={() => requestSort(column.key)}
-                        title={`Sort by ${column.label.toLowerCase()}`}
-                      >
-                        <ArrowUpDown className="h-3 w-3" />
-                      </Button>
-                      {getSortIcon(column.key)}
-                    </div>
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sortedAndFilteredFiles().length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={fileColumns.length} className="text-center py-8 text-muted-foreground">
-                    No files found
-                  </TableCell>
-                </TableRow>
-              ) : (
-                sortedAndFilteredFiles().map((file, idx) => (
-                  <TableRow key={idx}>
-                    <TableCell className="whitespace-nowrap">
+        <div className="flex-1 overflow-auto border rounded-md">
+          <div className="min-w-[800px]">
+            <Table className="w-full">
+              <TableHeader className="sticky top-0 z-10 bg-blue-600">
+                <TableRow className="hover:bg-blue-600 border-b bg-blue-600">
+                  {fileColumns.map((column) => (
+                    <TableHead key={column.key} className="whitespace-nowrap px-4 py-3 font-semibold text-white">
                       <div className="flex items-center gap-2">
-                        {getFileIcon(file.name, file.type)}
-                        <span className="font-medium truncate max-w-[200px]">{file.name}</span>
+                        <span>{column.label}</span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 w-6 p-0 hover:bg-blue-700 text-white"
+                          onClick={() => requestSort(column.key)}
+                          title={`Sort by ${column.label.toLowerCase()}`}
+                        >
+                          <ArrowUpDown className="h-3 w-3" />
+                        </Button>
+                        {getSortIcon(column.key)}
                       </div>
-                    </TableCell>
-                    <TableCell className="whitespace-nowrap capitalize">
-                      {file.type}
-                    </TableCell>
-                    <TableCell className="whitespace-nowrap">
-                      {formatFileSize(file.size)}
-                    </TableCell>
-                    <TableCell className="whitespace-nowrap">
-                      {formatDate(file.createdAt)}
-                    </TableCell>
-                    <TableCell className="whitespace-nowrap">
-                      {formatDate(file.lastUpdatedAt)}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {sortedAndFilteredFiles().length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={fileColumns.length} className="text-center py-8 text-muted-foreground">
+                      No files found
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                ) : (
+                  sortedAndFilteredFiles().map((file, idx) => (
+                    <TableRow 
+                      key={idx} 
+                      className="hover:bg-blue-50 cursor-pointer transition-colors"
+                      onClick={() => handleFileClick(file.name)}
+                    >
+                      <TableCell className="px-4 py-3 min-w-[250px]">
+                        <div className="flex items-center gap-2">
+                          {getFileIcon(file.name, file.type)}
+                          <span className="font-medium text-blue-600 hover:text-blue-800">{file.name}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-4 py-3 min-w-[120px]">
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getFileTypeBadge(file.type)}`}>
+                          {file.type}
+                        </span>
+                      </TableCell>
+                      <TableCell className="px-4 py-3 min-w-[100px]">
+                        <div className="flex items-center gap-1">
+                          <HardDrive className="h-3 w-3 text-gray-500" />
+                          <span className="text-sm">{formatFileSize(file.size)}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-4 py-3 min-w-[200px]">
+                        <TimestampDisplay timestamp={file.createdAt} size="sm" />
+                      </TableCell>
+                      <TableCell className="px-4 py-3 min-w-[200px]">
+                        <TimestampDisplay timestamp={file.lastUpdatedAt} size="sm" />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </div>
 
         {/* Summary */}
@@ -274,7 +313,7 @@ const FilesDialog = ({ index }) => {
   );
 };
 
-// Full mock indices data with createdAt and completedAt for files
+// Updated mock indices data with new timestamp format
 const mockIndices = [
   {
     id: "1",
@@ -285,28 +324,29 @@ const mockIndices = [
         name: "users_wc_001.dat", 
         size: 2048576, 
         type: "data",
-        createdAt: "2025-04-15T09:30:00Z",
-        lastUpdatedAt: "2025-04-15T11:30:00Z"
+        createdAt: "05-04-2025 09:30:00",
+        lastUpdatedAt: "05-04-2025 11:30:00"
       },
       { 
         name: "users_wc_001.idx", 
         size: 512000, 
         type: "index",
-        createdAt: "2025-04-15T09:45:00Z",
-        lastUpdatedAt: "2025-04-15T11:15:00Z"
+        createdAt: "05-04-2025 09:45:00",
+        lastUpdatedAt: "05-04-2025 11:15:00"
       },
       { 
         name: "users_metadata.json", 
         size: 4096, 
         type: "metadata",
-        createdAt: "2025-04-15T10:00:00Z",
-        lastUpdatedAt: "2025-04-15T11:05:00Z"
+        createdAt: "05-04-2025 10:00:00",
+        lastUpdatedAt: "05-04-2025 11:05:00"
       }
     ],
     sizeBytes: 3072672,
-    createdAt: "2025-04-15T10:30:00Z",
-    completedAt: "2025-04-15T11:00:00Z",
-    lastUpdatedAt: "2025-04-15T11:30:00Z",
+    createdAt: "05-04-2025 10:30:00",
+    completedAt: "05-04-2025 11:00:00",
+    lastUpdatedAt: "05-04-2025 11:30:00",
+    expiresAt: "05-07-2025 10:30:00",
   },
   {
     id: "2",
@@ -317,35 +357,36 @@ const mockIndices = [
         name: "products_ref.dat", 
         size: 15728640, 
         type: "data",
-        createdAt: "2025-04-12T13:00:00Z",
-        lastUpdatedAt: "2025-04-12T15:00:00Z"
+        createdAt: "05-03-2025 13:00:00",
+        lastUpdatedAt: "05-03-2025 15:00:00"
       },
       { 
         name: "products_ref.idx", 
         size: 8388608, 
         type: "index",
-        createdAt: "2025-04-12T13:30:00Z",
-        lastUpdatedAt: "2025-04-12T15:10:00Z"
+        createdAt: "05-03-2025 13:30:00",
+        lastUpdatedAt: "05-03-2025 15:10:00"
       },
       { 
         name: "catalog_config.txt", 
         size: 2048, 
         type: "config",
-        createdAt: "2025-04-12T14:15:00Z",
-        lastUpdatedAt: "2025-04-12T15:15:00Z"
+        createdAt: "05-03-2025 14:15:00",
+        lastUpdatedAt: "05-03-2025 15:15:00"
       },
       { 
         name: "product_schema.json", 
         size: 4096, 
         type: "metadata",
-        createdAt: "2025-04-12T14:20:00Z",
-        lastUpdatedAt: "2025-04-12T15:20:00Z"
+        createdAt: "05-03-2025 14:20:00",
+        lastUpdatedAt: "05-03-2025 15:20:00"
       }
     ],
     sizeBytes: 24123392,
-    createdAt: "2025-04-12T14:22:00Z",
-    completedAt: "2025-04-12T15:00:00Z",
-    lastUpdatedAt: "2025-04-12T16:15:00Z",
+    createdAt: "05-03-2025 14:22:00",
+    completedAt: "05-03-2025 15:00:00",
+    lastUpdatedAt: "05-03-2025 16:15:00",
+    expiresAt: "05-06-2025 14:22:00",
   },
   {
     id: "3",
@@ -356,21 +397,22 @@ const mockIndices = [
         name: "inventory_link.dat", 
         size: 5242880, 
         type: "data",
-        createdAt: "2025-04-10T08:00:00Z",
-        lastUpdatedAt: "2025-04-10T12:00:00Z"
+        createdAt: "05-02-2025 08:00:00",
+        lastUpdatedAt: "05-02-2025 12:00:00"
       },
       { 
         name: "inventory_link.idx", 
         size: 1048576, 
         type: "index",
-        createdAt: "2025-04-10T08:30:00Z",
-        lastUpdatedAt: "2025-04-10T12:10:00Z"
+        createdAt: "05-02-2025 08:30:00",
+        lastUpdatedAt: "05-02-2025 12:10:00"
       }
     ],
     sizeBytes: 6291456,
-    createdAt: "2025-04-10T09:15:00Z",
-    completedAt: "2025-04-10T10:00:00Z",
-    lastUpdatedAt: "2025-04-10T12:30:00Z",
+    createdAt: "05-02-2025 09:15:00",
+    completedAt: "05-02-2025 10:00:00",
+    lastUpdatedAt: "05-02-2025 12:30:00",
+    expiresAt: "05-05-2025 09:15:00",
   },
   {
     id: "4",
@@ -381,42 +423,43 @@ const mockIndices = [
         name: "analytics_wc_agg_1.dat", 
         size: 18874368, 
         type: "data",
-        createdAt: "2025-04-08T15:00:00Z",
-        lastUpdatedAt: "2025-04-08T17:30:00Z"
+        createdAt: "05-01-2025 15:00:00",
+        lastUpdatedAt: "05-01-2025 17:30:00"
       },
       { 
         name: "analytics_wc_agg_1.idx", 
         size: 4194304, 
         type: "index",
-        createdAt: "2025-04-08T15:30:00Z",
-        lastUpdatedAt: "2025-04-08T17:00:00Z"
+        createdAt: "05-01-2025 15:30:00",
+        lastUpdatedAt: "05-01-2025 17:00:00"
       },
       { 
         name: "analytics_wc_agg_2.dat", 
         size: 18874368, 
         type: "data",
-        createdAt: "2025-04-08T16:00:00Z",
-        lastUpdatedAt: "2025-04-08T17:30:00Z"
+        createdAt: "05-01-2025 16:00:00",
+        lastUpdatedAt: "05-01-2025 17:30:00"
       },
       { 
         name: "analytics_wc_agg_2.idx", 
         size: 4194304, 
         type: "index",
-        createdAt: "2025-04-08T16:15:00Z",
-        lastUpdatedAt: "2025-04-08T17:35:00Z"
+        createdAt: "05-01-2025 16:15:00",
+        lastUpdatedAt: "05-01-2025 17:35:00"
       },
       { 
         name: "aggregation_rules.json", 
         size: 8192, 
         type: "config",
-        createdAt: "2025-04-08T16:40:00Z",
-        lastUpdatedAt: "2025-04-08T17:40:00Z"
+        createdAt: "05-01-2025 16:40:00",
+        lastUpdatedAt: "05-01-2025 17:40:00"
       }
     ],
     sizeBytes: 23076864,
-    createdAt: "2025-04-08T16:45:00Z",
-    completedAt: "2025-04-08T17:30:00Z",
-    lastUpdatedAt: "2025-04-08T18:00:00Z",
+    createdAt: "05-01-2025 16:45:00",
+    completedAt: "05-01-2025 17:30:00",
+    lastUpdatedAt: "05-01-2025 18:00:00",
+    expiresAt: "05-04-2025 16:45:00",
   },
   {
     id: "5",
@@ -427,28 +470,29 @@ const mockIndices = [
         name: "reports_ref_agg.dat", 
         size: 10485760, 
         type: "data",
-        createdAt: "2025-04-05T10:00:00Z",
-        lastUpdatedAt: "2025-04-05T14:00:00Z"
+        createdAt: "04-30-2025 10:00:00",
+        lastUpdatedAt: "04-30-2025 14:00:00"
       },
       { 
         name: "reports_ref_agg.idx", 
         size: 2097152, 
         type: "index",
-        createdAt: "2025-04-05T10:30:00Z",
-        lastUpdatedAt: "2025-04-05T14:10:00Z"
+        createdAt: "04-30-2025 10:30:00",
+        lastUpdatedAt: "04-30-2025 14:10:00"
       },
       { 
         name: "report_meta.json", 
         size: 1024, 
         type: "metadata",
-        createdAt: "2025-04-05T11:15:00Z",
-        lastUpdatedAt: "2025-04-05T14:15:00Z"
+        createdAt: "04-30-2025 11:15:00",
+        lastUpdatedAt: "04-30-2025 14:15:00"
       }
     ],
     sizeBytes: 12583936,
-    createdAt: "2025-04-05T11:20:00Z",
-    completedAt: "2025-04-05T12:00:00Z",
-    lastUpdatedAt: "2025-04-05T14:30:00Z",
+    createdAt: "04-30-2025 11:20:00",
+    completedAt: "04-30-2025 12:00:00",
+    lastUpdatedAt: "04-30-2025 14:30:00",
+    expiresAt: "05-03-2025 11:20:00",
   },
   {
     id: "6",
@@ -459,21 +503,22 @@ const mockIndices = [
         name: "customers_wc.dat", 
         size: 7340032, 
         type: "data",
-        createdAt: "2025-04-03T07:30:00Z",
-        lastUpdatedAt: "2025-04-03T10:15:00Z"
+        createdAt: "04-29-2025 07:30:00",
+        lastUpdatedAt: "04-29-2025 10:15:00"
       },
       { 
         name: "customers_wc.idx", 
         size: 1572864, 
         type: "index",
-        createdAt: "2025-04-03T07:45:00Z",
-        lastUpdatedAt: "2025-04-03T10:20:00Z"
+        createdAt: "04-29-2025 07:45:00",
+        lastUpdatedAt: "04-29-2025 10:20:00"
       }
     ],
     sizeBytes: 8912896,
-    createdAt: "2025-04-03T08:30:00Z",
-    completedAt: "2025-04-03T09:00:00Z",
-    lastUpdatedAt: "2025-04-03T10:15:00Z",
+    createdAt: "04-29-2025 08:30:00",
+    completedAt: "04-29-2025 09:00:00",
+    lastUpdatedAt: "04-29-2025 10:15:00",
+    expiresAt: "05-02-2025 08:30:00",
   },
   {
     id: "7",
@@ -484,28 +529,29 @@ const mockIndices = [
         name: "geo_ref.dat", 
         size: 3145728, 
         type: "data",
-        createdAt: "2025-04-01T11:00:00Z",
-        lastUpdatedAt: "2025-04-01T15:00:00Z"
+        createdAt: "04-28-2025 11:00:00",
+        lastUpdatedAt: "04-28-2025 15:00:00"
       },
       { 
         name: "geo_ref.idx", 
         size: 786432, 
         type: "index",
-        createdAt: "2025-04-01T11:30:00Z",
-        lastUpdatedAt: "2025-04-01T15:10:00Z"
+        createdAt: "04-28-2025 11:30:00",
+        lastUpdatedAt: "04-28-2025 15:10:00"
       },
       { 
         name: "geo_mapping.json", 
         size: 2048, 
         type: "config",
-        createdAt: "2025-04-01T12:12:00Z",
-        lastUpdatedAt: "2025-04-01T15:12:00Z"
+        createdAt: "04-28-2025 12:12:00",
+        lastUpdatedAt: "04-28-2025 15:12:00"
       }
     ],
     sizeBytes: 3934208,
-    createdAt: "2025-04-01T12:15:00Z",
-    completedAt: "2025-04-01T13:00:00Z",
-    lastUpdatedAt: "2025-04-01T15:45:00Z",
+    createdAt: "04-28-2025 12:15:00",
+    completedAt: "04-28-2025 13:00:00",
+    lastUpdatedAt: "04-28-2025 15:45:00",
+    expiresAt: "05-01-2025 12:15:00",
   },
 ];
 
@@ -521,7 +567,6 @@ export default function IndexDetailsPage() {
   const [completedSearchTerm, setCompletedSearchTerm] = useState("");
   const [lastUpdatedSearchTerm, setLastUpdatedSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: "indexName", direction: "ascending" });
-  const [openPopover, setOpenPopover] = useState(null);
   const [showNameSearch, setShowNameSearch] = useState(false);
   const [showTypeSearch, setShowTypeSearch] = useState(false);
   const [showFilesSearch, setShowFilesSearch] = useState(false);
@@ -554,17 +599,17 @@ export default function IndexDetailsPage() {
     },
     {
       key: "createdAt",
-      label: "Created At",
+      label: "Created TS",
       sortValue: (index) => index.createdAt,
     },
     {
       key: "completedAt",
-      label: "Completed At",
+      label: "Completed TS",
       sortValue: (index) => index.completedAt || "",
     },
     {
       key: "lastUpdatedAt",
-      label: "Last Updated At",
+      label: "Last Updated TS",
       sortValue: (index) => index.lastUpdatedAt || "",
     },
   ];
@@ -580,9 +625,9 @@ export default function IndexDetailsPage() {
         index.indexType.toLowerCase().includes(searchLower) ||
         index.files.some(file => file.name.toLowerCase().includes(searchLower)) ||
         formatFileSize(index.sizeBytes).toLowerCase().includes(searchLower) ||
-        formatDate(index.createdAt).toLowerCase().includes(searchLower) ||
-        (index.completedAt && formatDate(index.completedAt).toLowerCase().includes(searchLower)) ||
-        (index.lastUpdatedAt && formatDate(index.lastUpdatedAt).toLowerCase().includes(searchLower))
+        (index.createdAt && index.createdAt.toLowerCase().includes(searchLower)) ||
+        (index.completedAt && index.completedAt.toLowerCase().includes(searchLower)) ||
+        (index.lastUpdatedAt && index.lastUpdatedAt.toLowerCase().includes(searchLower))
       );
 
       // Apply specific search filters if active
@@ -595,11 +640,11 @@ export default function IndexDetailsPage() {
       const sizeMatch = sizeSearchTerm ?
         formatFileSize(index.sizeBytes).toLowerCase().includes(sizeSearchTerm.toLowerCase()) : true;
       const dateMatch = dateSearchTerm ?
-        formatDate(index.createdAt).toLowerCase().includes(dateSearchTerm.toLowerCase()) : true;
+        (index.createdAt && index.createdAt.toLowerCase().includes(dateSearchTerm.toLowerCase())) : true;
       const completedMatch = completedSearchTerm ?
-        (index.completedAt && formatDate(index.completedAt).toLowerCase().includes(completedSearchTerm.toLowerCase())) : true;
+        (index.completedAt && index.completedAt.toLowerCase().includes(completedSearchTerm.toLowerCase())) : true;
       const lastUpdatedMatch = lastUpdatedSearchTerm ?
-        (index.lastUpdatedAt && formatDate(index.lastUpdatedAt).toLowerCase().includes(lastUpdatedSearchTerm.toLowerCase())) : true;
+        (index.lastUpdatedAt && index.lastUpdatedAt.toLowerCase().includes(lastUpdatedSearchTerm.toLowerCase())) : true;
 
       return globalMatch && nameMatch && typeMatch && filesMatch && sizeMatch && dateMatch && completedMatch && lastUpdatedMatch;
     });
@@ -673,12 +718,6 @@ export default function IndexDetailsPage() {
   const clearLastUpdatedSearch = () => {
     setLastUpdatedSearchTerm("");
     setShowLastUpdatedSearch(false);
-  };
-
-  // Handle delete index
-  const handleDeleteIndex = (indexId) => {
-    setIndices(indices.filter((index) => index.id !== indexId));
-    setOpenPopover(null);
   };
 
   return (
@@ -1052,107 +1091,50 @@ export default function IndexDetailsPage() {
                     </div>
                   </TableHead>
                 ))}
-                <TableHead className="text-right text-white">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {sortedAndFilteredIndices().length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                     No indices found
                   </TableCell>
                 </TableRow>
               ) : (
                 sortedAndFilteredIndices().map((index) => (
                   <TableRow key={index.id} className="hover:bg-gray-50">
-                    <TableCell>
+                    <TableCell className="py-4">
                       <div className="flex items-center">
                         <Database className="h-4 w-4 mr-2 text-gray-600" />
                         <span className="font-medium">{index.indexName}</span>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="py-4">
                       <span className={`px-2 py-1 text-xs font-medium rounded-full ${getIndexTypeBadge(index.indexType)}`}>
                         {index.indexType}
                       </span>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="py-4">
                       <FilesDialog index={index} />
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="py-4">
                       <div className="flex items-center gap-1">
                         <HardDrive className="h-3 w-3 text-gray-500" />
                         <span className="text-sm">{formatFileSize(index.sizeBytes)}</span>
                       </div>
                     </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1 text-gray-600">
-                        <Calendar className="h-3 w-3" />
-                        <span className="text-sm">{formatDate(index.createdAt)}</span>
-                      </div>
+                    <TableCell className="py-4">
+                      <TimestampDisplay timestamp={index.createdAt} size="sm" />
                     </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1 text-gray-600">
-                        <Calendar className="h-3 w-3" />
-                        <span className="text-sm">{formatDate(index.completedAt)}</span>
-                      </div>
+                    <TableCell className="py-4">
+                      <TimestampDisplay timestamp={index.completedAt} size="sm" />
                     </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1 text-gray-600">
-                        <Calendar className="h-3 w-3" />
-                        <span className="text-sm">{formatDate(index.lastUpdatedAt)}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Popover 
-                          open={openPopover === index.id} 
-                          onOpenChange={(open) => {
-                            if (open) {
-                              setOpenPopover(index.id);
-                            } else {
-                              setOpenPopover(null);
-                            }
-                          }}
-                        >
-                          <PopoverTrigger asChild>
-                            <Button variant="outline" size="icon">
-                              <Trash2 className="h-4 w-4 text-red-600" />
-                              <span className="sr-only">Delete</span>
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-60 p-4 mr-4" side="bottom">
-                            <div className="space-y-4">
-                              <div>
-                                <h4 className="font-medium">Are you sure?</h4>
-                                <p className="text-sm text-muted-foreground">
-                                  This will permanently delete "{index.indexName}" and affect {index.files.length} associated files.
-                                </p>
-                              </div>
-                              <div className="flex justify-end gap-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => setOpenPopover(null)}
-                                >
-                                  Cancel
-                                </Button>
-                                <Button
-                                  variant="destructive"
-                                  size="sm"
-                                  onClick={() => handleDeleteIndex(index.id)}
-                                >
-                                  Delete
-                                </Button>
-                              </div>
-                            </div>
-                          </PopoverContent>
-                        </Popover>
-                      </div>
+                    <TableCell className="py-4">
+                      <TimestampDisplay timestamp={index.lastUpdatedAt} size="sm" />
                     </TableCell>
                   </TableRow>
                 ))
-              )}
+              )}  
             </TableBody>
           </Table>
         </div>

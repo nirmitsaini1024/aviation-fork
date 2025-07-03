@@ -15,7 +15,18 @@ export const useAviationSearch = () => {
   const searchFunction = useCallback((query, filters = {}) => {
     setIsLoading(true);
 
-    const { domain, category, templates, selectedAgents } = filters;
+    const {
+      domain,
+      category,
+      templates,
+      selectedAgents,
+      selectedDocGenTypes,
+      startDate = null,
+      ContentLibrary = "",
+      completionDate = null,
+      scheduleDate = null,
+      selectedDepartment = ""
+    } = filters;
     let results = [];
 
     // Search in mockCategories
@@ -62,8 +73,7 @@ export const useAviationSearch = () => {
 
           let allAnswers = [...question.answer];
 
-
-          console.log(selectedAgents)
+          console.log(selectedAgents);
 
           // Add matching agents from agentsMockData if selectedAgents exist
           if (selectedAgents && selectedAgents.length > 0) {
@@ -86,10 +96,16 @@ export const useAviationSearch = () => {
             id: `${categoryData.id}-${template.id}-${question.id}`,
             domain: categoryData.name,
             template: template.name,
+            department: selectedDepartment,
             customAnswers: false,
             question: question.text,
             searchedCategory: category,
+            docGen: selectedDocGenTypes,
             category: question.category,
+            startDate: startDate,
+            completionDate: completionDate,
+            contentLibrary: ContentLibrary,
+            scheduleDateTime: scheduleDate,
             answers: allAnswers,
             agents: selectedAgents,
             answerFormat:
@@ -151,6 +167,12 @@ export const useSearchForCustomQuestion = () => {
     templates,
     selectedAgents,
     customAnswerFormat,
+    selectedDocGenTypes,
+    startDate = null,
+    ContentLibrary = "",
+    completionDate = null,
+    scheduleDate = null,
+    selectedDepartment = ""
   } = useContext(RequestInfoContext);
   const searchCustomQuestion = useCallback(
     (question, customCategory) => {
@@ -177,9 +199,15 @@ export const useSearchForCustomQuestion = () => {
         category: customCategory,
         customAnswers: true,
         domain: domain === "all_domains" ? "All Domains" : domain,
+        department: selectedDepartment,
         id: Date.now(),
         question: question,
         agents: selectedAgents,
+        docGen: selectedDocGenTypes,
+        startDate: startDate,
+        completionDate: completionDate,
+        contentLibrary: ContentLibrary,
+        scheduleDateTime: scheduleDate,
         searchedCategory: category,
         template: templates == "all_templates" ? "All Templates" : templates,
         type: "internal",
@@ -191,7 +219,6 @@ export const useSearchForCustomQuestion = () => {
       // console.log("custom Doc is: ", customDoc);
 
       setSearchResults((prev) => [...prev, customDoc]);
-
     },
     [customAnswerFormat]
   );

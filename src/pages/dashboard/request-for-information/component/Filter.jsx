@@ -3,7 +3,7 @@ import {
   aiAgents,
   AirportDocuments,
   categoryOptions,
-  docGenTable,
+  docGenTemplateData,
   domains,
   mockCategories,
 } from "../mock-data/constant";
@@ -43,6 +43,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import DatePicker from "./DatePicker";
 import ScheduleDateTime from "./ScheduleDateAndTime";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { departmentOptions } from "@/mock-data/doc-center";
 
 const Filter = () => {
   const {
@@ -61,6 +68,10 @@ const Filter = () => {
     setContentLibrary,
     docGenTemplate,
     setDocGenTemplate,
+    selectedDocGenTypes,
+    setSelectedDocGenTypes,
+    selectedDepartment,
+    setSelectedDepartment,
   } = useContext(RequestInfoContext);
   const disabledSearchButton =
     domain.length === 0 || category.length === 0 || templates.length === 0;
@@ -69,26 +80,76 @@ const Filter = () => {
   const [openContenLibraryDocument, setOpenContentLibraryDocument] =
     useState(false);
   const [openDocGenDropDown, setOpenDocGenDropDown] = useState(false);
+  const [multiSelectContentLibrary, setMultiSelectContentLibrary] = useState(
+    []
+  );
 
-  const handleSelectDocGen = (templateType) => {
-    setDocGenTemplate((prev) => {
-      const isSelected = prev.includes(templateType);
+  const handleSelectDocGen = (name, templateType) => {
+    console.log("the name and type is: ", name, templateType);
 
-      if (isSelected) {
-        return prev.filter((type) => type !== templateType);
+    setSelectedDocGenTypes((prev) => {
+      // Find existing template with this name
+      const existingTemplateIndex = prev.findIndex(
+        (item) => item.name === name
+      );
+      console.log(existingTemplateIndex);
+
+      if (existingTemplateIndex !== -1) {
+        // Template exists, toggle the type
+        const existingTemplate = prev[existingTemplateIndex];
+        const typeExists = existingTemplate.type.includes(templateType);
+
+        if (typeExists) {
+          // Remove the type
+          const updatedTypes = existingTemplate.type.filter(
+            (type) => type !== templateType
+          );
+
+          if (updatedTypes.length === 0) {
+            // Remove entire template if no types left
+            return prev.filter((_, index) => index !== existingTemplateIndex);
+          } else {
+            // Update with remaining types
+            const newArray = [...prev];
+            newArray[existingTemplateIndex] = {
+              ...existingTemplate,
+              type: updatedTypes,
+            };
+            return newArray;
+          }
+        } else {
+          // Add the type
+          const newArray = [...prev];
+          newArray[existingTemplateIndex] = {
+            ...existingTemplate,
+            type: [...existingTemplate.type, templateType],
+          };
+          return newArray;
+        }
       } else {
-        return [...prev, templateType];
+        // Template doesn't exist, create new one
+        return [
+          ...prev,
+          {
+            name: name,
+            type: [templateType],
+          },
+        ];
       }
     });
+    console.log(selectedDocGenTypes);
   };
 
-  const handleRemoveDocGen = (templateType) => {
-    setDocGenTemplate((prev) => prev.filter((type) => type !== templateType));
+  const handleRemoveDocGen = (templateName) => {
+    setSelectedDocGenTypes((prev) =>
+      prev.filter((template) => template.name !== templateName)
+    );
   };
 
   const handleClearAllDocGen = () => {
-    setDocGenTemplate([]);
+    setSelectedDocGenTypes([]);
   };
+
   const availableCategories = useMemo(() => {
     if (!domain || domain === "all_domains") {
       return Object.values(categoryOptions).flat();
@@ -114,6 +175,16 @@ const Filter = () => {
 
   const handleClearAll = () => {
     onSelectionChange([]);
+  };
+
+  const handleRemoveFromContentLibrary = (content) => {
+    setMultiSelectContentLibrary((prev) => {
+      return prev.filter((item) => {
+        if (item != content) {
+          return item;
+        }
+      });
+    });
   };
 
   // Get available templates based on selected domain and category
@@ -145,6 +216,7 @@ const Filter = () => {
     setContentLibrary("");
     onSelectionChange([]);
     setDocGenTemplate([]);
+    setSelectedDocGenTypes([]);
   };
 
   const handleSearch = () => {
@@ -165,7 +237,7 @@ const Filter = () => {
 
   return (
     <div className="bg-gradient-to-r from-blue-50  to-blue-100/50 rounded-lg border border-blue-200 shadow-sm p-6 mb-8">
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-x-6 w-full mb-4">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-x-6 w-full mb-4">
         {/* Domain Filter */}
         <div className="space-y-2">
           <label
@@ -191,6 +263,37 @@ const Filter = () => {
                 {domains.map((dom) => (
                   <SelectItem key={dom} value={dom}>
                     {dom}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <label
+            htmlFor="department"
+            className="block text-sm font-medium text-blue-700"
+          >
+            Department
+          </label>
+          <div className="w-full">
+            <Select
+              value={selectedDepartment}
+              onValueChange={(value) => setSelectedDepartment(value)}
+              disabled={domain.length === 0}
+            >
+              <SelectTrigger className="h-10 bg-white border-blue-200 shadow-sm w-full hover:border-blue-300 focus:ring-blue-300">
+                <div className="flex items-center">
+                  <Menu className="mr-2 h-4 w-4 text-muted-foreground" />
+                  <SelectValue placeholder="Department" />
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all_department">All Department</SelectItem>
+                {departmentOptions[domain]?.map((department, index) => (
+                  <SelectItem key={index} value={department}>
+                    {department}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -336,17 +439,45 @@ const Filter = () => {
                     >
                       <div className="flex items-center">
                         <Menu className="mr-2 h-4 w-4 text-muted-foreground" />
-                        <span
-                          className={`${
-                            ContentLibrary.length === 0
-                              ? "text-muted-foreground"
-                              : "text-black"
-                          } font-normal`}
-                        >
-                          {ContentLibrary.length === 0
-                            ? "Content Library"
-                            : ContentLibrary}
-                        </span>
+                        {multiSelectContentLibrary.length === 0 ? (
+                          <span className="text-muted-foreground font-normal">
+                            Select Content Libraries
+                          </span>
+                        ) : (
+                          <div className="flex flex-wrap gap-1 flex-1">
+                            {multiSelectContentLibrary
+                              .slice(0, 1)
+                              .map((library) => (
+                                <Badge
+                                  key={library}
+                                  variant="secondary"
+                                  className="text-xs bg-blue-100 text-blue-800 hover:bg-blue-200"
+                                >
+                                  <span className="truncate max-w-12">
+                                    {library}
+                                  </span>
+                                  <button
+                                    className="ml-1 hover:bg-blue-300 rounded-full p-0.5"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      handleRemoveFromContentLibrary(library);
+                                    }}
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </button>
+                                </Badge>
+                              ))}
+                            {multiSelectContentLibrary.length > 1 && (
+                              <Badge
+                                variant="secondary"
+                                className="text-xs bg-blue-100 text-blue-800"
+                              >
+                                +{multiSelectContentLibrary.length - 1} more
+                              </Badge>
+                            )}
+                          </div>
+                        )}
                       </div>
                       <ChevronsUpDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
                     </Button>
@@ -357,31 +488,43 @@ const Filter = () => {
                       <CommandList className="scroll-container w-full">
                         <CommandEmpty>No Content found.</CommandEmpty>
                         <CommandGroup>
-                          {AirportDocuments.map((option) => (
-                            <CommandItem
-                              key={option.id}
-                              className="text-black"
-                              value={option.documentName}
-                              onSelect={(currentValue) => {
-                                setContentLibrary(
-                                  currentValue === ContentLibrary
-                                    ? ""
-                                    : currentValue
-                                );
-                                setOpenContentLibraryDocument(false);
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  ContentLibrary === option.documentName
-                                    ? "opacity-100"
-                                    : "opacity-0"
-                                )}
-                              />
-                              {option.documentName}
-                            </CommandItem>
-                          ))}
+                          {AirportDocuments.map((option) => {
+                            const isSelected =
+                              multiSelectContentLibrary.includes(
+                                option.documentName
+                              );
+                            return (
+                              <CommandItem
+                                key={option.id}
+                                className="text-black"
+                                value={option.documentName}
+                                onSelect={(currentValue) => {
+                                  setContentLibrary(
+                                    currentValue === ContentLibrary
+                                      ? ""
+                                      : currentValue
+                                  );
+                                  isSelected
+                                    ? handleRemoveFromContentLibrary(
+                                        option.documentName
+                                      )
+                                    : setMultiSelectContentLibrary((prev) => [
+                                        ...prev,
+                                        option.documentName,
+                                      ]);
+                                  // setOpenContentLibraryDocument(false);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    isSelected ? "opacity-100" : "opacity-0"
+                                  )}
+                                />
+                                {option.documentName}
+                              </CommandItem>
+                            );
+                          })}
                         </CommandGroup>
                       </CommandList>
                     </Command>
@@ -396,7 +539,7 @@ const Filter = () => {
                 htmlFor="aiagents"
                 className="block text-sm font-medium text-blue-700"
               >
-                AI Agents
+                AI Agents/Orchestration
               </label>
               <div className="w-full overflow-x-hidden">
                 <Popover
@@ -516,50 +659,47 @@ const Filter = () => {
                     <Button
                       variant="outline"
                       role="combobox"
-                      disabled={templates.length === 0}
                       className="h-auto min-h-10 bg-white border-blue-200 shadow-sm w-full hover:border-blue-300 focus:ring-blue-300 justify-start p-2"
                     >
                       <div className="flex items-center flex-wrap gap-1 w-full">
                         <Menu className="mr-2 h-4 w-4 text-muted-foreground flex-shrink-0" />
 
-                        {docGenTemplate.length === 0 ? (
+                        {selectedDocGenTypes.length === 0 ? (
                           <span className="text-muted-foreground font-normal">
                             Select DocGen Template
                           </span>
                         ) : (
                           <div className="flex flex-wrap gap-1 flex-1">
-                            {docGenTemplate.slice(0, 1).map((templateType) => {
-                              const template = docGenTable.find(
-                                (t) => t.type === templateType
-                              );
-                              return (
-                                <Badge
-                                  key={templateType} // Fixed: use templateType as key
-                                  variant="secondary"
-                                  className="text-xs bg-blue-100 text-blue-800 hover:bg-blue-200 flex items-center gap-1"
+                            {selectedDocGenTypes.slice(0, 1).map((template) => (
+                              <Badge
+                                key={template.name}
+                                variant="secondary"
+                                className="text-xs min-w-0 max-w-28 bg-blue-100 text-blue-800 hover:bg-blue-200 flex items-center gap-1 pr-1"
+                              >
+                                <span
+                                  className="text-xs text-blue-700 flex-1 min-w-0 truncate"
+                                  title={`${template.name} (${template.type.length})`}
                                 >
-                                  <span className="text-xs text-blue-700 px-1 rounded">
-                                    {template?.type}
-                                  </span>
-                                  <button
-                                    className="ml-1 hover:bg-blue-300 rounded-full p-0.5"
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      handleRemoveDocGen(templateType); // Fixed: use templateType
-                                    }}
-                                  >
-                                    <X className="h-3 w-3" />
-                                  </button>
-                                </Badge>
-                              );
-                            })}
-                            {docGenTemplate.length > 1 && (
+                                  {template.name} ({template.type.length})
+                                </span>
+                                <button
+                                  className="ml-1 hover:bg-blue-300 rounded-full p-0.5 flex-shrink-0"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleRemoveDocGen(template.name);
+                                  }}
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </Badge>
+                            ))}
+                            {selectedDocGenTypes.length > 1 && (
                               <Badge
                                 variant="secondary"
                                 className="text-xs bg-blue-100 text-blue-800"
                               >
-                                +{docGenTemplate.length - 1} more
+                                +{selectedDocGenTypes.length - 1} more
                               </Badge>
                             )}
                           </div>
@@ -573,7 +713,7 @@ const Filter = () => {
                     <Command className="w-full">
                       <CommandList className="scroll-container">
                         <CommandGroup>
-                          {docGenTemplate.length > 0 && (
+                          {selectedDocGenTypes.length > 0 && (
                             <div className="px-2 py-1.5 border-b">
                               <Button
                                 variant="ghost"
@@ -581,41 +721,71 @@ const Filter = () => {
                                 onClick={handleClearAllDocGen}
                                 className="h-6 text-xs text-muted-foreground hover:text-foreground"
                               >
-                                Clear all ({docGenTemplate.length})
+                                Clear all ({selectedDocGenTypes.length})
                               </Button>
                             </div>
                           )}
-                          {docGenTable.map((template) => {
-                            const isSelected = docGenTemplate.includes(
-                              template.type
-                            ); // Fixed: check for template.type
-                            return (
-                              <CommandItem
+
+                          <Accordion type="multiple" className="w-full">
+                            {docGenTemplateData.map((template) => (
+                              <AccordionItem
                                 key={template.id}
-                                className="text-black cursor-pointer"
-                                value={template.name}
-                                onSelect={() =>
-                                  handleSelectDocGen(template.type)
-                                } // Fixed: pass template.type
+                                value={`item-${template.id}`}
                               >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    isSelected ? "opacity-100" : "opacity-0"
-                                  )}
-                                />
-                                <div className="flex items-center justify-between w-full">
+                                <AccordionTrigger className="px-4 py-2 hover:no-underline text-left">
                                   <span className="font-normal text-gray-800">
-                                    {templates}{" "}
-                                    {/* Fixed: use template.name instead of templates */}
+                                    {template.name}
                                   </span>
-                                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full ml-2">
-                                    {template.type}
-                                  </span>
-                                </div>
-                              </CommandItem>
-                            );
-                          })}
+                                </AccordionTrigger>
+                                <AccordionContent className="px-4 pb-2">
+                                  <div className="space-y-1">
+                                    {template.type.map((type) => {
+                                      const isSelected =
+                                        selectedDocGenTypes.some(
+                                          (selected) =>
+                                            selected.name === template.name &&
+                                            selected.type.includes(type)
+                                        );
+                                      const uniqueKey = `${template.id}-${type}`;
+
+                                      return (
+                                        <div
+                                          key={uniqueKey}
+                                          className="flex items-center justify-between p-2 hover:bg-gray-50 rounded cursor-pointer"
+                                          onClick={() =>
+                                            handleSelectDocGen(
+                                              template.name,
+                                              type
+                                            )
+                                          }
+                                        >
+                                          <div className="flex items-center">
+                                            <Check
+                                              className={cn(
+                                                "mr-2 h-4 text-black w-4",
+                                                isSelected
+                                                  ? "opacity-100"
+                                                  : "opacity-0"
+                                              )}
+                                            />
+                                            <span className="text-sm text-gray-700">
+                                              {type}
+                                            </span>
+                                          </div>
+                                          <Badge
+                                            variant="outline"
+                                            className="text-xs bg-blue-50 text-blue-700 border-blue-200"
+                                          >
+                                            {type}
+                                          </Badge>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </AccordionContent>
+                              </AccordionItem>
+                            ))}
+                          </Accordion>
                         </CommandGroup>
                       </CommandList>
                     </Command>
@@ -626,7 +796,7 @@ const Filter = () => {
 
             <DatePicker dateHeader={"Start Date"} />
             <DatePicker dateHeader={"Completion Date"} />
-            <ScheduleDateTime/>
+            <ScheduleDateTime />
           </div>
         </>
       )}

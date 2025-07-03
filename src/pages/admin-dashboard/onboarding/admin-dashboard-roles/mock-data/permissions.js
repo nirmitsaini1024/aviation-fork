@@ -320,6 +320,50 @@ export const permissions = [
     subItemOf: "escalated-tasks-access",
     allowedLevels: ["admin_access", "no_access"],
   },
+
+  // RFI (Request for Information)
+  {
+    id: "rfi-access",
+    title: "RFI Access",
+    description: "Access to Request for Information features",
+    category: "rfi",
+    section: "rfi",
+    allowedLevels: ["admin_access", "write_access", "view_access", "no_access"],
+    defaultLevel: "view_access",
+  },
+  {
+    id: "rfi-create",
+    title: "Create R.F.I",
+    description: "Allow creating new RFI requests",
+    category: "rfi",
+    section: "rfi",
+    isSubItem: true,
+    subItemOf: "rfi-access",
+    allowedLevels: ["admin_access", "write_access", "view_access","no_access"],
+    defaultLevel: "no_access",
+  },
+  {
+    id: "rfi-details",
+    title: "R.F.I Details",
+    description: "Allow access to RFI details and information",
+    category: "rfi",
+    section: "rfi",
+    isSubItem: true,
+    subItemOf: "rfi-access",
+    allowedLevels: ["admin_access", "write_access", "view_access", "no_access"],
+    defaultLevel: "no_access",
+  },
+  {
+    id: "rfi-upload-templates",
+    title: "Upload Templates",
+    description: "Allow uploading and managing RFI templates",
+    category: "rfi",
+    section: "rfi",
+    isSubItem: true,
+    subItemOf: "rfi-access",
+    allowedLevels: ["admin_access", "write_access", "view_access", "no_access"],
+    defaultLevel: "view_access",
+  },
 ];
 
 // Define sections with parent-child relationships
@@ -350,5 +394,9 @@ export const sections = {
   "escalated-tasks": {
     title: "Escalated Tasks",
     description: "Escalated task permissions",
+  },
+  rfi: {
+    title: "RFI",
+    description: "Request for Information permissions",
   },
 };

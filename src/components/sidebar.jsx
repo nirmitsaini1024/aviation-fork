@@ -44,7 +44,10 @@ import {
   Files,
   Info,
   BookOpen,
-  Database
+  Database,
+  FilePlus2,
+  ListCollapse,
+  MonitorUp
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -94,11 +97,31 @@ export default function Sidebar({ collapsed, setCollapsed, user }) {
           icon: <BriefcaseBusiness className="h-5 w-5" />,
           type: "single",
         },
-         {
+        {
           name: "R.F.I",
-          path: "/request-for-information",
+          key: "request-for-info",
           icon: <Info className="h-5 w-5" />,
-          type: "single",
+          type: "group",
+          items: [
+            {
+              name: "Create R.F.I",
+              path: "/create-rfi",
+              icon: <FilePlus2 className="h-5 w-5" />,
+              type: "single",
+            },
+            {
+              name: "R.F.I Details",
+              path: "/rfi-details",
+              icon: <ListCollapse className="h-5 w-5" />,
+              type: "single",
+            },
+            {
+              name: "Upload Templates",
+              path: "/upload-templates",
+              icon: <MonitorUp className="h-5 w-5" />,
+              type: "single",
+            },
+          ],
         },
         {
           name: "Review Board",

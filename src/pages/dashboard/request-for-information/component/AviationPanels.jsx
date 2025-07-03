@@ -51,6 +51,13 @@ import {
   FileText,
   Trash,
   Trash2,
+  EllipsisVerticalIcon,
+  Bot,
+  ChartPie,
+  AlertTriangle,
+  ChevronUp,
+  MoreHorizontal,
+  FileBarChart,
 } from "lucide-react";
 import {
   Card,
@@ -99,6 +106,17 @@ import AIHints from "./AIHints";
 
 import CustomTable from "./CustomTable";
 import BadgePopover from "./BadgePopover";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useAgentAndDocGenRemoverFromQuestion } from "../hooks/usehandleDocAgent";
+import BadgePopoverDocGen from "./BadgePopOverDocGen";
+import useSaveRfi from "../hooks/useSaveRfi";
+import { useLocation } from "react-router-dom";
+import { GlobalContext } from "@/GlobalContext/GlobalProvider";
 
 const AviationSearchResults = () => {
   const {
@@ -115,9 +133,21 @@ const AviationSearchResults = () => {
     isEditInternalANswer,
     setIsEditInternalAnswer,
     setSearchResults,
-    docGenTemplate,
+    rfiName,
+    setRfiName,
+    project,
+    setProject,
   } = useContext(RequestInfoContext);
+  const location = useLocation();
+  const { isBotOpen, setIsBotOpen } = useContext(GlobalContext);
+  const {
+    removeAgents,
+    handleClearAll,
+    handleRemoveType,
+    handleRemoveTemplate,
+  } = useAgentAndDocGenRemoverFromQuestion();
   const { searchAgainInternalQues } = useSearchAgainInternalQuestion();
+  const { saveRfi } = useSaveRfi();
   const [filteredResults, setFilteredResults] = useState([]);
   const [randomMockExternalAnswers, setRandomExternalAnswer] = useState([]);
   const [searchQuestions, setSearchQuestions] = useState("");
@@ -153,12 +183,25 @@ const AviationSearchResults = () => {
     showLoadingAFterAddHintsExternal,
     setShowLoadingAfterAddHintsExternal,
   ] = useState(false);
-  const [saveProjectName, setSaveProjectName] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState("Select a project");
   const [newProjectName, setNewProjectName] = useState("");
   const [projects, setProjects] = useState(existingProjects);
   const [openDeletePopOver, setOpenDeletePopOver] = useState(null);
+  const [IscomeFromRFIDetails, setIsComeFromRFIDetails] = useState(false);
+  const [showRiskANalysis, setShowRiskAnalysis] = useState(null);
+  const [showButtonsPopOver, setSHowButtonPopOver] = useState(false);
+  const [loaderForRiskCalCulate, setLoaderForRiskCalculate] = useState(true);
+
+  useEffect(() => {
+    if (location.state?.searchResults) {
+      setSearchResults(location.state.searchResults);
+      setRfiName(location.state.rfiName);
+      setNewProjectName(location.state.rfiProject);
+      setSelectedProject(location.state.rfiProject);
+      setIsComeFromRFIDetails(true);
+    }
+  }, [location.state, setSearchResults]);
 
   const handleCreateProject = () => {
     if (newProjectName.trim() && !projects.includes(newProjectName.trim())) {
@@ -167,21 +210,21 @@ const AviationSearchResults = () => {
       setSelectedProject(newProject);
       setNewProjectName("");
       setIsOpen(false);
+      setProject(newProject);
     }
   };
 
   const handleSelectProject = (project) => {
     setSelectedProject(project);
     setIsOpen(false);
+    setProject(project);
   };
 
-  useEffect(() => {
-    console.log(selectedRIF);
-  }, [selectedRIF]);
+  useEffect(() => {}, [selectedRIF]);
 
   useEffect(() => {
     setFilteredResults(searchResults);
-  }, [searchResults]);
+  }, [searchResults, selectedResult]);
 
   useEffect(() => {
     if (copiedFileContentRef.current) {
@@ -415,6 +458,33 @@ const AviationSearchResults = () => {
     }
   };
 
+  const handleDeleteAnswer = (answer, documentName) => {
+    console.log("The answer is: ", answer);
+    console.log("The doucment name is: ", documentName);
+    console.log("The selected question is: ", selectedResult);
+
+    setSelectedResult((prev) => {
+      return {
+        ...prev,
+        answers: prev.answers.filter((ans) => ans.answer !== answer),
+      };
+    });
+
+    setSearchResults((prev) => {
+      return prev.map((item) => {
+        if (item.id === selectedResult.id) {
+          return {
+            ...item,
+            answers: item.answers.filter((ans) => ans.answer !== answer),
+          };
+        }
+        return item;
+      });
+    });
+
+    setOpenDeletePopOver(null);
+  };
+
   const handleChangeAnswerFormat = async (id, type) => {
     await setSearchResults((prev) => {
       return prev.map((item) => {
@@ -625,7 +695,6 @@ const AviationSearchResults = () => {
                               >
                                 {result.answerFormat}
                               </Badge>
-                              {console.log(result)}
                               {result.agents.length > 0 && (
                                 <BadgePopover
                                   notifications={result.agents}
@@ -633,16 +702,16 @@ const AviationSearchResults = () => {
                                   icon={
                                     <SquareDashedBottomCode className="w-3 h-3 font-semibold text-blue-500" />
                                   }
+                                  onRemove={removeAgents}
                                 />
                               )}
                               {/* docGenTemplate */}
-                              {docGenTemplate.length > 0 && (
-                                <BadgePopover
-                                  notifications={docGenTemplate}
-                                  name={"DocGen"}
-                                  icon={
-                                    <FileText className="w-3 h-3 font-semibold text-blue-500" />
-                                  }
+                              {result.docGen.length > 0 && (
+                                <BadgePopoverDocGen
+                                  selectedTemplates={result.docGen}
+                                  onRemoveType={handleRemoveType}
+                                  onRemoveTemplate={handleRemoveTemplate}
+                                  onClearAll={handleClearAll}
                                 />
                               )}
                               <p className="text-xs text-slate-600">
@@ -654,9 +723,9 @@ const AviationSearchResults = () => {
                               </p>
                             </div>
                           </div>
-                          {/* <DropdownMenu>
+                          <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <EllipsisVertical className="w-4 h-4" />
+                              <EllipsisVerticalIcon className="w-4 h-4" />
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="w-48">
                               {selectedAnswerOption.map((option, index) => (
@@ -676,7 +745,7 @@ const AviationSearchResults = () => {
                                 </DropdownMenuItem>
                               ))}
                             </DropdownMenuContent>
-                          </DropdownMenu> */}
+                          </DropdownMenu>
                           {selectedResult?.id === result.id && (
                             <div className="w-2 h-2 absolute -right-2 -top-2 bg-blue-500 rounded-full"></div>
                           )}
@@ -694,6 +763,22 @@ const AviationSearchResults = () => {
   );
 
   const renderRightPanel = () => {
+    const riskScore = Math.floor(Math.random() * 100);
+    const getRiskLevel = (score) => {
+      if (score < 30)
+        return {
+          level: "Low",
+          color: "bg-green-100 text-green-800 border-green-200",
+        };
+      if (score < 70)
+        return {
+          level: "Medium",
+          color: "bg-yellow-100 text-yellow-800 border-yellow-200",
+        };
+      return { level: "High", color: "bg-red-100 text-red-800 border-red-200" };
+    };
+
+    const risk = getRiskLevel(riskScore);
     if (!selectedResult) {
       return (
         <div className={`w-full flex h-full items-center justify-center`}>
@@ -707,20 +792,6 @@ const AviationSearchResults = () => {
         </div>
       );
     }
-
-    const handleDeleteAnswer = (answer, documentName) => {
-      console.log("The answer is: ", answer);
-      console.log("The doucment name is: ", documentName);
-      console.log("The selected question is: ", selectedResult);
-
-      setSelectedResult((prev) => {
-        return {
-          ...prev, 
-          answers: prev.answers.filter((ans) => ans.answer !== answer),
-        };
-      });
-      setOpenDeletePopOver(null)
-    };
 
     return (
       <div className="w-full flex flex-col h-full">
@@ -832,217 +903,312 @@ const AviationSearchResults = () => {
                     {selectedResult.answerFormat === "Text" ? (
                       <>
                         {selectedResult.answers.map((answerItem, index) => (
-                          <Card
-                            key={index}
-                            className={`p-4 bg-gradient-to-r from-slate-50 to-blue-50 border-l-4 border-blue-400 shadow-sm ${
-                              isEditInternalANswer === true &&
-                              showInternalResourceAnswerInTipTap.originalAnswer !==
-                                answerItem.answer &&
-                              "opacity-0"
-                            }`}
-                          >
-                            {isEditInternalANswer === false && (
-                              <div className="flex items-center gap-3 mb-3">
-                                <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
-                                  {index + 1}
-                                </div>
-                                <span className="text-sm flex items-center gap-x-2 font-semibold text-blue-600">
-                                  {answerItem.documentName === "API Agent" ||
-                                  answerItem.documentName === "Web Agent" ||
-                                  answerItem.documentName === "SQL Agent" ? (
-                                    <Badge className="bg-blue-600 px-2 py-1">
-                                      {answerItem.documentName}
-                                    </Badge>
-                                  ) : (
-                                    <>
-                                      <File className="h-5 w-5" />{" "}
-                                      <span
-                                        onClick={handleViewDocument}
-                                        className="hover:underline hover:cursor-pointer"
-                                      >
+                          <>
+                            <Card
+                              key={index}
+                              className={`p-4 bg-gradient-to-r from-slate-50 to-blue-50 border-l-4 border-blue-400 shadow-sm ${
+                                isEditInternalANswer === true &&
+                                showInternalResourceAnswerInTipTap.originalAnswer !==
+                                  answerItem.answer &&
+                                "opacity-0"
+                              }`}
+                            >
+                              {isEditInternalANswer === false && (
+                                <div className="flex items-center gap-3 mb-3">
+                                  <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                                    {index + 1}
+                                  </div>
+                                  <span className="text-sm flex items-center gap-x-2 font-semibold text-blue-600">
+                                    {answerItem.documentName === "API Agent" ||
+                                    answerItem.documentName === "Web Agent" ||
+                                    answerItem.documentName === "SQL Agent" ? (
+                                      <Badge className="bg-blue-600 px-2 py-1">
                                         {answerItem.documentName}
-                                      </span>
-                                    </>
-                                  )}
-                                  <div className="text-gray-600 flex gap-x-0.5 items-center">
-                                    <Badge
-                                      variant="secondary"
-                                      onClick={() =>
-                                        handleDownloadFile(
-                                          answerItem.documentName
-                                        )
-                                      }
-                                      className=" text-gray-600 border-0 transition-all duration-200 cursor-pointer p-2 rounded-lg group scale-105"
-                                      title={`Download ${answerItem.documentName}`}
-                                    >
-                                      <Download className="h-4 w-4 group-hover:animate-bounce" />
-                                    </Badge>
-                                    <Badge
-                                      variant="secondary"
-                                      onClick={() => {
-                                        navigator.clipboard.writeText(
-                                          answerItem.answer
-                                        );
-                                        setCopiedFileContent(
-                                          answerItem.documentName
-                                        );
-                                      }}
-                                      className=" text-gray-600 border-0 transition-all duration-200 cursor-pointer p-2 rounded-lg group scale-105"
-                                      title={`Copy ${answerItem.documentName}`}
-                                    >
-                                      {copiedFileContent ===
-                                      answerItem.documentName ? (
-                                        <CircleCheckBig className="h-4 w-4" />
-                                      ) : (
-                                        <Copy className="h-4 w-4 group-hover:animate-bounce" />
-                                      )}
-                                    </Badge>
-                                    <Badge
-                                      variant="outline"
-                                      className="bg-blue-50 mr-1 hover:bg-blue-100 border-blue-200 hover:border-blue-300 select-none text-blue-700 hover:text-blue-800 transition-all duration-200 cursor-pointer gap-2 px-3 py-1.5 font-medium"
-                                      onClick={() => {
-                                        if (
-                                          showInternalResourceAnswerInTipTap.originalAnswer !=
-                                          answerItem.answer
-                                        ) {
-                                          setShowInternalResourceAnswerInTipTap(
-                                            {
-                                              originalAnswer: answerItem.answer,
-                                              markdownAnswer: answerItem.answer,
-                                            }
-                                          );
-                                          console.log(answerItem);
-                                        }
-                                        setIsEditInternalAnswer(true);
-                                      }}
-                                    >
-                                      <Edit3 className="h-4 w-4" />
-                                      <span>Edit</span>
-                                    </Badge>
-                                    {savedDoc.some(
-                                      (item) =>
-                                        item.documentName ===
-                                        answerItem.documentName
-                                    ) ? (
-                                      <Badge
-                                        onClick={() =>
-                                          handleSavedDoc(
-                                            answerItem.documentName
-                                          )
-                                        }
-                                        className="bg-green-500/20 backdrop-blur-md border border-white/20 text-green-900 hover:bg-green-500/30 px-3 py-1.5 transition-all duration-300 cursor-pointer"
-                                      >
-                                        <Database className="h-4 w-4 mr-1" />
-                                        <span>Saved</span>
                                       </Badge>
                                     ) : (
+                                      <>
+                                        <File className="h-5 w-5" />{" "}
+                                        <span
+                                          onClick={handleViewDocument}
+                                          className="hover:underline hover:cursor-pointer"
+                                        >
+                                          {answerItem.documentName}
+                                        </span>
+                                      </>
+                                    )}
+                                    <div className="text-gray-600 flex gap-x-0.5 items-center">
                                       <Badge
-                                        variant="outline"
+                                        variant="secondary"
+                                        className=" text-gray-600 border-0 transition-all duration-200 cursor-pointer p-2 rounded-lg group scale-105"
+                                        onClick={() => setIsBotOpen(!isBotOpen)}
+                                      >
+                                        <Bot className="h-4 w-4 group-hover:animate-bounce" />
+                                      </Badge>
+                                      <Badge
+                                        variant="secondary"
                                         onClick={() =>
-                                          handleSavedDoc(
+                                          handleDownloadFile(
                                             answerItem.documentName
                                           )
                                         }
-                                        className="bg-blue-50 hover:bg-blue-100 border-blue-200 hover:border-blue-300 text-blue-700 hover:text-blue-800 transition-all duration-200 cursor-pointer gap-2 px-3 py-1.5 font-medium"
+                                        className=" text-gray-600 border-0 transition-all duration-200 cursor-pointer p-2 rounded-lg group scale-105"
+                                        title={`Download ${answerItem.documentName}`}
                                       >
-                                        {" "}
-                                        <Save className="h-4 w-4" />
-                                        <span>Save</span>
+                                        <Download className="h-4 w-4 group-hover:animate-bounce" />
                                       </Badge>
-                                    )}
-                                    <div className="">
-                                      <CircleX
-                                        className="h-4 w-4 ml-3 text-red-600"
-                                        onClick={() =>
-                                          setOpenDeletePopOver(answerItem.answer)
-                                        }
-                                      />
-
-                                      {/* Full Screen Modal */}
-                                      {openDeletePopOver === answerItem.answer && (
-                                        <div className="fixed inset-0 z-50 flex items-center justify-center">
-                                          {/* Blurred Background Overlay */}
-                                          <div
-                                            className="absolute inset-0 bg-black/30"
-                                            onClick={() =>
-                                              setOpenDeletePopOver(answerItem.answer)
-                                            }
-                                          />
-
-                                          {/* Confirmation Card */}
-                                          <Card className="relative z-10 w-full max-w-md mx-4 shadow-2xl">
-                                            <CardHeader className="text-center">
-                                              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
-                                                <CircleX className="h-6 w-6 text-red-600" />
-                                              </div>
-                                              <CardTitle className="text-xl">
-                                                Confirm Delete
-                                              </CardTitle>
-                                              <CardDescription>
-                                                Are you sure you want to delete
-                                                this answer? This action cannot
-                                                be undone.
-                                              </CardDescription>
-                                            </CardHeader>
-                                            <CardFooter className="flex gap-3 justify-end">
-                                              <Button
-                                                variant="outline"
-                                                onClick={() =>
-                                                  setOpenDeletePopOver(null)
-                                                }
-                                              >
-                                                Cancel
-                                              </Button>
-                                              <Button
-                                                variant="destructive"
-                                                onClick={(e) => {
-                                                  e.stopPropagation();
-                                                  handleDeleteAnswer(
-                                                    answerItem.answer,
-                                                    answerItem.documentName
-                                                  );
-                                                }}
-                                              >
-                                                Delete
-                                              </Button>
-                                            </CardFooter>
-                                          </Card>
-                                        </div>
+                                      <Badge
+                                        variant="secondary"
+                                        onClick={() => {
+                                          navigator.clipboard.writeText(
+                                            answerItem.answer
+                                          );
+                                          setCopiedFileContent(
+                                            answerItem.documentName
+                                          );
+                                        }}
+                                        className=" text-gray-600 border-0 transition-all duration-200 cursor-pointer p-2 rounded-lg group scale-105"
+                                        title={`Copy ${answerItem.documentName}`}
+                                      >
+                                        {copiedFileContent ===
+                                        answerItem.documentName ? (
+                                          <CircleCheckBig className="h-4 w-4" />
+                                        ) : (
+                                          <Copy className="h-4 w-4 group-hover:animate-bounce" />
+                                        )}
+                                      </Badge>
+                                      <Badge
+                                        variant="outline"
+                                        className="bg-blue-50 mr-1 hover:bg-blue-100 border-blue-200 hover:border-blue-300 select-none text-blue-700 hover:text-blue-800 transition-all duration-200 cursor-pointer gap-2 px-3 py-1.5 font-medium"
+                                        onClick={() => {
+                                          if (
+                                            showInternalResourceAnswerInTipTap.originalAnswer !=
+                                            answerItem.answer
+                                          ) {
+                                            setShowInternalResourceAnswerInTipTap(
+                                              {
+                                                originalAnswer:
+                                                  answerItem.answer,
+                                                markdownAnswer:
+                                                  answerItem.answer,
+                                              }
+                                            );
+                                          }
+                                          setIsEditInternalAnswer(true);
+                                        }}
+                                      >
+                                        <Edit3 className="h-4 w-4" />
+                                        <span>Edit</span>
+                                      </Badge>
+                                      {savedDoc.some(
+                                        (item) =>
+                                          item.documentName ===
+                                          answerItem.documentName
+                                      ) ? (
+                                        <Badge
+                                          onClick={() =>
+                                            handleSavedDoc(
+                                              answerItem.documentName
+                                            )
+                                          }
+                                          className="bg-green-500/20 backdrop-blur-md border border-white/20 text-green-900 hover:bg-green-500/30 px-3 py-1.5 transition-all duration-300 cursor-pointer"
+                                        >
+                                          <Database className="h-4 w-4 mr-1" />
+                                          <span>Saved</span>
+                                        </Badge>
+                                      ) : (
+                                        <Badge
+                                          variant="outline"
+                                          onClick={() =>
+                                            handleSavedDoc(
+                                              answerItem.documentName
+                                            )
+                                          }
+                                          className="bg-blue-50 hover:bg-blue-100 border-blue-200 hover:border-blue-300 text-blue-700 hover:text-blue-800 transition-all duration-200 cursor-pointer gap-2 px-3 py-1.5 font-medium"
+                                        >
+                                          {" "}
+                                          <Save className="h-4 w-4" />
+                                          <span>Save</span>
+                                        </Badge>
                                       )}
-                                    </div>
-                                  </div>
-                                </span>
-                              </div>
-                            )}
+                                      <div className="">
+                                        <CircleX
+                                          className="h-4 w-4 ml-3 text-red-600"
+                                          onClick={() =>
+                                            setOpenDeletePopOver(
+                                              answerItem.answer
+                                            )
+                                          }
+                                        />
 
-                            <div className="ml-9">
-                              {isEditInternalANswer ? (
-                                // In edit mode: show TipTap only if answer matches
+                                        {/* Full Screen Modal */}
+                                        {openDeletePopOver ===
+                                          answerItem.answer && (
+                                          <div className="fixed inset-0 z-50 flex items-center justify-center">
+                                            {/* Blurred Background Overlay */}
+                                            <div
+                                              className="absolute inset-0 bg-black/30"
+                                              onClick={() =>
+                                                setOpenDeletePopOver(
+                                                  answerItem.answer
+                                                )
+                                              }
+                                            />
+
+                                            {/* Confirmation Card */}
+                                            <Card className="relative z-10 w-full max-w-md mx-4 shadow-2xl">
+                                              <CardHeader className="text-center">
+                                                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+                                                  <CircleX className="h-6 w-6 text-red-600" />
+                                                </div>
+                                                <CardTitle className="text-xl">
+                                                  Confirm Delete
+                                                </CardTitle>
+                                                <CardDescription>
+                                                  Are you sure you want to
+                                                  delete this answer? This
+                                                  action cannot be undone.
+                                                </CardDescription>
+                                              </CardHeader>
+                                              <CardFooter className="flex gap-3 justify-end">
+                                                <Button
+                                                  variant="outline"
+                                                  onClick={() =>
+                                                    setOpenDeletePopOver(null)
+                                                  }
+                                                >
+                                                  Cancel
+                                                </Button>
+                                                <Button
+                                                  variant="destructive"
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDeleteAnswer(
+                                                      answerItem.answer,
+                                                      answerItem.documentName
+                                                    );
+                                                  }}
+                                                >
+                                                  Delete
+                                                </Button>
+                                              </CardFooter>
+                                            </Card>
+                                          </div>
+                                        )}
+                                      </div>
+                                      <div className="ml-3">
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => {
+                                            setShowRiskAnalysis(
+                                              showRiskANalysis ===
+                                                answerItem.answer
+                                                ? null
+                                                : answerItem.answer
+                                            );
+                                            loaderForRiskCalCulate === false
+                                              ? setLoaderForRiskCalculate(true)
+                                              : setTimeout(() => {
+                                                  setLoaderForRiskCalculate(
+                                                    false
+                                                  );
+                                                }, 1000);
+                                          }}
+                                          className="text-blue-600 hover:text-blue-800 p-0 h-auto font-medium"
+                                        >
+                                          <ChartPie className="w-3 h-3" />
+                                          Calculate Risk
+                                          {showRiskANalysis ===
+                                          answerItem.answer ? (
+                                            <ChevronUp className="w-4 h-4 ml-2" />
+                                          ) : (
+                                            <ChevronDown className="w-4 h-4 ml-2" />
+                                          )}
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  </span>
+                                </div>
+                              )}
+
+                              <div className="ml-9">
+                                {isEditInternalANswer ? (
+                                  // In edit mode: show TipTap only if answer matches
+                                  showInternalResourceAnswerInTipTap.originalAnswer ===
+                                  answerItem.answer ? (
+                                    <TipTap
+                                      answers={
+                                        showInternalResourceAnswerInTipTap.markdownAnswer
+                                      }
+                                      type="internal"
+                                    />
+                                  ) : null
+                                ) : // Not in edit mode: show ReadOnlyEditor or plain text
                                 showInternalResourceAnswerInTipTap.originalAnswer ===
-                                answerItem.answer ? (
-                                  <TipTap
-                                    answers={
+                                  answerItem.answer ? (
+                                  <ReadOnlyEditor
+                                    externalAnswers={
                                       showInternalResourceAnswerInTipTap.markdownAnswer
                                     }
                                     type="internal"
                                   />
-                                ) : null
-                              ) : // Not in edit mode: show ReadOnlyEditor or plain text
-                              showInternalResourceAnswerInTipTap.originalAnswer ===
-                                answerItem.answer ? (
-                                <ReadOnlyEditor
-                                  externalAnswers={
-                                    showInternalResourceAnswerInTipTap.markdownAnswer
-                                  }
-                                  type="internal"
-                                />
-                              ) : (
-                                <p className="text-slate-700 leading-relaxed text-sm">
-                                  {answerItem.answer}
-                                </p>
-                              )}
-                            </div>
-                          </Card>
+                                ) : (
+                                  <p className="text-slate-700 leading-relaxed text-sm">
+                                    {answerItem.answer}
+                                  </p>
+                                )}
+                              </div>
+                            </Card>
+                            {showRiskANalysis === answerItem.answer && (
+                              <div className="mt-4 p-4 bg-slate-50 rounded-lg border border-slate-200 animate-in slide-in-from-top-2 duration-200">
+                                {loaderForRiskCalCulate ? (
+                                  <div className="flex items-center justify-center py-8">
+                                    <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+                                    <span className="ml-2 text-sm text-slate-500">
+                                      Please wait, Calculating Risk...
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-start justify-between gap-4">
+                                    <div className="flex-1">
+                                      <h4 className="font-semibold text-slate-800 mb-2 flex items-center">
+                                        <ChartPie className="w-4 h-4 mr-2 text-amber-600" />
+                                        Risk Summary
+                                      </h4>
+                                      <p className="text-slate-600 text-sm leading-relaxed mb-3">
+                                        This recommendation carries a{" "}
+                                        {risk.level.toLowerCase()} risk profile
+                                        based on market volatility, asset
+                                        correlation, and historical performance
+                                        data.
+                                      </p>
+                                    </div>
+                                    <div className="flex justify-end items-center gap-2">
+                                      <span className="text-xs flex gap-x-2">
+                                        <RefreshCcw onClick={() => {
+                                            setLoaderForRiskCalculate(true);
+                                            setTimeout(() => {
+                                                  setLoaderForRiskCalculate(
+                                                    false
+                                                  );
+                                                }, 1000); 
+                                          }} className="w-4 h-4 text-blue-600" />Risk Score
+                                      </span>
+                                      <Badge
+                                        variant="outline"
+                                        className={`rounded-full font-semibold ${risk.color}`}
+                                      >
+                                        {riskScore}
+                                        <span className="text-xs text-slate-500 font-medium">
+                                          {risk.level} Risk
+                                        </span>
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </>
                         ))}
                       </>
                     ) : (
@@ -1075,6 +1241,13 @@ const AviationSearchResults = () => {
                       External Source Response
                     </h4>
                     <div className="text-gray-600 flex gap-x-0.5 items-center">
+                      <Badge
+                        variant="secondary"
+                        className=" text-gray-600 border-0 transition-all duration-200 cursor-pointer p-2 mr-2 rounded-lg group scale-105"
+                        onClick={() => setIsBotOpen(!isBotOpen)}
+                      >
+                        <Bot className="h-4 w-4 group-hover:animate-bounce" />
+                      </Badge>
                       <Badge
                         variant="secondary"
                         className=" text-gray-600 border-0 transition-all duration-200 cursor-pointer p-2 mr-2 rounded-lg group scale-105"
@@ -1311,20 +1484,32 @@ const AviationSearchResults = () => {
         <div className="fixed bottom-0 w-[90%] bg-white border-t border-slate-200 py-4">
           <div className="w-full flex gap-x-14 items-center">
             <div className="w-[40%]">
-              {/* Add Custom Question Button */}
               {(Object.keys(groupedResults).length > 0 ||
                 searchResults.length > 0) && (
                 <div className="flex items-center gap-x-4">
                   <div className="relative w-full border border-gray-400 rounded-md">
                     <Input
-                      value={saveProjectName}
-                      onChange={(e) => setSaveProjectName(e.target.value)}
+                      value={rfiName}
+                      onChange={(e) => setRfiName(e.target.value)}
                       placeholder="Enter RFI name..."
                       className="pr-20" // Add padding to prevent text overlap with button
                     />
                     <Button
                       variant="outline"
-                      disabled={saveProjectName.length === 0}
+                      disabled={rfiName.length === 0}
+                      onClick={() => {
+                        if (project.length === 0) {
+                          toast.warning("Please select a project first.", {
+                            duration: 800,
+                          });
+                        } else {
+                          saveRfi();
+                          toast.success("R.F.I Saved", {
+                            duration: 8000,
+                          });
+                          setRfiName("");
+                        }
+                      }}
                       className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 bg-blue-500 hover:bg-blue-600 ease-in-out transition-all duration-300 text-white shadow-lg text-xs px-3 hover:text-white"
                     >
                       <Save className="h-3 w-3 mr-1" />
@@ -1399,32 +1584,7 @@ const AviationSearchResults = () => {
                 </div>
               )}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 max-w-7xl ">
-              {/* Generate Report Button */}
-              <Button
-                onClick={() => handleDownloadFile("Request_for_Information")}
-                className="h-10  shadow hover:opacity-90 active:scale-95 focus-visible:ring-[#405cf5] bg-[#405cf5] hover:bg-[#405cf5] text-white ease-in-out transition-all duration-300  text-sm"
-              >
-                <Download className="h-4 w-4 " />
-                Generate Report
-              </Button>
-
-              <Button
-                onClick={() => handleDownloadFile("RFI_Summary")}
-                className="h-10  shadow hover:opacity-90 active:scale-95 focus-visible:ring-[#405cf5] bg-[#405cf5] hover:bg-[#405cf5] text-white ease-in-out transition-all duration-300  text-sm"
-              >
-                <Download className="h-4 w-4 " />
-                Generate Summary
-              </Button>
-
-              <Button
-                // onClick={() => setShowEmailPopOver(true)}
-                className="h-10  shadow hover:opacity-90 active:scale-95 focus-visible:ring-[#405cf5] bg-[#405cf5] hover:bg-[#405cf5] text-white ease-in-out transition-all duration-300  text-sm"
-              >
-                <ChartBarStacked className="h-4 w-4" />
-                Category Report
-              </Button>
-
+            <div className="flex items-center gap-x-5">
               {/* Send via Email Button */}
               <Button
                 onClick={() => setShowEmailPopOver(true)}
@@ -1514,6 +1674,64 @@ const AviationSearchResults = () => {
                   </Command>
                 </PopoverContent>
               </Popover>
+              <div>
+                <Popover
+                  open={showButtonsPopOver}
+                  onOpenChange={setSHowButtonPopOver}
+                >
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-10 w-10 p-0 hover:bg-gray-100 bg-transparent"
+                    >
+                      <MoreHorizontal className="h-4 w-4" />
+                      <span className="sr-only">More options</span>
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-56 p-2 mb-2 ml-40" align="right">
+                    <div className="grid gap-1">
+                      <Button
+                        variant="ghost"
+                        onClick={() =>
+                          handleDownloadFile("Request_for_Information")
+                        }
+                        className="justify-start gap-y-2 gap-x-3 h-auto p-3"
+                      >
+                        <FileText className="h-4 text-blue-700 w-4" />
+                        Full Report
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleDownloadFile("RFI_Summary")}
+                        className="justify-start gap-y-2 gap-x-3 h-auto p-3"
+                      >
+                        <FileBarChart className="h-4 text-blue-700 w-4" />
+                        Summary Report
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleDownloadFile("Category_Report")}
+                        className="justify-start gap-y-2 gap-x-3 h-auto p-3"
+                      >
+                        <ChartBarStacked className="h-4 text-blue-700 w-4" />
+                        Category Report
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleDownloadFile("Risk_Report")}
+                        className="justify-start gap-y-2 gap-x-3 h-auto p-3"
+                      >
+                        <ChartPie className="h-4 text-blue-700 w-4" />
+                        Risk Report
+                      </Button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
             </div>
           </div>
         </div>

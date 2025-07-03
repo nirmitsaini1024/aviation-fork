@@ -1006,128 +1006,6 @@ export const DocumentViewer = ({ url, filename, onClose }) => {
             )}
           </div>
 
-          <div className="bg-white rounded-lg p-4 shadow-sm mb-4">
-            <div className="flex items-start gap-3">
-              <Avatar>
-                <AvatarImage src={currentUser.avatar} alt={currentUser.name} />
-                <AvatarFallback>{currentUser.initials}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <div className="mb-2">
-                  <Textarea
-                    placeholder="Write a comment..."
-                    className="min-h-[80px] resize-none"
-                    value={newComment}
-                    onChange={(e) =>
-                      handleNewCommentChange(docId, e.target.value)
-                    }
-                  />
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex items-center gap-1 h-8 px-3"
-                        >
-                          {visibility === "private" && (
-                            <>
-                              <Users className="h-3.5 w-3.5 text-slate-600" />
-                              <span className="text-xs">Group Only</span>
-                            </>
-                          )}
-                          {visibility === "public" && (
-                            <>
-                              <Globe className="h-3.5 w-3.5 text-green-600" />
-                              <span className="text-xs text-green-600">
-                                Public
-                              </span>
-                            </>
-                          )}
-                          {visibility === "individual" && (
-                            <>
-                              <User className="h-3.5 w-3.5 text-blue-600" />
-                              <span className="text-xs text-blue-600">
-                                For Me
-                              </span>
-                            </>
-                          )}
-                          <ChevronDown className="h-3.5 w-3.5 ml-1 opacity-70" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="start" className="w-32">
-                        <DropdownMenuItem
-                          className="flex items-center gap-2 text-xs cursor-pointer"
-                          onClick={() => setVisibility("private")}
-                        >
-                          <Users className="h-3.5 w-3.5" />
-                          Group Only
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="flex items-center gap-2 text-xs cursor-pointer"
-                          onClick={() => setVisibility("public")}
-                        >
-                          <Globe className="h-3.5 w-3.5 text-green-600" />
-                          <span className="text-green-600">Public</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="flex items-center gap-2 text-xs cursor-pointer"
-                          onClick={() => setVisibility("individual")}
-                        >
-                          <User className="h-3.5 w-3.5 text-blue-600" />
-                          <span className="text-blue-600">For Me</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleFileUpload}
-                      accept="image/*,.pdf,.doc,.docx"
-                      className="hidden"
-                    />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => fileInputRef.current.click()}
-                      className="h-8"
-                    >
-                      <Upload className="h-3.5 w-3.5 mr-1.5" />
-                      Attachment
-                    </Button>
-
-                    {selectedFile && (
-                      <div className="inline-flex items-center bg-gray-100 rounded px-2 py-1">
-                        <button
-                          onClick={handleViewFile}
-                          className="text-xs mr-2 hover:underline"
-                        >
-                          {selectedFile.file.name}
-                        </button>
-                        <button onClick={removeFile}>
-                          <X className="h-3 w-3 text-gray-500" />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  <Button
-                    size="sm"
-                    onClick={() => submitComment(docId)}
-                    disabled={!newComment.trim() && !selectedFile}
-                    className="bg-blue-600"
-                  >
-                    <Send className="h-3.5 w-3.5 mr-1.5" />
-                    Post Comment
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
 
           <ScrollArea
             className="rounded-md border"
@@ -1170,14 +1048,8 @@ export const DocumentViewer = ({ url, filename, onClose }) => {
                           <div className="flex items-center">
                             <StarRating
                               value={comment.rating || 0}
-                              onChange={(newRating) =>
-                                handleCommentRating(
-                                  docId,
-                                  comment.id,
-                                  newRating
-                                )
-                              }
-                              readOnly={false}
+                              onChange={() => {}}
+                              readOnly={true}
                             />
                           </div>
                         </div>
@@ -1212,44 +1084,14 @@ export const DocumentViewer = ({ url, filename, onClose }) => {
 
                         <div className="flex items-center mt-3 gap-4">
                           <div className="flex items-center gap-2">
-                            <Button
-                              variant={
-                                userInteractions[comment.id]?.liked
-                                  ? "default"
-                                  : "ghost"
-                              }
-                              size="sm"
-                              onClick={() => handleLike(docId, comment.id)}
-                              className={`h-8 px-2 ${
-                                userInteractions[comment.id]?.liked
-                                  ? "bg-green-100 text-green-700 hover:bg-green-200"
-                                  : "hover:bg-green-100 hover:text-green-700"
-                              }`}
-                            >
-                              <ThumbsUp
-                                className={`h-4 w-4 mr-1 text-green-700`}
-                              />
-                              {comment.likes}
-                            </Button>
-                            <Button
-                              variant={
-                                userInteractions[comment.id]?.disliked
-                                  ? "default"
-                                  : "ghost"
-                              }
-                              size="sm"
-                              onClick={() => handleDislike(docId, comment.id)}
-                              className={`h-8 px-2 ${
-                                userInteractions[comment.id]?.disliked
-                                  ? "bg-red-100 text-red-700 hover:bg-red-200"
-                                  : "hover:bg-red-100 hover:text-red-700"
-                              }`}
-                            >
-                              <ThumbsDown
-                                className={`h-4 w-4 mr-1 text-red-600`}
-                              />
-                              {comment.dislikes}
-                            </Button>
+                            <div className="flex items-center gap-1 text-sm text-gray-600">
+                              <ThumbsUp className="h-4 w-4 text-green-700" />
+                              <span>{comment.likes}</span>
+                            </div>
+                            <div className="flex items-center gap-1 text-sm text-gray-600">
+                              <ThumbsDown className="h-4 w-4 text-red-600" />
+                              <span>{comment.dislikes}</span>
+                            </div>
                           </div>
 
                           {comment.replies.length > 0 && (
@@ -1267,116 +1109,8 @@ export const DocumentViewer = ({ url, filename, onClose }) => {
                               Replies ({comment.replies.length})
                             </Button>
                           )}
-
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => toggleReplyInput(docId, comment.id)}
-                            className="ml-auto hover:bg-blue-50 hover:text-blue-600 transition-colors"
-                          >
-                            <Reply className="h-3.5 w-3.5 mr-1.5" />
-                            Reply
-                          </Button>
                         </div>
 
-                        {showReplyInput[comment.id] && (
-                          <div className="mt-3 ml-8 border-l-2 pl-4 py-2">
-                            <div className="flex items-start gap-2">
-                              <Avatar className="h-7 w-7">
-                                <AvatarImage
-                                  src={currentUser.avatar}
-                                  alt={currentUser.name}
-                                />
-                                <AvatarFallback>
-                                  {currentUser.initials}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div className="flex-1">
-                                {replyingTo[comment.id]?.user && (
-                                  <div className="mb-1 text-xs text-blue-600">
-                                    Replying to{" "}
-                                    {replyingTo[comment.id].user.name}
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-5 px-1 ml-1 text-xs"
-                                      onClick={() => {
-                                        setCommentState((prev) => ({
-                                          ...prev,
-                                          [docId]: {
-                                            ...prev[docId],
-                                            replyingTo: {
-                                              ...prev[docId].replyingTo,
-                                              [comment.id]: null,
-                                            },
-                                            replyInputs: {
-                                              ...prev[docId].replyInputs,
-                                              [comment.id]: (
-                                                prev[docId].replyInputs[
-                                                  comment.id
-                                                ] || ""
-                                              ).replace(
-                                                new RegExp(
-                                                  `^@${
-                                                    replyingTo[comment.id].user
-                                                      .name
-                                                  }\\s`
-                                                ),
-                                                ""
-                                              ),
-                                            },
-                                          },
-                                        }));
-                                      }}
-                                    >
-                                      ×
-                                    </Button>
-                                  </div>
-                                )}
-                                <Textarea
-                                  placeholder={
-                                    replyingTo[comment.id]?.user
-                                      ? `Reply to ${
-                                          replyingTo[comment.id].user.name
-                                        }...`
-                                      : "Write a reply..."
-                                  }
-                                  className="min-h-[60px] resize-none text-sm"
-                                  value={replyInputs[comment.id] || ""}
-                                  onChange={(e) =>
-                                    handleReplyChange(
-                                      docId,
-                                      comment.id,
-                                      e.target.value
-                                    )
-                                  }
-                                />
-                                <div className="flex justify-end mt-2">
-                                  <Button
-                                    size="sm"
-                                    variant="secondary"
-                                    className="mr-2"
-                                    onClick={() =>
-                                      cancelReply(docId, comment.id)
-                                    }
-                                  >
-                                    Cancel
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    onClick={() =>
-                                      submitReply(docId, comment.id)
-                                    }
-                                    disabled={!replyInputs[comment.id]?.trim()}
-                                  >
-                                    <Send className="h-3 w-3 mr-1.5" />
-                                    Reply
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        )}
 
                         {expandedComments.includes(comment.id) &&
                           comment.replies.length > 0 && (
@@ -1412,15 +1146,8 @@ export const DocumentViewer = ({ url, filename, onClose }) => {
                                         <div className="flex items-center scale-75 origin-right">
                                           <StarRating
                                             value={reply.rating || 0}
-                                            onChange={(newRating) =>
-                                              handleReplyRating(
-                                                docId,
-                                                comment.id,
-                                                reply.id,
-                                                newRating
-                                              )
-                                            }
-                                            readOnly={false}
+                                            onChange={() => {}}
+                                            readOnly={true}
                                           />
                                         </div>
                                       </div>
@@ -1433,86 +1160,16 @@ export const DocumentViewer = ({ url, filename, onClose }) => {
                                       </div>
 
                                       <div className="flex items-center mt-2 mb-1">
-                                        <div className="flex items-center gap-1">
-                                          <Button
-                                            variant={
-                                              getReplyInteraction(
-                                                docId,
-                                                comment.id,
-                                                reply.id
-                                              ).liked
-                                                ? "default"
-                                                : "ghost"
-                                            }
-                                            size="sm"
-                                            onClick={() =>
-                                              handleReplyLike(
-                                                docId,
-                                                comment.id,
-                                                reply.id
-                                              )
-                                            }
-                                            className={`h-6 px-1.5 text-xs ${
-                                              getReplyInteraction(
-                                                docId,
-                                                comment.id,
-                                                reply.id
-                                              ).liked
-                                                ? "bg-green-100 text-green-700 hover:bg-green-200"
-                                                : "hover:bg-green-100 hover:text-green-700"
-                                            }`}
-                                          >
-                                            <ThumbsUp className="h-3 w-3 mr-1 text-green-700" />
-                                            {reply.likes}
-                                          </Button>
-                                          <Button
-                                            variant={
-                                              getReplyInteraction(
-                                                docId,
-                                                comment.id,
-                                                reply.id
-                                              ).disliked
-                                                ? "default"
-                                                : "ghost"
-                                            }
-                                            size="sm"
-                                            onClick={() =>
-                                              handleReplyDislike(
-                                                docId,
-                                                comment.id,
-                                                reply.id
-                                              )
-                                            }
-                                            className={`h-6 px-1.5 text-xs ${
-                                              getReplyInteraction(
-                                                docId,
-                                                comment.id,
-                                                reply.id
-                                              ).disliked
-                                                ? "bg-red-100 text-red-700 hover:bg-red-200"
-                                                : "hover:bg-red-100 hover:text-red-700"
-                                            }`}
-                                          >
-                                            <ThumbsDown className="h-3 w-3 mr-1 text-red-600" />
-                                            {reply.dislikes}
-                                          </Button>
+                                        <div className="flex items-center gap-2 text-xs text-gray-600">
+                                          <div className="flex items-center gap-1">
+                                            <ThumbsUp className="h-3 w-3 text-green-700" />
+                                            <span>{reply.likes}</span>
+                                          </div>
+                                          <div className="flex items-center gap-1">
+                                            <ThumbsDown className="h-3 w-3 text-red-600" />
+                                            <span>{reply.dislikes}</span>
+                                          </div>
                                         </div>
-                                        <Button
-                                          variant="ghost"
-                                          size="sm"
-                                          className="text-xs h-6 px-2 ml-auto"
-                                          onClick={() =>
-                                            toggleReplyToReply(
-                                              docId,
-                                              comment.id,
-                                              reply.id,
-                                              reply.user
-                                            )
-                                          }
-                                        >
-                                          <Reply className="h-3 w-3 mr-1" />
-                                          Reply
-                                        </Button>
                                       </div>
                                     </div>
                                   </div>

@@ -4,6 +4,7 @@ import { useContext, useEffect } from "react";
 import { GlobalContext } from "@/GlobalContext/GlobalProvider";
 import AviationSearchInterface from "./component/AviationPanels";
 import AviationSearchResults from "./component/AviationPanels";
+import { RFIDetailsContent } from "./RFI-details";
 
 const RequestForInfoContent = () => {
   const { setIsReviewManagementOpen } = useContext(GlobalContext);
@@ -26,12 +27,5 @@ const RequestForInfoContent = () => {
   );
 };
 
-const RequestForInfo = () => {
-  return (
-    <RequestInfoProvider>
-      <RequestForInfoContent />
-    </RequestInfoProvider>
-  );
-};
 
-export default RequestForInfo;
+export default RequestForInfoContent;

@@ -21,7 +21,7 @@ const AppLayout = ({ user, isBotOpen, setIsBotOpen }) => {
   }, [user, navigate]);
 
   useEffect(() => {
-    if(location.pathname === "/doc-review-management-center" || location.pathname === "/request-for-information"){
+    if(location.pathname === "/doc-review-management-center" || location.pathname === "/create-rfi" || location.pathname === "/rfi-details" || location.pathname === "/upload-templates"){
       setCollapsed(isReviewManagementOpen)
     }
     else{

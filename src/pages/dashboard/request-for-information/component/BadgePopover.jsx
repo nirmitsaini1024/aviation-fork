@@ -6,9 +6,12 @@ import {
 } from "@/components/ui/popover";
 import { useContext } from "react";
 import { RequestInfoContext } from "../context/RequestInfoContext";
+import { Bot, Minus } from "lucide-react";
+import { GlobalContext } from "@/GlobalContext/GlobalProvider";
 
-function BadgePopover({ notifications, name, icon }) {
-  const { templates } = useContext(RequestInfoContext)
+function BadgePopover({ notifications, name, icon, onRemove }) {
+  const { templates } = useContext(RequestInfoContext);
+  const { isBotOpen, setIsBotOpen } = useContext(GlobalContext);
   return (
     <div className="flex items-center justify-center">
       <Popover>
@@ -26,10 +29,26 @@ function BadgePopover({ notifications, name, icon }) {
             {notifications.length > 0 && notifications.map((item, index) => (
               <li
                 key={index}
-                className="px-2 py-1 text-sm flex items-center gap-x-3 hover:bg-gray-100 rounded cursor-pointer"
+                className="px-2 py-1 text-sm flex items-center justify-between gap-x-3 hover:bg-gray-100 rounded cursor-pointer"
               >
-                {icon}
+                <div className="flex justify-between items-center w-full">
+                  <span className="flex items-center gap-x-2">
+                  {icon}
                 <span className="font-semibold">{item}</span>
+                </span>
+                <Bot onClick={()=>setIsBotOpen(!isBotOpen)} className="h-4 w-4 group-hover:animate-bounce text-gray-600"/>
+                </div>
+                
+               {
+                notifications.length > 1 && (
+                   <Minus onClick={(e) => {
+                      e.stopPropagation();
+                      if (onRemove) {
+                        onRemove(item);
+                      }
+                    }}  className="w-3 h-3 text-red-800" />
+                )
+               }
               </li>
             ))}
           </ul>

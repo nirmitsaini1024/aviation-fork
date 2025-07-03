@@ -46,6 +46,8 @@ export default function ReviewTasksPage({ user }) {
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState(null);
   const [columnFilters, setColumnFilters] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(6);
 
   // Handle sorting
   const handleSort = (column) => {
@@ -68,11 +70,13 @@ export default function ReviewTasksPage({ user }) {
       ...prev,
       [column]: value,
     }));
+    setCurrentPage(1);
   };
 
   // Handle search
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
+    setCurrentPage(1);
   };
 
   // Filter and sort data
@@ -84,6 +88,18 @@ export default function ReviewTasksPage({ user }) {
     columnFilters
   );
   const sortedData = sortDocuments(filteredDocuments, sortColumn, sortDirection);
+
+  // Pagination logic
+  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedData = sortedData.slice(startIndex, endIndex);
+
+
+  // Page change handler  
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   // Toggle document selection
   const toggleDocumentSelection = (docId) => {
@@ -218,7 +234,7 @@ export default function ReviewTasksPage({ user }) {
       <ReviewTasksTable
         selectedDocuments={selectedDocuments}
         toggleSelectAll={toggleSelectAll}
-        sortedData={sortedData}
+        sortedData={paginatedData}
         filteredDocuments={filteredDocuments}
         sortColumn={sortColumn}
         sortDirection={sortDirection}
@@ -257,6 +273,11 @@ export default function ReviewTasksPage({ user }) {
         getAiSentiment={getDocumentAiSentiment}
         isDocumentSigned={isDocumentSigned}
         user={user}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        itemsPerPage={itemsPerPage}
+        totalItems={sortedData.length}
+        handlePageChange={handlePageChange}
       />
     </div>
   );

@@ -3,7 +3,7 @@ import { ChartColumnStacked, Table, TypeOutline } from "lucide-react";
 export const domains = ["Airport", "Airline"];
 
 export const categoryOptions = {
-  Airport: ["ASP", "AEP", "ACM", "SMS", "ADFAP (Airport)"],
+  Airport: ["ASP", "AEP", "ACM", "SMS", "ADFAP (Airport)", "ADFP"],
   Airline: ["ASP", "ADFP"],
 };
 
@@ -12,8 +12,8 @@ export const existingProjects = [
   "Materials",
   "Finance",
   "ADFAP (Airport)",
-  "Safety Management"
-]
+  "Safety Management",
+];
 
 export const mockCategories = [
   {
@@ -1283,68 +1283,67 @@ export const questionCategories = [
 ];
 
 export const customAnswers = [
-              {
-                documentName: "Flight Operations Manual",
-                page: "Page 11",
-                answer:
-                  "Comprehensive flight safety protocols including pre-flight checks, weather assessment procedures, and crew resource management requirements.",
-              },
-              {
-                documentName: "Safety Risk Management",
-                page: "Page 28",
-                answer:
-                  "Systematic approach to identifying, assessing, and mitigating operational risks throughout all phases of flight operations.",
-              },
-              {
-                documentName: "IATA Safety Standards",
-                page: "Page 35",
-                answer:
-                  "Implementation of international safety standards including IOSA audit requirements and best practice recommendations.",
-              },
-              {
-                documentName: "Standard Operating Procedures",
-                page: "Page 64",
-                answer:
-                  "Detailed standard operating procedures for normal, abnormal, and emergency situations ensuring consistent and safe flight operations.",
-              },
-               {
-                documentName: "Enterprise Data Architecture",
-                page: "Page 72",
-                answer:
-                  "Enterprise-wide data architecture enabling seamless integration between flight operations, maintenance, customer service, and financial systems.",
-              },
-              {
-                documentName: "API Integration Framework",
-                page: "Page 51",
-                answer:
-                  "Standardized API framework enabling real-time data exchange with partners, suppliers, and regulatory authorities.",
-              },
-              {
-                documentName: "Data Governance Framework",
-                page: "Page 39",
-                answer:
-                  "Comprehensive data governance framework ensuring data quality, consistency, and compliance across all airline operations.",
-              },
-                {
-                documentName: "Flight Data Analytics",
-                page: "Page 37",
-                answer:
-                  "Comprehensive flight data analysis including fuel consumption, route efficiency, and performance optimization using advanced analytics.",
-              },
-              {
-                documentName: "Predictive Maintenance Analytics",
-                page: "Page 54",
-                answer:
-                  "Predictive maintenance algorithms analyzing aircraft data to predict component failures and optimize maintenance schedules.",
-              },
-              {
-                documentName: "Route Optimization Models",
-                page: "Page 42",
-                answer:
-                  "Mathematical models for route optimization considering fuel costs, weather conditions, and air traffic constraints.",
-              },
-            ]
-
+  {
+    documentName: "Flight Operations Manual",
+    page: "Page 11",
+    answer:
+      "Comprehensive flight safety protocols including pre-flight checks, weather assessment procedures, and crew resource management requirements.",
+  },
+  {
+    documentName: "Safety Risk Management",
+    page: "Page 28",
+    answer:
+      "Systematic approach to identifying, assessing, and mitigating operational risks throughout all phases of flight operations.",
+  },
+  {
+    documentName: "IATA Safety Standards",
+    page: "Page 35",
+    answer:
+      "Implementation of international safety standards including IOSA audit requirements and best practice recommendations.",
+  },
+  {
+    documentName: "Standard Operating Procedures",
+    page: "Page 64",
+    answer:
+      "Detailed standard operating procedures for normal, abnormal, and emergency situations ensuring consistent and safe flight operations.",
+  },
+  {
+    documentName: "Enterprise Data Architecture",
+    page: "Page 72",
+    answer:
+      "Enterprise-wide data architecture enabling seamless integration between flight operations, maintenance, customer service, and financial systems.",
+  },
+  {
+    documentName: "API Integration Framework",
+    page: "Page 51",
+    answer:
+      "Standardized API framework enabling real-time data exchange with partners, suppliers, and regulatory authorities.",
+  },
+  {
+    documentName: "Data Governance Framework",
+    page: "Page 39",
+    answer:
+      "Comprehensive data governance framework ensuring data quality, consistency, and compliance across all airline operations.",
+  },
+  {
+    documentName: "Flight Data Analytics",
+    page: "Page 37",
+    answer:
+      "Comprehensive flight data analysis including fuel consumption, route efficiency, and performance optimization using advanced analytics.",
+  },
+  {
+    documentName: "Predictive Maintenance Analytics",
+    page: "Page 54",
+    answer:
+      "Predictive maintenance algorithms analyzing aircraft data to predict component failures and optimize maintenance schedules.",
+  },
+  {
+    documentName: "Route Optimization Models",
+    page: "Page 42",
+    answer:
+      "Mathematical models for route optimization considering fuel costs, weather conditions, and air traffic constraints.",
+  },
+];
 
 export const aiAgents = [
   {
@@ -1352,466 +1351,486 @@ export const aiAgents = [
     name: "SQL Agent",
     company: "Anthropic",
     type: "Conversational AI",
-    capabilities: ["text generation", "analysis", "coding", "math", "creative writing"],
+    capabilities: [
+      "text generation",
+      "analysis",
+      "coding",
+      "math",
+      "creative writing",
+    ],
     modality: ["text"],
     pricing: "freemium",
     apiAvailable: true,
     launchYear: 2022,
-    description: "Constitutional AI assistant focused on being helpful, harmless, and honest"
+    description:
+      "Constitutional AI assistant focused on being helpful, harmless, and honest",
   },
   {
     id: 101,
     name: "API Agent",
     company: "Anthropic",
     type: "Conversational AI",
-    capabilities: ["text generation", "analysis", "coding", "math", "creative writing"],
+    capabilities: [
+      "text generation",
+      "analysis",
+      "coding",
+      "math",
+      "creative writing",
+    ],
     modality: ["text"],
     pricing: "freemium",
     apiAvailable: true,
     launchYear: 2022,
-    description: "Constitutional AI assistant focused on being helpful, harmless, and honest"
+    description:
+      "Constitutional AI assistant focused on being helpful, harmless, and honest",
   },
   {
     id: 102,
     name: "Web Agent",
     company: "Anthropic",
     type: "Conversational AI",
-    capabilities: ["text generation", "analysis", "coding", "math", "creative writing"],
+    capabilities: [
+      "text generation",
+      "analysis",
+      "coding",
+      "math",
+      "creative writing",
+    ],
     modality: ["text"],
     pricing: "freemium",
     apiAvailable: true,
     launchYear: 2022,
-    description: "Constitutional AI assistant focused on being helpful, harmless, and honest"
-  }
+    description:
+      "Constitutional AI assistant focused on being helpful, harmless, and honest",
+  },
 ];
-
 
 // Extracted document names from the mockCategories data
 export const AirportDocuments = [
   {
     id: "doc1",
-    documentName: "Airport Safety Manual"
+    documentName: "Airport Safety Manual",
   },
   {
-    id: "doc2", 
-    documentName: "ICAO Airport Standards"
+    id: "doc2",
+    documentName: "ICAO Airport Standards",
   },
   {
     id: "doc3",
-    documentName: "FAA Advisory Circular"
+    documentName: "FAA Advisory Circular",
   },
   {
     id: "doc4",
-    documentName: "Runway Safety Best Practices"
+    documentName: "Runway Safety Best Practices",
   },
   {
     id: "doc5",
-    documentName: "Wildlife Management Guidelines"
+    documentName: "Wildlife Management Guidelines",
   },
   {
     id: "doc6",
-    documentName: "Ground Operations Manual"
+    documentName: "Ground Operations Manual",
   },
   {
     id: "doc7",
-    documentName: "Safety Risk Assessment"
+    documentName: "Safety Risk Assessment",
   },
   {
     id: "doc8",
-    documentName: "Equipment Safety Standards"
+    documentName: "Equipment Safety Standards",
   },
   {
     id: "doc9",
-    documentName: "Personnel Training Requirements"
+    documentName: "Personnel Training Requirements",
   },
   {
     id: "doc10",
-    documentName: "Apron Safety Guidelines"
+    documentName: "Apron Safety Guidelines",
   },
   {
     id: "doc11",
-    documentName: "Ground Traffic Management"
+    documentName: "Ground Traffic Management",
   },
   {
     id: "doc12",
-    documentName: "Foreign Object Debris Prevention"
+    documentName: "Foreign Object Debris Prevention",
   },
   {
     id: "doc13",
-    documentName: "Training Curriculum Standards"
+    documentName: "Training Curriculum Standards",
   },
   {
     id: "doc14",
-    documentName: "Competency Assessment Framework"
+    documentName: "Competency Assessment Framework",
   },
   {
     id: "doc15",
-    documentName: "Safety Culture Development"
+    documentName: "Safety Culture Development",
   },
   {
     id: "doc16",
-    documentName: "Incident Investigation Procedures"
+    documentName: "Incident Investigation Procedures",
   },
   {
     id: "doc17",
-    documentName: "Safety Reporting Systems"
+    documentName: "Safety Reporting Systems",
   },
   {
     id: "doc18",
-    documentName: "Regulatory Notification Requirements"
+    documentName: "Regulatory Notification Requirements",
   },
   {
     id: "doc19",
-    documentName: "Emergency Response Plan"
+    documentName: "Emergency Response Plan",
   },
   {
     id: "doc20",
-    documentName: "Crisis Management Manual"
+    documentName: "Crisis Management Manual",
   },
   {
     id: "doc21",
-    documentName: "ICAO Emergency Planning"
+    documentName: "ICAO Emergency Planning",
   },
   {
     id: "doc22",
-    documentName: "Incident Command System"
+    documentName: "Incident Command System",
   },
   {
     id: "doc23",
-    documentName: "Training Requirements Manual"
+    documentName: "Training Requirements Manual",
   },
   {
     id: "doc24",
-    documentName: "Certification Standards"
+    documentName: "Certification Standards",
   },
   {
     id: "doc25",
-    documentName: "International Training Standards"
+    documentName: "International Training Standards",
   },
   {
     id: "doc26",
-    documentName: "Specialized Equipment Training"
+    documentName: "Specialized Equipment Training",
   },
   {
     id: "doc27",
-    documentName: "ARFF Operations Manual"
+    documentName: "ARFF Operations Manual",
   },
   {
     id: "doc28",
-    documentName: "Equipment Specifications"
+    documentName: "Equipment Specifications",
   },
   {
     id: "doc29",
-    documentName: "Response Time Standards"
+    documentName: "Response Time Standards",
   },
   {
     id: "doc30",
-    documentName: "Emergency Communications Protocol"
+    documentName: "Emergency Communications Protocol",
   },
   {
     id: "doc31",
-    documentName: "Communication Equipment Standards"
+    documentName: "Communication Equipment Standards",
   },
   {
     id: "doc32",
-    documentName: "Multi-Agency Coordination"
+    documentName: "Multi-Agency Coordination",
   },
   {
     id: "doc33",
-    documentName: "Medical Emergency Procedures"
+    documentName: "Medical Emergency Procedures",
   },
   {
     id: "doc34",
-    documentName: "Medical Equipment Standards"
+    documentName: "Medical Equipment Standards",
   },
   {
     id: "doc35",
-    documentName: "Medical Personnel Requirements"
+    documentName: "Medical Personnel Requirements",
   },
   {
     id: "doc36",
-    documentName: "Capacity Analysis Report"
+    documentName: "Capacity Analysis Report",
   },
   {
     id: "doc37",
-    documentName: "Traffic Flow Management"
+    documentName: "Traffic Flow Management",
   },
   {
     id: "doc38",
-    documentName: "IATA Capacity Guidelines"
+    documentName: "IATA Capacity Guidelines",
   },
   {
     id: "doc39",
-    documentName: "Runway Capacity Modeling"
+    documentName: "Runway Capacity Modeling",
   },
   {
     id: "doc40",
-    documentName: "Terminal Operations Analysis"
+    documentName: "Terminal Operations Analysis",
   },
   {
     id: "doc41",
-    documentName: "Passenger Flow Optimization"
+    documentName: "Passenger Flow Optimization",
   },
   {
     id: "doc42",
-    documentName: "Baggage Handling Capacity"
+    documentName: "Baggage Handling Capacity",
   },
   {
     id: "doc43",
-    documentName: "Airspace Management Procedures"
+    documentName: "Airspace Management Procedures",
   },
   {
     id: "doc44",
-    documentName: "Air Traffic Flow Management"
+    documentName: "Air Traffic Flow Management",
   },
   {
     id: "doc45",
-    documentName: "Approach and Departure Optimization"
+    documentName: "Approach and Departure Optimization",
   },
   {
     id: "doc46",
-    documentName: "Infrastructure Development Plan"
+    documentName: "Infrastructure Development Plan",
   },
   {
     id: "doc47",
-    documentName: "Operational Efficiency Improvements"
+    documentName: "Operational Efficiency Improvements",
   },
   {
     id: "doc48",
-    documentName: "Technology Integration"
+    documentName: "Technology Integration",
   },
   {
     id: "doc49",
-    documentName: "SMS Implementation Guide"
+    documentName: "SMS Implementation Guide",
   },
   {
     id: "doc50",
-    documentName: "Regulatory Compliance Manual"
+    documentName: "Regulatory Compliance Manual",
   },
   {
     id: "doc51",
-    documentName: "Safety Performance Indicators"
+    documentName: "Safety Performance Indicators",
   },
   {
     id: "doc52",
-    documentName: "SMS Documentation Requirements"
+    documentName: "SMS Documentation Requirements",
   },
   {
     id: "doc53",
-    documentName: "Safety Risk Management Procedures"
+    documentName: "Safety Risk Management Procedures",
   },
   {
     id: "doc54",
-    documentName: "Hazard Identification Methods"
+    documentName: "Hazard Identification Methods",
   },
   {
     id: "doc55",
-    documentName: "Risk Assessment Matrix"
+    documentName: "Risk Assessment Matrix",
   },
   {
     id: "doc56",
-    documentName: "Safety Assurance Framework"
+    documentName: "Safety Assurance Framework",
   },
   {
     id: "doc57",
-    documentName: "Safety Audit Procedures"
+    documentName: "Safety Audit Procedures",
   },
   {
     id: "doc58",
-    documentName: "Safety Performance Monitoring"
+    documentName: "Safety Performance Monitoring",
   },
   {
     id: "doc59",
-    documentName: "Safety Promotion Strategy"
+    documentName: "Safety Promotion Strategy",
   },
   {
     id: "doc60",
-    documentName: "Safety Training Programs"
+    documentName: "Safety Training Programs",
   },
   {
     id: "doc61",
-    documentName: "Safety Culture Assessment"
+    documentName: "Safety Culture Assessment",
   },
   {
     id: "doc62",
-    documentName: "Data Analytics Framework"
+    documentName: "Data Analytics Framework",
   },
   {
     id: "doc63",
-    documentName: "Performance Monitoring System"
+    documentName: "Performance Monitoring System",
   },
   {
     id: "doc64",
-    documentName: "Business Intelligence Platform"
+    documentName: "Business Intelligence Platform",
   },
   {
     id: "doc65",
-    documentName: "Predictive Analytics Tools"
+    documentName: "Predictive Analytics Tools",
   },
   {
     id: "doc66",
-    documentName: "Data Integration Architecture"
+    documentName: "Data Integration Architecture",
   },
   {
     id: "doc67",
-    documentName: "API Management System"
+    documentName: "API Management System",
   },
   {
     id: "doc68",
-    documentName: "Data Quality Management"
+    documentName: "Data Quality Management",
   },
   {
     id: "doc69",
-    documentName: "Passenger Analytics Suite"
+    documentName: "Passenger Analytics Suite",
   },
   {
     id: "doc70",
-    documentName: "Queue Management Analytics"
+    documentName: "Queue Management Analytics",
   },
   {
     id: "doc71",
-    documentName: "Revenue Analytics Platform"
+    documentName: "Revenue Analytics Platform",
   },
   {
     id: "doc72",
-    documentName: "Data Security Framework"
+    documentName: "Data Security Framework",
   },
   {
     id: "doc73",
-    documentName: "Privacy Protection Measures"
+    documentName: "Privacy Protection Measures",
   },
   {
     id: "doc74",
-    documentName: "Cybersecurity Protocols"
+    documentName: "Cybersecurity Protocols",
   },
   {
     id: "doc75",
-    documentName: "Flight Operations Manual"
+    documentName: "Flight Operations Manual",
   },
   {
     id: "doc76",
-    documentName: "IATA Safety Standards"
+    documentName: "IATA Safety Standards",
   },
   {
     id: "doc77",
-    documentName: "Standard Operating Procedures"
+    documentName: "Standard Operating Procedures",
   },
   {
     id: "doc78",
-    documentName: "Maintenance Program Manual"
+    documentName: "Maintenance Program Manual",
   },
   {
     id: "doc79",
-    documentName: "Quality Assurance Program"
+    documentName: "Quality Assurance Program",
   },
   {
     id: "doc80",
-    documentName: "Regulatory Compliance Guide"
+    documentName: "Regulatory Compliance Guide",
   },
   {
     id: "doc81",
-    documentName: "Maintenance Safety Culture"
+    documentName: "Maintenance Safety Culture",
   },
   {
     id: "doc82",
-    documentName: "CRM Training Manual"
+    documentName: "CRM Training Manual",
   },
   {
     id: "doc83",
-    documentName: "Human Factors Guidelines"
+    documentName: "Human Factors Guidelines",
   },
   {
     id: "doc84",
-    documentName: "Threat and Error Management"
+    documentName: "Threat and Error Management",
   },
   {
     id: "doc85",
-    documentName: "Cabin Safety Manual"
+    documentName: "Cabin Safety Manual",
   },
   {
     id: "doc86",
-    documentName: "Emergency Equipment Standards"
+    documentName: "Emergency Equipment Standards",
   },
   {
     id: "doc87",
-    documentName: "Cabin Crew Training Requirements"
+    documentName: "Cabin Crew Training Requirements",
   },
   {
     id: "doc88",
-    documentName: "Flight Data Analysis"
+    documentName: "Flight Data Analysis",
   },
   {
     id: "doc89",
-    documentName: "Safety Reporting Culture"
+    documentName: "Safety Reporting Culture",
   },
   {
     id: "doc90",
-    documentName: "Data Management Strategy"
+    documentName: "Data Management Strategy",
   },
   {
     id: "doc91",
-    documentName: "Analytics Platform Guide"
+    documentName: "Analytics Platform Guide",
   },
   {
     id: "doc92",
-    documentName: "Performance Metrics Framework"
+    documentName: "Performance Metrics Framework",
   },
   {
     id: "doc93",
-    documentName: "Real-time Data Processing"
+    documentName: "Real-time Data Processing",
   },
   {
     id: "doc94",
-    documentName: "Cybersecurity Framework"
+    documentName: "Cybersecurity Framework",
   },
   {
     id: "doc95",
-    documentName: "Data Protection Policy"
+    documentName: "Data Protection Policy",
   },
   {
     id: "doc96",
-    documentName: "Incident Response Plan"
+    documentName: "Incident Response Plan",
   },
   {
     id: "doc97",
-    documentName: "Security Monitoring Systems"
+    documentName: "Security Monitoring Systems",
   },
   {
     id: "doc98",
-    documentName: "Flight Data Analytics"
+    documentName: "Flight Data Analytics",
   },
   {
     id: "doc99",
-    documentName: "Predictive Maintenance Analytics"
+    documentName: "Predictive Maintenance Analytics",
   },
   {
     id: "doc100",
-    documentName: "Route Optimization Models"
+    documentName: "Route Optimization Models",
   },
   {
     id: "doc101",
-    documentName: "Customer Analytics Platform"
+    documentName: "Customer Analytics Platform",
   },
   {
     id: "doc102",
-    documentName: "Revenue Management Analytics"
+    documentName: "Revenue Management Analytics",
   },
   {
     id: "doc103",
-    documentName: "Passenger Experience Analytics"
+    documentName: "Passenger Experience Analytics",
   },
   {
     id: "doc104",
-    documentName: "Enterprise Data Architecture"
+    documentName: "Enterprise Data Architecture",
   },
   {
     id: "doc105",
-    documentName: "API Integration Framework"
+    documentName: "API Integration Framework",
   },
   {
     id: "doc106",
-    documentName: "Data Governance Framework"
-  }
+    documentName: "Data Governance Framework",
+  },
 ];
 
 export const assignUser = [
@@ -1834,201 +1853,1640 @@ export const assignUser = [
   { id: 17, fullName: "Jack Wright" },
   { id: 18, fullName: "Harper Green" },
   { id: 19, fullName: "Alexander Baker" },
-  { id: 20, fullName: "Evelyn Adams" }
+  { id: 20, fullName: "Evelyn Adams" },
 ];
-
 
 export const agentsMockData = [
   {
     page: 1,
     documentName: "SQL Agent",
-    answer: "Queried the database to extract passenger traffic data from the last month, categorized by terminal, day, and airline to support capacity planning and staff allocation decisions."
+    answer:
+      "Queried the database to extract passenger traffic data from the last month, categorized by terminal, day, and airline to support capacity planning and staff allocation decisions.",
   },
   {
     page: 3,
     documentName: "API Agent",
-    answer: "Analyzed historical data to predict congestion times at security checkpoints and suggested optimal staff scheduling and queue management strategies to improve passenger flow and reduce delays."
+    answer:
+      "Analyzed historical data to predict congestion times at security checkpoints and suggested optimal staff scheduling and queue management strategies to improve passenger flow and reduce delays.",
   },
   {
     page: 2,
     documentName: "Web Agent",
-    answer: "Fetched real-time weather conditions and delays for all international flights using public aviation APIs to help travelers plan accordingly and avoid unnecessary waiting at the airport."
-  }
+    answer:
+      "Fetched real-time weather conditions and delays for all international flights using public aviation APIs to help travelers plan accordingly and avoid unnecessary waiting at the airport.",
+  },
 ];
-
 
 export const selectedAnswerOption = [
   {
     id: 1,
     icon: TypeOutline,
-    text: "Text"
+    text: "Text",
   },
   {
     id: 2,
     icon: Table,
-    text: "Table"
+    text: "Table",
   },
   {
     id: 3,
     icon: ChartColumnStacked,
-    text: "Chart"
-  }
-]
+    text: "Chart",
+  },
+];
 
 export const docGenTable = [
   {
     id: 1,
     name: "Word Template",
-    type: "Word"
+    type: "Word",
   },
   {
     id: 2,
-    name: "PDF Template", 
-    type: "PDF"
+    name: "PDF Template",
+    type: "PDF",
   },
   {
     id: 3,
     name: "CSV Template",
-    type: "CSV"
-  }
+    type: "CSV",
+  },
+];
+
+export const docGenTemplateData = [
+  {
+    id: 1,
+    name: "ASP (Airport Safety Program)",
+    type: ["Word", "PDF", "CSV"],
+  },
+
+  {
+    id: 2,
+    name: "AEP",
+    type: ["Word", "PDF", "CSV"],
+  },
+
+  {
+    id: 3,
+    name: "ADFAP (Airport)",
+    type: ["Word", "PDF", "CSV"],
+  },
 ];
 
 export const tabelContentFirst = [
-    {
-      event: { id: "event-1", content: "Incident or near-miss" },
-      investigation: { id: "investigation-1", content: "Best practice" },
-      whoToNotify: [{ id: "notify-1-1", content: "JHSC" }],
-      timeframe: [{ id: "time-1-1", content: "Within 4 days" }],
-      documentation: [{ id: "doc-1-1", content: "Internal incident/accident report" }],
+  {
+    event: { id: "event-1", content: "Incident or near-miss" },
+    investigation: { id: "investigation-1", content: "Best practice" },
+    whoToNotify: [{ id: "notify-1-1", content: "JHSC" }],
+    timeframe: [{ id: "time-1-1", content: "Within 4 days" }],
+    documentation: [
+      { id: "doc-1-1", content: "Internal incident/accident report" },
+    ],
+  },
+  {
+    event: { id: "event-2", content: "First-aid only injury" },
+    investigation: { id: "investigation-2", content: "Best practice" },
+    whoToNotify: [{ id: "notify-2-1", content: "JHSC" }],
+    timeframe: [{ id: "time-2-1", content: "Within 4 days" }],
+    documentation: [
+      { id: "doc-2-1", content: "Internal incident/accident report" },
+    ],
+  },
+  {
+    event: {
+      id: "event-3",
+      content: "Non-critical injury requiring medical treatment",
     },
-    {
-      event: { id: "event-2", content: "First-aid only injury" },
-      investigation: { id: "investigation-2", content: "Best practice" },
-      whoToNotify: [{ id: "notify-2-1", content: "JHSC" }],
-      timeframe: [{ id: "time-2-1", content: "Within 4 days" }],
-      documentation: [{ id: "doc-2-1", content: "Internal incident/accident report" }],
-    },
-    {
-      event: { id: "event-3", content: "Non-critical injury requiring medical treatment" },
-      investigation: { id: "investigation-3", content: "Best practice" },
-      whoToNotify: [
-        { id: "notify-3-1", content: "JHSC" },
-        { id: "notify-3-2", content: "WSIB" },
-      ],
-      timeframe: [
-        { id: "time-3-1", content: "Within 4 days" },
-        { id: "time-3-2", content: "Within 3 days" },
-      ],
-      documentation: [
-        { id: "doc-3-1", content: "Internal incident/accident report" },
-        { id: "doc-3-2", content: "WSIB Form 7" },
-      ],
-    },
-    {
-      event: { id: "event-4", content: "Critical injury or fatality" },
-      investigation: { id: "investigation-4", content: "Required" },
-      whoToNotify: [
-        { id: "notify-4-1", content: "MLTSD" },
-        { id: "notify-4-2", content: "JHSC" },
-        { id: "notify-4-3", content: "WSIB" },
-      ],
-      timeframe: [
-        { id: "time-4-1", content: "48 hours" },
-        { id: "time-4-2", content: "As soon as possible" },
-        { id: "time-4-3", content: "Within 3 days" },
-      ],
-      documentation: [
-        { id: "doc-4-1", content: "Accident Report submitted by the employer to MLTSD" },
-        { id: "doc-4-2", content: "Accident Investigation support submitted to employer and MLTSD by JHSC" },
-        { id: "doc-4-3", content: "WSIB Form 7" },
-      ],
-    },
-  ]
-
+    investigation: { id: "investigation-3", content: "Best practice" },
+    whoToNotify: [
+      { id: "notify-3-1", content: "JHSC" },
+      { id: "notify-3-2", content: "WSIB" },
+    ],
+    timeframe: [
+      { id: "time-3-1", content: "Within 4 days" },
+      { id: "time-3-2", content: "Within 3 days" },
+    ],
+    documentation: [
+      { id: "doc-3-1", content: "Internal incident/accident report" },
+      { id: "doc-3-2", content: "WSIB Form 7" },
+    ],
+  },
+  {
+    event: { id: "event-4", content: "Critical injury or fatality" },
+    investigation: { id: "investigation-4", content: "Required" },
+    whoToNotify: [
+      { id: "notify-4-1", content: "MLTSD" },
+      { id: "notify-4-2", content: "JHSC" },
+      { id: "notify-4-3", content: "WSIB" },
+    ],
+    timeframe: [
+      { id: "time-4-1", content: "48 hours" },
+      { id: "time-4-2", content: "As soon as possible" },
+      { id: "time-4-3", content: "Within 3 days" },
+    ],
+    documentation: [
+      {
+        id: "doc-4-1",
+        content: "Accident Report submitted by the employer to MLTSD",
+      },
+      {
+        id: "doc-4-2",
+        content:
+          "Accident Investigation support submitted to employer and MLTSD by JHSC",
+      },
+      { id: "doc-4-3", content: "WSIB Form 7" },
+    ],
+  },
+];
 
 export const tabelContentSecond = [
-    {
-      event: { id: "event-1", content: "Project delay (< 1 week)" },
-      investigation: { id: "investigation-1", content: "Team review" },
-      whoToNotify: [{ id: "notify-1-1", content: "Project Manager" }],
-      timeframe: [{ id: "time-1-1", content: "Within 24 hours" }],
-      documentation: [{ id: "doc-1-1", content: "Status update email" }],
-    },
-    {
-      event: { id: "event-2", content: "Budget variance (10-20%)" },
-      investigation: { id: "investigation-2", content: "Financial analysis" },
-      whoToNotify: [
-        { id: "notify-2-1", content: "Finance Team" },
-        { id: "notify-2-2", content: "Department Head" },
-      ],
-      timeframe: [
-        { id: "time-2-1", content: "Within 2 days" },
-        { id: "time-2-2", content: "Within 3 days" },
-      ],
-      documentation: [
-        { id: "doc-2-1", content: "Budget variance report" },
-        { id: "doc-2-2", content: "Corrective action plan" },
-      ],
-    },
-    {
-      event: { id: "event-3", content: "Quality issue identified" },
-      investigation: { id: "investigation-3", content: "Root cause analysis" },
-      whoToNotify: [
-        { id: "notify-3-1", content: "Quality Assurance" },
-        { id: "notify-3-2", content: "Client" },
-        { id: "notify-3-3", content: "Senior Management" },
-      ],
-      timeframe: [
-        { id: "time-3-1", content: "Immediately" },
-        { id: "time-3-2", content: "Within 4 hours" },
-        { id: "time-3-3", content: "Within 1 day" },
-      ],
-      documentation: [
-        { id: "doc-3-1", content: "Quality incident report" },
-        { id: "doc-3-2", content: "Client notification letter" },
-        { id: "doc-3-3", content: "Remediation plan" },
-      ],
-    },
-    {
-      event: { id: "event-4", content: "Critical system failure" },
-      investigation: { id: "investigation-4", content: "Emergency response" },
-      whoToNotify: [
-        { id: "notify-4-1", content: "IT Support" },
-        { id: "notify-4-2", content: "All Stakeholders" },
-        { id: "notify-4-3", content: "Executive Team" },
-        { id: "notify-4-4", content: "External Vendors" },
-      ],
-      timeframe: [
-        { id: "time-4-1", content: "Immediately" },
-        { id: "time-4-2", content: "Within 30 minutes" },
-        { id: "time-4-3", content: "Within 1 hour" },
-        { id: "time-4-4", content: "Within 2 hours" },
-      ],
-      documentation: [
-        { id: "doc-4-1", content: "System failure incident report" },
-        { id: "doc-4-2", content: "Stakeholder communication log" },
-        { id: "doc-4-3", content: "Recovery timeline document" },
-        { id: "doc-4-4", content: "Post-incident review report" },
-      ],
-    },
-    {
-      event: { id: "event-5", content: "Resource unavailability" },
-      investigation: { id: "investigation-5", content: "Resource assessment" },
-      whoToNotify: [
-        { id: "notify-5-1", content: "Resource Manager" },
-        { id: "notify-5-2", content: "Project Sponsor" },
-      ],
-      timeframe: [
-        { id: "time-5-1", content: "Within 1 day" },
-        { id: "time-5-2", content: "Within 2 days" },
-      ],
-      documentation: [
-        { id: "doc-5-1", content: "Resource impact assessment" },
-        { id: "doc-5-2", content: "Alternative resource plan" },
-      ],
-    },
-  ]
+  {
+    event: { id: "event-1", content: "Project delay (< 1 week)" },
+    investigation: { id: "investigation-1", content: "Team review" },
+    whoToNotify: [{ id: "notify-1-1", content: "Project Manager" }],
+    timeframe: [{ id: "time-1-1", content: "Within 24 hours" }],
+    documentation: [{ id: "doc-1-1", content: "Status update email" }],
+  },
+  {
+    event: { id: "event-2", content: "Budget variance (10-20%)" },
+    investigation: { id: "investigation-2", content: "Financial analysis" },
+    whoToNotify: [
+      { id: "notify-2-1", content: "Finance Team" },
+      { id: "notify-2-2", content: "Department Head" },
+    ],
+    timeframe: [
+      { id: "time-2-1", content: "Within 2 days" },
+      { id: "time-2-2", content: "Within 3 days" },
+    ],
+    documentation: [
+      { id: "doc-2-1", content: "Budget variance report" },
+      { id: "doc-2-2", content: "Corrective action plan" },
+    ],
+  },
+  {
+    event: { id: "event-3", content: "Quality issue identified" },
+    investigation: { id: "investigation-3", content: "Root cause analysis" },
+    whoToNotify: [
+      { id: "notify-3-1", content: "Quality Assurance" },
+      { id: "notify-3-2", content: "Client" },
+      { id: "notify-3-3", content: "Senior Management" },
+    ],
+    timeframe: [
+      { id: "time-3-1", content: "Immediately" },
+      { id: "time-3-2", content: "Within 4 hours" },
+      { id: "time-3-3", content: "Within 1 day" },
+    ],
+    documentation: [
+      { id: "doc-3-1", content: "Quality incident report" },
+      { id: "doc-3-2", content: "Client notification letter" },
+      { id: "doc-3-3", content: "Remediation plan" },
+    ],
+  },
+  {
+    event: { id: "event-4", content: "Critical system failure" },
+    investigation: { id: "investigation-4", content: "Emergency response" },
+    whoToNotify: [
+      { id: "notify-4-1", content: "IT Support" },
+      { id: "notify-4-2", content: "All Stakeholders" },
+      { id: "notify-4-3", content: "Executive Team" },
+      { id: "notify-4-4", content: "External Vendors" },
+    ],
+    timeframe: [
+      { id: "time-4-1", content: "Immediately" },
+      { id: "time-4-2", content: "Within 30 minutes" },
+      { id: "time-4-3", content: "Within 1 hour" },
+      { id: "time-4-4", content: "Within 2 hours" },
+    ],
+    documentation: [
+      { id: "doc-4-1", content: "System failure incident report" },
+      { id: "doc-4-2", content: "Stakeholder communication log" },
+      { id: "doc-4-3", content: "Recovery timeline document" },
+      { id: "doc-4-4", content: "Post-incident review report" },
+    ],
+  },
+  {
+    event: { id: "event-5", content: "Resource unavailability" },
+    investigation: { id: "investigation-5", content: "Resource assessment" },
+    whoToNotify: [
+      { id: "notify-5-1", content: "Resource Manager" },
+      { id: "notify-5-2", content: "Project Sponsor" },
+    ],
+    timeframe: [
+      { id: "time-5-1", content: "Within 1 day" },
+      { id: "time-5-2", content: "Within 2 days" },
+    ],
+    documentation: [
+      { id: "doc-5-1", content: "Resource impact assessment" },
+      { id: "doc-5-2", content: "Alternative resource plan" },
+    ],
+  },
+];
+
+export const chartImage =
+  "http://res.cloudinary.com/dakddv1pm/image/upload/v1750859132/posts/ejf3gcglf47l8bksm2it.webp";
+export const chartImageSecond =
+  "http://res.cloudinary.com/dakddv1pm/image/upload/v1750859295/posts/qtsegloqspheh7hljmap.jpg";
+
+export const rfiNamesList = [
+  "Aircraft",
+  "Ground Security",
+  "Crew Resource Management",
+  "Emergency Response",
+];
+
+export const projectNameList = ["Finance", "Ground", "ASP", "AEP"];
+
+export const tableAllData = [
+  {
+    id: 1,
+    rfiName: "Aircraft",
+    rfiTemplateDescription: "Comprehensive aircraft safety protocols covering runway operations, ground handling procedures, and apron safety management for airport environments.",
+    project: "Finance",
+    files: "aircraft-landing-analysis",
+    data: [
+      {
+        id: "cat1-temp1-q1",
+        domain: "Airport",
+        department: "Airport Security",
+        template: "ASP (Airport Safety Program)",
+        customAnswers: false,
+        question: "What are the runway safety protocols?",
+        searchedCategory: "ASP",
+        docGen: [
+          {
+            name: "ASP (Airport Safety Program)",
+            type: ["Word", "PDF"],
+          },
+          {
+            name: "AEP",
+            type: ["Word", "CSV"],
+          },
+          {
+            name: "ADFAP (Airport)",
+            type: ["CSV", "PDF"],
+          },
+        ],
+        category: "Runway Safety",
+        startDate: "2025-06-09T18:30:00.000Z",
+        completionDate: "2025-06-27T18:30:00.000Z",
+        contentLibrary: "Wildlife Management Guidelines",
+        scheduleDateTime: {
+          date: "2025-06-29T18:30:00.000Z",
+          time: "2025-06-30T10:00:00.000Z",
+          repeat: "Daily",
+        },
+        answers: [
+          {
+            documentName: "Airport Safety Manual",
+            page: "Page 15",
+            answer:
+              "Runway safety protocols include mandatory safety management systems, regular inspections, and wildlife hazard management programs to ensure safe aircraft operations.",
+          },
+          {
+            documentName: "ICAO Airport Standards",
+            page: "Page 22",
+            answer:
+              "Implementation of runway incursion prevention systems with advanced ground radar and automated conflict detection capabilities.",
+          },
+          {
+            documentName: "FAA Advisory Circular",
+            page: "Page 8",
+            answer:
+              "Comprehensive safety protocols covering lighting systems, marking standards, and emergency response procedures for runway operations.",
+          },
+          {
+            documentName: "Runway Safety Best Practices",
+            page: "Page 41",
+            answer:
+              "Enhanced runway safety measures including improved markings, lighting systems, and automated warning systems for enhanced visibility and safety.",
+          },
+          {
+            documentName: "Wildlife Management Guidelines",
+            page: "Page 17",
+            answer:
+              "Comprehensive wildlife hazard management including habitat modification, deterrent systems, and wildlife strike reporting procedures.",
+          },
+          {
+            answer:
+              "Queried the database to extract passenger traffic data from the last month, categorized by terminal, day, and airline to support capacity planning and staff allocation decisions.",
+            documentName: "SQL Agent",
+            page: 1,
+          },
+          {
+            answer:
+              "Analyzed historical data to predict congestion times at security checkpoints and suggested optimal staff scheduling and queue management strategies to improve passenger flow and reduce delays.",
+            documentName: "API Agent",
+            page: 3,
+          },
+          {
+            answer:
+              "Fetched real-time weather conditions and delays for all international flights using public aviation APIs to help travelers plan accordingly and avoid unnecessary waiting at the airport.",
+            documentName: "Web Agent",
+            page: 2,
+          },
+        ],
+        agents: ["API Agent", "Web Agent", "SQL Agent"],
+        answerFormat: "Text",
+        type: "internal",
+        rfiName: "Aircraft",
+        project: "Finance",
+      },
+      {
+        id: "cat1-temp1-q2",
+        domain: "Airport",
+        department: "Airport Security",
+        template: "ASP (Airport Safety Program)",
+        customAnswers: false,
+        question: "What are the ground handling safety requirements?",
+        searchedCategory: "ASP",
+        docGen: [
+          {
+            name: "ASP (Airport Safety Program)",
+            type: ["PDF", "CSV"],
+          },
+          {
+            name: "ADFAP (Airport)",
+            type: ["Word", "PDF"],
+          },
+        ],
+        category: "Ground Operations",
+        startDate: "2025-06-08T18:30:00.000Z",
+        completionDate: "2025-06-17T18:30:00.000Z",
+        contentLibrary: "Ground Operations Manual",
+        scheduleDateTime: {
+          date: "2025-06-30T18:30:00.000Z",
+          time: "2025-07-01T10:00:00.000Z",
+          repeat: "Daily",
+        },
+        answers: [
+          {
+            documentName: "Ground Operations Manual",
+            page: "Page 31",
+            answer:
+              "Ground handling operations require certified personnel training, equipment maintenance schedules, and adherence to IATA Ground Operations Manual standards.",
+          },
+          {
+            documentName: "Safety Risk Assessment",
+            page: "Page 12",
+            answer:
+              "Mandatory risk assessments for all ground handling activities including baggage handling, aircraft servicing, and passenger boarding operations.",
+          },
+          {
+            documentName: "Equipment Safety Standards",
+            page: "Page 19",
+            answer:
+              "All ground support equipment must meet international safety standards with regular certification and operator training requirements.",
+          },
+          {
+            documentName: "Personnel Training Requirements",
+            page: "Page 45",
+            answer:
+              "Ground handling personnel must complete comprehensive safety training including equipment operation, hazard recognition, and emergency procedures.",
+          },
+          {
+            answer:
+              "Queried the database to extract passenger traffic data from the last month, categorized by terminal, day, and airline to support capacity planning and staff allocation decisions.",
+            documentName: "SQL Agent",
+            page: 1,
+          },
+          {
+            answer:
+              "Analyzed historical data to predict congestion times at security checkpoints and suggested optimal staff scheduling and queue management strategies to improve passenger flow and reduce delays.",
+            documentName: "API Agent",
+            page: 3,
+          },
+          {
+            answer:
+              "Fetched real-time weather conditions and delays for all international flights using public aviation APIs to help travelers plan accordingly and avoid unnecessary waiting at the airport.",
+            documentName: "Web Agent",
+            page: 2,
+          },
+        ],
+        agents: ["Web Agent", "API Agent", "SQL Agent"],
+        answerFormat: "Text",
+        type: "internal",
+        rfiName: "Aircraft",
+        project: "Finance",
+      },
+      {
+        id: "cat1-temp1-q3",
+        domain: "Airport",
+        department: "Airport Security",
+        template: "ASP (Airport Safety Program)",
+        customAnswers: false,
+        question: "What are the aircraft apron safety procedures?",
+        searchedCategory: "ASP",
+        docGen: [
+          {
+            name: "ASP (Airport Safety Program)",
+            type: ["PDF", "CSV"],
+          },
+          {
+            name: "ADFAP (Airport)",
+            type: ["Word", "PDF"],
+          },
+        ],
+        category: "Apron Safety",
+        startDate: "2025-06-08T18:30:00.000Z",
+        completionDate: "2025-06-17T18:30:00.000Z",
+        contentLibrary: "Ground Operations Manual",
+        scheduleDateTime: {
+          date: "2025-06-30T18:30:00.000Z",
+          time: "2025-07-01T10:00:00.000Z",
+          repeat: "Daily",
+        },
+        answers: [
+          {
+            documentName: "Apron Safety Guidelines",
+            page: "Page 28",
+            answer:
+              "Apron safety procedures include designated walkways, vehicle traffic control, and personal protective equipment requirements for all personnel.",
+          },
+          {
+            documentName: "Ground Traffic Management",
+            page: "Page 33",
+            answer:
+              "Systematic traffic control measures including vehicle permits, speed limits, and coordination with air traffic control for apron movements.",
+          },
+          {
+            documentName: "Foreign Object Debris Prevention",
+            page: "Page 15",
+            answer:
+              "Regular FOD inspections and removal procedures to prevent aircraft damage from debris on apron and runway surfaces.",
+          },
+          {
+            answer:
+              "Queried the database to extract passenger traffic data from the last month, categorized by terminal, day, and airline to support capacity planning and staff allocation decisions.",
+            documentName: "SQL Agent",
+            page: 1,
+          },
+          {
+            answer:
+              "Analyzed historical data to predict congestion times at security checkpoints and suggested optimal staff scheduling and queue management strategies to improve passenger flow and reduce delays.",
+            documentName: "API Agent",
+            page: 3,
+          },
+          {
+            answer:
+              "Fetched real-time weather conditions and delays for all international flights using public aviation APIs to help travelers plan accordingly and avoid unnecessary waiting at the airport.",
+            documentName: "Web Agent",
+            page: 2,
+          },
+        ],
+        agents: ["Web Agent", "API Agent", "SQL Agent"],
+        answerFormat: "Text",
+        type: "internal",
+        rfiName: "Aircraft",
+        project: "Finance",
+      },
+      {
+        id: "cat1-temp1-q4",
+        domain: "Airport",
+        department: "Airport Security",
+        template: "ASP (Airport Safety Program)",
+        customAnswers: false,
+        question:
+          "What is the probability that a pilot chosen at random has completed safety training?",
+        searchedCategory: "ASP",
+        docGen: [
+          {
+            name: "ASP (Airport Safety Program)",
+            type: ["PDF", "CSV"],
+          },
+          {
+            name: "ADFAP (Airport)",
+            type: ["Word", "PDF"],
+          },
+        ],
+        category: "Training Programs",
+        startDate: "2025-06-08T18:30:00.000Z",
+        completionDate: "2025-06-17T18:30:00.000Z",
+        contentLibrary: "Ground Operations Manual",
+        scheduleDateTime: {
+          date: "2025-06-30T18:30:00.000Z",
+          time: "2025-07-01T10:00:00.000Z",
+          repeat: "Daily",
+        },
+        answers: [
+          {
+            documentName: "Training Curriculum Standards",
+            page: "Page 52",
+            answer:
+              "Mandatory safety training includes initial certification, annual recurrent training, and specialized training for specific job functions.",
+          },
+          {
+            documentName: "Competency Assessment Framework",
+            page: "Page 38",
+            answer:
+              "Regular competency assessments ensure personnel maintain required safety knowledge and skills throughout their employment.",
+          },
+          {
+            documentName: "Safety Culture Development",
+            page: "Page 29",
+            answer:
+              "Comprehensive safety culture programs promoting proactive safety reporting and continuous improvement initiatives.",
+          },
+          {
+            answer:
+              "Queried the database to extract passenger traffic data from the last month, categorized by terminal, day, and airline to support capacity planning and staff allocation decisions.",
+            documentName: "SQL Agent",
+            page: 1,
+          },
+          {
+            answer:
+              "Analyzed historical data to predict congestion times at security checkpoints and suggested optimal staff scheduling and queue management strategies to improve passenger flow and reduce delays.",
+            documentName: "API Agent",
+            page: 3,
+          },
+          {
+            answer:
+              "Fetched real-time weather conditions and delays for all international flights using public aviation APIs to help travelers plan accordingly and avoid unnecessary waiting at the airport.",
+            documentName: "Web Agent",
+            page: 2,
+          },
+        ],
+        agents: ["Web Agent", "API Agent", "SQL Agent"],
+        answerFormat: "Chart",
+        type: "internal",
+        rfiName: "Aircraft",
+        project: "Finance",
+      },
+      {
+        id: "cat1-temp1-q5",
+        domain: "Airport",
+        department: "Airport Security",
+        template: "ASP (Airport Safety Program)",
+        customAnswers: false,
+        question: "How are safety incidents investigated and reported?",
+        searchedCategory: "ASP",
+        docGen: [
+          {
+            name: "ASP (Airport Safety Program)",
+            type: ["PDF", "CSV"],
+          },
+          {
+            name: "ADFAP (Airport)",
+            type: ["Word", "PDF"],
+          },
+        ],
+        category: "Incident Management",
+        startDate: "2025-06-08T18:30:00.000Z",
+        completionDate: "2025-06-17T18:30:00.000Z",
+        contentLibrary: "Ground Operations Manual",
+        scheduleDateTime: {
+          date: "2025-06-30T18:30:00.000Z",
+          time: "2025-07-01T10:00:00.000Z",
+          repeat: "Daily",
+        },
+        answers: [
+          {
+            documentName: "Incident Investigation Procedures",
+            page: "Page 67",
+            answer:
+              "Systematic incident investigation methodology including evidence collection, root cause analysis, and corrective action implementation.",
+          },
+          {
+            documentName: "Safety Reporting Systems",
+            page: "Page 44",
+            answer:
+              "Confidential safety reporting systems encouraging voluntary reporting of safety concerns and near-miss incidents.",
+          },
+          {
+            documentName: "Regulatory Notification Requirements",
+            page: "Page 23",
+            answer:
+              "Immediate notification procedures for serious incidents and accidents to aviation authorities and relevant stakeholders.",
+          },
+          {
+            answer:
+              "Queried the database to extract passenger traffic data from the last month, categorized by terminal, day, and airline to support capacity planning and staff allocation decisions.",
+            documentName: "SQL Agent",
+            page: 1,
+          },
+          {
+            answer:
+              "Analyzed historical data to predict congestion times at security checkpoints and suggested optimal staff scheduling and queue management strategies to improve passenger flow and reduce delays.",
+            documentName: "API Agent",
+            page: 3,
+          },
+          {
+            answer:
+              "Fetched real-time weather conditions and delays for all international flights using public aviation APIs to help travelers plan accordingly and avoid unnecessary waiting at the airport.",
+            documentName: "Web Agent",
+            page: 2,
+          },
+        ],
+        agents: ["Web Agent", "API Agent", "SQL Agent"],
+        answerFormat: "Table",
+        type: "internal",
+        rfiName: "Aircraft",
+        project: "Finance",
+      },
+    ],
+  },
+  {
+    id: 2,
+    rfiName: "Ground Security",
+    rfiTemplateDescription: "Advanced data management and security frameworks for airline operations, including operational analytics, cybersecurity requirements, and enterprise integration.",
+    project: "Ground",
+    files: "safe-aircraft-landing",
+    data: [
+      {
+        id: "cat2-temp7-q1",
+        domain: "Airline",
+        department: "Airline Operations",
+        template: "ADFP (Airline Data Flow Program)",
+        customAnswers: false,
+        question: "How is operational data managed?",
+        searchedCategory: "ADFP",
+        docGen: [
+          {
+            name: "AEP",
+            type: ["PDF"],
+          },
+          {
+            name: "ASP (Airport Safety Program)",
+            type: ["CSV"],
+          },
+          {
+            name: "ADFAP (Airport)",
+            type: ["Word"],
+          },
+        ],
+        category: "Data Management",
+        startDate: "2025-07-15T18:30:00.000Z",
+        completionDate: "2025-06-26T18:30:00.000Z",
+        contentLibrary: "Ground Operations Manual",
+        scheduleDateTime: {
+          date: "2025-08-05T18:30:00.000Z",
+          time: "2025-08-06T06:30:00.000Z",
+          repeat: "Weekly",
+        },
+        answers: [
+          {
+            documentName: "Data Management Strategy",
+            page: "Page 8",
+            answer:
+              "Integrated data management system capturing flight operations, passenger services, maintenance records, and financial performance metrics.",
+          },
+          {
+            documentName: "Analytics Platform Guide",
+            page: "Page 21",
+            answer:
+              "Advanced analytics for route optimization, fuel efficiency analysis, and predictive maintenance scheduling using machine learning algorithms.",
+          },
+          {
+            documentName: "Performance Metrics Framework",
+            page: "Page 16",
+            answer:
+              "Key performance indicators including on-time performance, load factors, customer satisfaction scores, and operational efficiency measures.",
+          },
+          {
+            documentName: "Real-time Data Processing",
+            page: "Page 58",
+            answer:
+              "Real-time data processing capabilities enabling immediate decision-making and operational adjustments based on current conditions.",
+          },
+          {
+            answer:
+              "Analyzed historical data to predict congestion times at security checkpoints and suggested optimal staff scheduling and queue management strategies to improve passenger flow and reduce delays.",
+            documentName: "API Agent",
+            page: 3,
+          },
+          {
+            answer:
+              "Fetched real-time weather conditions and delays for all international flights using public aviation APIs to help travelers plan accordingly and avoid unnecessary waiting at the airport.",
+            documentName: "Web Agent",
+            page: 2,
+          },
+        ],
+        agents: ["API Agent", "Web Agent"],
+        answerFormat: "Text",
+        type: "internal",
+        rfiName: "Ground Security",
+        project: "Ground",
+      },
+      {
+        id: "cat2-temp7-q2",
+        domain: "Airline",
+        department: "Airline Operations",
+        template: "ADFP (Airline Data Flow Program)",
+        customAnswers: false,
+        question: "What are the data security requirements?",
+        searchedCategory: "ADFP",
+        docGen: [
+          {
+            name: "AEP",
+            type: ["PDF"],
+          },
+          {
+            name: "ASP (Airport Safety Program)",
+            type: ["CSV"],
+          },
+          {
+            name: "ADFAP (Airport)",
+            type: ["Word"],
+          },
+        ],
+        category: "Cybersecurity",
+        startDate: "2025-07-15T18:30:00.000Z",
+        completionDate: "2025-06-26T18:30:00.000Z",
+        contentLibrary: "Ground Operations Manual",
+        scheduleDateTime: {
+          date: "2025-08-05T18:30:00.000Z",
+          time: "2025-08-06T06:30:00.000Z",
+          repeat: "Weekly",
+        },
+        answers: [
+          {
+            documentName: "Cybersecurity Framework",
+            page: "Page 13",
+            answer:
+              "Multi-layered security architecture protecting passenger data, operational systems, and critical infrastructure from cyber threats.",
+          },
+          {
+            documentName: "Data Protection Policy",
+            page: "Page 26",
+            answer:
+              "Compliance with international data protection regulations including GDPR, data encryption standards, and access control mechanisms.",
+          },
+          {
+            documentName: "Incident Response Plan",
+            page: "Page 31",
+            answer:
+              "Comprehensive incident response procedures for data breaches, system failures, and security violations with regulatory reporting requirements.",
+          },
+          {
+            documentName: "Security Monitoring Systems",
+            page: "Page 49",
+            answer:
+              "Continuous security monitoring and threat detection systems with automated alerting and response capabilities.",
+          },
+          {
+            answer:
+              "Analyzed historical data to predict congestion times at security checkpoints and suggested optimal staff scheduling and queue management strategies to improve passenger flow and reduce delays.",
+            documentName: "API Agent",
+            page: 3,
+          },
+          {
+            answer:
+              "Fetched real-time weather conditions and delays for all international flights using public aviation APIs to help travelers plan accordingly and avoid unnecessary waiting at the airport.",
+            documentName: "Web Agent",
+            page: 2,
+          },
+        ],
+        agents: ["API Agent", "Web Agent"],
+        answerFormat: "Text",
+        type: "internal",
+        rfiName: "Ground Security",
+        project: "Ground",
+      },
+      {
+        id: "cat2-temp7-q3",
+        domain: "Airline",
+        department: "Airline Operations",
+        template: "ADFP (Airline Data Flow Program)",
+        customAnswers: false,
+        question: "How is flight data analyzed for optimization?",
+        searchedCategory: "ADFP",
+        docGen: [
+          {
+            name: "AEP",
+            type: ["PDF"],
+          },
+          {
+            name: "ASP (Airport Safety Program)",
+            type: ["CSV"],
+          },
+          {
+            name: "ADFAP (Airport)",
+            type: ["Word"],
+          },
+        ],
+        category: "Flight Data Analytics",
+        startDate: "2025-07-15T18:30:00.000Z",
+        completionDate: "2025-06-26T18:30:00.000Z",
+        contentLibrary: "Ground Operations Manual",
+        scheduleDateTime: {
+          date: "2025-08-05T18:30:00.000Z",
+          time: "2025-08-06T06:30:00.000Z",
+          repeat: "Weekly",
+        },
+        answers: [
+          {
+            documentName: "Flight Data Analytics",
+            page: "Page 37",
+            answer:
+              "Comprehensive flight data analysis including fuel consumption, route efficiency, and performance optimization using advanced analytics.",
+          },
+          {
+            documentName: "Predictive Maintenance Analytics",
+            page: "Page 54",
+            answer:
+              "Predictive maintenance algorithms analyzing aircraft data to predict component failures and optimize maintenance schedules.",
+          },
+          {
+            documentName: "Route Optimization Models",
+            page: "Page 42",
+            answer:
+              "Mathematical models for route optimization considering fuel costs, weather conditions, and air traffic constraints.",
+          },
+          {
+            answer:
+              "Analyzed historical data to predict congestion times at security checkpoints and suggested optimal staff scheduling and queue management strategies to improve passenger flow and reduce delays.",
+            documentName: "API Agent",
+            page: 3,
+          },
+          {
+            answer:
+              "Fetched real-time weather conditions and delays for all international flights using public aviation APIs to help travelers plan accordingly and avoid unnecessary waiting at the airport.",
+            documentName: "Web Agent",
+            page: 2,
+          },
+        ],
+        agents: ["API Agent", "Web Agent"],
+        answerFormat: "Text",
+        type: "internal",
+        rfiName: "Ground Security",
+        project: "Ground",
+      },
+      {
+        id: "cat2-temp7-q4",
+        domain: "Airline",
+        department: "Airline Operations",
+        template: "ADFP (Airline Data Flow Program)",
+        customAnswers: false,
+        question: "What passenger data analytics are available?",
+        searchedCategory: "ADFP",
+        docGen: [
+          {
+            name: "AEP",
+            type: ["PDF"],
+          },
+          {
+            name: "ASP (Airport Safety Program)",
+            type: ["CSV"],
+          },
+          {
+            name: "ADFAP (Airport)",
+            type: ["Word"],
+          },
+        ],
+        category: "Customer Analytics",
+        startDate: "2025-07-15T18:30:00.000Z",
+        completionDate: "2025-06-26T18:30:00.000Z",
+        contentLibrary: "Ground Operations Manual",
+        scheduleDateTime: {
+          date: "2025-08-05T18:30:00.000Z",
+          time: "2025-08-06T06:30:00.000Z",
+          repeat: "Weekly",
+        },
+        answers: [
+          {
+            documentName: "Customer Analytics Platform",
+            page: "Page 29",
+            answer:
+              "Comprehensive customer analytics including booking patterns, satisfaction metrics, and loyalty program effectiveness analysis.",
+          },
+          {
+            documentName: "Revenue Management Analytics",
+            page: "Page 63",
+            answer:
+              "Advanced revenue management analytics optimizing pricing strategies, capacity allocation, and ancillary revenue opportunities.",
+          },
+          {
+            documentName: "Passenger Experience Analytics",
+            page: "Page 45",
+            answer:
+              "Analysis of passenger experience data including service quality, on-time performance impact, and satisfaction correlation analysis.",
+          },
+          {
+            answer:
+              "Analyzed historical data to predict congestion times at security checkpoints and suggested optimal staff scheduling and queue management strategies to improve passenger flow and reduce delays.",
+            documentName: "API Agent",
+            page: 3,
+          },
+          {
+            answer:
+              "Fetched real-time weather conditions and delays for all international flights using public aviation APIs to help travelers plan accordingly and avoid unnecessary waiting at the airport.",
+            documentName: "Web Agent",
+            page: 2,
+          },
+        ],
+        agents: ["API Agent", "Web Agent"],
+        answerFormat: "Text",
+        type: "internal",
+        rfiName: "Ground Security",
+        project: "Ground",
+      },
+      {
+        id: "cat2-temp7-q5",
+        domain: "Airline",
+        department: "Airline Operations",
+        template: "ADFP (Airline Data Flow Program)",
+        customAnswers: false,
+        question: "How is data integrated across airline operations?",
+        searchedCategory: "ADFP",
+        docGen: [
+          {
+            name: "AEP",
+            type: ["PDF"],
+          },
+          {
+            name: "ASP (Airport Safety Program)",
+            type: ["CSV"],
+          },
+          {
+            name: "ADFAP (Airport)",
+            type: ["Word"],
+          },
+        ],
+        category: "Enterprise Integration",
+        startDate: "2025-07-15T18:30:00.000Z",
+        completionDate: "2025-06-26T18:30:00.000Z",
+        contentLibrary: "Ground Operations Manual",
+        scheduleDateTime: {
+          date: "2025-08-05T18:30:00.000Z",
+          time: "2025-08-06T06:30:00.000Z",
+          repeat: "Weekly",
+        },
+        answers: [
+          {
+            documentName: "Enterprise Data Architecture",
+            page: "Page 72",
+            answer:
+              "Enterprise-wide data architecture enabling seamless integration between flight operations, maintenance, customer service, and financial systems.",
+          },
+          {
+            documentName: "API Integration Framework",
+            page: "Page 51",
+            answer:
+              "Standardized API framework enabling real-time data exchange with partners, suppliers, and regulatory authorities.",
+          },
+          {
+            documentName: "Data Governance Framework",
+            page: "Page 39",
+            answer:
+              "Comprehensive data governance framework ensuring data quality, consistency, and compliance across all airline operations.",
+          },
+          {
+            answer:
+              "Analyzed historical data to predict congestion times at security checkpoints and suggested optimal staff scheduling and queue management strategies to improve passenger flow and reduce delays.",
+            documentName: "API Agent",
+            page: 3,
+          },
+          {
+            answer:
+              "Fetched real-time weather conditions and delays for all international flights using public aviation APIs to help travelers plan accordingly and avoid unnecessary waiting at the airport.",
+            documentName: "Web Agent",
+            page: 2,
+          },
+        ],
+        agents: ["API Agent", "Web Agent"],
+        answerFormat: "Text",
+        type: "internal",
+        rfiName: "Ground Security",
+        project: "Ground",
+      },
+    ],
+  },
+  {
+    id: 3,
+    rfiName: "Crew Resource Management",
+    rfiTemplateDescription: "Flight safety protocols, maintenance requirements, and crew resource management procedures for airline safety programs and operational excellence.",
+    project: "ASP",
+    files: "aircraft-landing-optimization",
+    data: [
+      {
+        id: "cat2-temp6-q1",
+        domain: "Airline",
+        department: "Airline Security",
+        template: "ASP (Airline Safety Program)",
+        customAnswers: false,
+        question: "What are the flight safety protocols?",
+        searchedCategory: "ASP",
+        docGen: [
+          {
+            name: "AEP",
+            type: ["PDF"],
+          },
+          {
+            name: "ASP (Airport Safety Program)",
+            type: ["CSV"],
+          },
+        ],
+        category: "Flight Operations",
+        startDate: "2025-08-12T18:30:00.000Z",
+        completionDate: "2025-08-21T18:30:00.000Z",
+        contentLibrary: "Queue Management Analytics",
+        scheduleDateTime: {
+          date: "2025-07-08T18:30:00.000Z",
+          time: "2025-07-09T10:00:00.000Z",
+          repeat: "Weekly",
+        },
+        answers: [
+          {
+            documentName: "Flight Operations Manual",
+            page: "Page 11",
+            answer:
+              "Comprehensive flight safety protocols including pre-flight checks, weather assessment procedures, and crew resource management requirements.",
+          },
+          {
+            documentName: "Safety Risk Management",
+            page: "Page 28",
+            answer:
+              "Systematic approach to identifying, assessing, and mitigating operational risks throughout all phases of flight operations.",
+          },
+          {
+            documentName: "IATA Safety Standards",
+            page: "Page 35",
+            answer:
+              "Implementation of international safety standards including IOSA audit requirements and best practice recommendations.",
+          },
+          {
+            documentName: "Standard Operating Procedures",
+            page: "Page 64",
+            answer:
+              "Detailed standard operating procedures for normal, abnormal, and emergency situations ensuring consistent and safe flight operations.",
+          },
+          {
+            answer:
+              "Analyzed historical data to predict congestion times at security checkpoints and suggested optimal staff scheduling and queue management strategies to improve passenger flow and reduce delays.",
+            documentName: "API Agent",
+            page: 3,
+          },
+        ],
+        agents: ["API Agent"],
+        answerFormat: "Text",
+        type: "internal",
+        rfiName: "Crew Resource Management",
+        project: "ASP",
+      },
+      {
+        id: "cat2-temp6-q2",
+        domain: "Airline",
+        department: "Airline Security",
+        template: "ASP (Airline Safety Program)",
+        customAnswers: false,
+        question: "What maintenance safety requirements exist?",
+        searchedCategory: "ASP",
+        docGen: [
+          {
+            name: "AEP",
+            type: ["PDF"],
+          },
+          {
+            name: "ASP (Airport Safety Program)",
+            type: ["CSV"],
+          },
+        ],
+        category: "Maintenance Safety",
+        startDate: "2025-08-12T18:30:00.000Z",
+        completionDate: "2025-08-21T18:30:00.000Z",
+        contentLibrary: "Queue Management Analytics",
+        scheduleDateTime: {
+          date: "2025-07-08T18:30:00.000Z",
+          time: "2025-07-09T10:00:00.000Z",
+          repeat: "Weekly",
+        },
+        answers: [
+          {
+            documentName: "Maintenance Program Manual",
+            page: "Page 19",
+            answer:
+              "Aircraft maintenance must comply with manufacturer specifications, regulatory airworthiness requirements, and approved maintenance schedules.",
+          },
+          {
+            documentName: "Quality Assurance Program",
+            page: "Page 14",
+            answer:
+              "Continuous monitoring of maintenance activities with independent quality audits and corrective action procedures.",
+          },
+          {
+            documentName: "Regulatory Compliance Guide",
+            page: "Page 22",
+            answer:
+              "Adherence to aviation authority regulations including Part 145 maintenance organization requirements and personnel certification.",
+          },
+          {
+            documentName: "Maintenance Safety Culture",
+            page: "Page 47",
+            answer:
+              "Development of strong maintenance safety culture through training, communication, and continuous improvement initiatives.",
+          },
+          {
+            answer:
+              "Analyzed historical data to predict congestion times at security checkpoints and suggested optimal staff scheduling and queue management strategies to improve passenger flow and reduce delays.",
+            documentName: "API Agent",
+            page: 3,
+          },
+        ],
+        agents: ["API Agent"],
+        answerFormat: "Text",
+        type: "internal",
+        rfiName: "Crew Resource Management",
+        project: "ASP",
+      },
+      {
+        id: "cat2-temp6-q3",
+        domain: "Airline",
+        department: "Airline Security",
+        template: "ASP (Airline Safety Program)",
+        customAnswers: false,
+        question: "How is crew resource management implemented?",
+        searchedCategory: "ASP",
+        docGen: [
+          {
+            name: "AEP",
+            type: ["PDF"],
+          },
+          {
+            name: "ASP (Airport Safety Program)",
+            type: ["CSV"],
+          },
+        ],
+        category: "Crew Resource Management",
+        startDate: "2025-08-12T18:30:00.000Z",
+        completionDate: "2025-08-21T18:30:00.000Z",
+        contentLibrary: "Queue Management Analytics",
+        scheduleDateTime: {
+          date: "2025-07-08T18:30:00.000Z",
+          time: "2025-07-09T10:00:00.000Z",
+          repeat: "Weekly",
+        },
+        answers: [
+          {
+            documentName: "CRM Training Manual",
+            page: "Page 33",
+            answer:
+              "Comprehensive crew resource management training focusing on communication, decision-making, and teamwork skills for flight crews.",
+          },
+          {
+            documentName: "Human Factors Guidelines",
+            page: "Page 56",
+            answer:
+              "Integration of human factors principles in operations to reduce human error and improve safety performance.",
+          },
+          {
+            documentName: "Threat and Error Management",
+            page: "Page 41",
+            answer:
+              "Systematic approach to identifying and managing operational threats and errors to prevent accidents and incidents.",
+          },
+          {
+            answer:
+              "Analyzed historical data to predict congestion times at security checkpoints and suggested optimal staff scheduling and queue management strategies to improve passenger flow and reduce delays.",
+            documentName: "API Agent",
+            page: 3,
+          },
+        ],
+        agents: ["API Agent"],
+        answerFormat: "Text",
+        type: "internal",
+        rfiName: "Crew Resource Management",
+        project: "ASP",
+      },
+      {
+        id: "cat2-temp6-q4",
+        domain: "Airline",
+        department: "Airline Security",
+        template: "ASP (Airline Safety Program)",
+        customAnswers: false,
+        question: "What are the cabin safety requirements?",
+        searchedCategory: "ASP",
+        docGen: [
+          {
+            name: "AEP",
+            type: ["PDF"],
+          },
+          {
+            name: "ASP (Airport Safety Program)",
+            type: ["CSV"],
+          },
+        ],
+        category: "Cabin Safety",
+        startDate: "2025-08-12T18:30:00.000Z",
+        completionDate: "2025-08-21T18:30:00.000Z",
+        contentLibrary: "Queue Management Analytics",
+        scheduleDateTime: {
+          date: "2025-07-08T18:30:00.000Z",
+          time: "2025-07-09T10:00:00.000Z",
+          repeat: "Weekly",
+        },
+        answers: [
+          {
+            documentName: "Cabin Safety Manual",
+            page: "Page 25",
+            answer:
+              "Comprehensive cabin safety procedures including emergency equipment checks, passenger briefings, and evacuation procedures.",
+          },
+          {
+            documentName: "Emergency Equipment Standards",
+            page: "Page 38",
+            answer:
+              "Requirements for emergency equipment including life vests, oxygen systems, and evacuation slides with regular inspection schedules.",
+          },
+          {
+            documentName: "Cabin Crew Training Requirements",
+            page: "Page 52",
+            answer:
+              "Mandatory training for cabin crew including safety procedures, first aid, and emergency response with annual recertification.",
+          },
+          {
+            answer:
+              "Analyzed historical data to predict congestion times at security checkpoints and suggested optimal staff scheduling and queue management strategies to improve passenger flow and reduce delays.",
+            documentName: "API Agent",
+            page: 3,
+          },
+        ],
+        agents: ["API Agent"],
+        answerFormat: "Text",
+        type: "internal",
+        rfiName: "Crew Resource Management",
+        project: "ASP",
+      },
+      {
+        id: "cat2-temp6-q5",
+        domain: "Airline",
+        department: "Airline Security",
+        template: "ASP (Airline Safety Program)",
+        customAnswers: false,
+        question: "How are safety incidents investigated?",
+        searchedCategory: "ASP",
+        docGen: [
+          {
+            name: "AEP",
+            type: ["PDF"],
+          },
+          {
+            name: "ASP (Airport Safety Program)",
+            type: ["CSV"],
+          },
+        ],
+        category: "Incident Investigation",
+        startDate: "2025-08-12T18:30:00.000Z",
+        completionDate: "2025-08-21T18:30:00.000Z",
+        contentLibrary: "Queue Management Analytics",
+        scheduleDateTime: {
+          date: "2025-07-08T18:30:00.000Z",
+          time: "2025-07-09T10:00:00.000Z",
+          repeat: "Weekly",
+        },
+        answers: [
+          {
+            documentName: "Incident Investigation Procedures",
+            page: "Page 69",
+            answer:
+              "Systematic incident investigation methodology including immediate response, evidence preservation, and root cause analysis.",
+          },
+          {
+            documentName: "Flight Data Analysis",
+            page: "Page 44",
+            answer:
+              "Utilization of flight data monitoring and analysis to identify potential safety issues and improve operational safety.",
+          },
+          {
+            documentName: "Safety Reporting Culture",
+            page: "Page 31",
+            answer:
+              "Promotion of open safety reporting culture encouraging voluntary reporting of safety concerns and near-miss events.",
+          },
+          {
+            answer:
+              "Analyzed historical data to predict congestion times at security checkpoints and suggested optimal staff scheduling and queue management strategies to improve passenger flow and reduce delays.",
+            documentName: "API Agent",
+            page: 3,
+          },
+        ],
+        agents: ["API Agent"],
+        answerFormat: "Text",
+        type: "internal",
+        rfiName: "Crew Resource Management",
+        project: "ASP",
+      },
+    ],
+  },
+  {
+    id: 4,
+    rfiName: "Emergency Response",
+    rfiTemplateDescription: "Emergency preparedness procedures covering aircraft rescue, firefighting operations, personnel training, and medical emergency response protocols.",
+    project: "AEP",
+    files: "aircraft-landing-monitor",
+    data: [
+      {
+        id: "cat1-temp2-q1",
+        domain: "Airport",
+        department: "Airport Operations",
+        template: "AEP (Airport Emergency Preparedness)",
+        customAnswers: false,
+        question: "What are the emergency response procedures?",
+        searchedCategory: "AEP",
+        docGen: [
+          {
+            name: "ADFAP (Airport)",
+            type: ["PDF"],
+          },
+        ],
+        category: "Emergency Response",
+        startDate: "2025-06-17T18:30:00.000Z",
+        completionDate: "2025-07-16T18:30:00.000Z",
+        contentLibrary: "Data Governance Framework",
+        scheduleDateTime: {
+          date: "2025-07-14T18:30:00.000Z",
+          time: "2025-07-15T12:30:00.000Z",
+          repeat: "Daily",
+        },
+        answers: [
+          {
+            documentName: "Emergency Response Plan",
+            page: "Page 5",
+            answer:
+              "Comprehensive emergency response procedures including aircraft rescue and firefighting, medical emergency protocols, and coordination with local authorities.",
+          },
+          {
+            documentName: "Crisis Management Manual",
+            page: "Page 18",
+            answer:
+              "Multi-level emergency response system with clear command structures, communication protocols, and resource allocation procedures.",
+          },
+          {
+            documentName: "ICAO Emergency Planning",
+            page: "Page 24",
+            answer:
+              "International standards for airport emergency planning including regular drills, equipment maintenance, and staff training requirements.",
+          },
+          {
+            documentName: "Incident Command System",
+            page: "Page 42",
+            answer:
+              "Standardized incident command system ensuring effective coordination between airport personnel, emergency services, and external agencies.",
+          },
+          {
+            answer:
+              "Analyzed historical data to predict congestion times at security checkpoints and suggested optimal staff scheduling and queue management strategies to improve passenger flow and reduce delays.",
+            documentName: "API Agent",
+            page: 3,
+          },
+        ],
+        agents: ["API Agent"],
+        answerFormat: "Text",
+        type: "internal",
+        rfiName: "Emergency Response",
+        project: "AEP",
+      },
+      {
+        id: "cat1-temp2-q2",
+        domain: "Airport",
+        department: "Airport Operations",
+        template: "AEP (Airport Emergency Preparedness)",
+        customAnswers: false,
+        question: "What training is required for emergency personnel?",
+        searchedCategory: "AEP",
+        docGen: [
+          {
+            name: "ADFAP (Airport)",
+            type: ["PDF"],
+          },
+        ],
+        category: "Personnel Training",
+        startDate: "2025-06-17T18:30:00.000Z",
+        completionDate: "2025-07-16T18:30:00.000Z",
+        contentLibrary: "Data Governance Framework",
+        scheduleDateTime: {
+          date: "2025-07-14T18:30:00.000Z",
+          time: "2025-07-15T12:30:00.000Z",
+          repeat: "Daily",
+        },
+        answers: [
+          {
+            documentName: "Training Requirements Manual",
+            page: "Page 14",
+            answer:
+              "Emergency personnel must complete specialized training in aircraft rescue, firefighting techniques, hazardous materials handling, and first aid certification.",
+          },
+          {
+            documentName: "Certification Standards",
+            page: "Page 27",
+            answer:
+              "Annual recertification requirements with practical exercises, theoretical knowledge testing, and equipment proficiency demonstrations.",
+          },
+          {
+            documentName: "International Training Standards",
+            page: "Page 11",
+            answer:
+              "Compliance with ICAO Annex 14 training standards and local regulatory requirements for emergency response personnel.",
+          },
+          {
+            documentName: "Specialized Equipment Training",
+            page: "Page 58",
+            answer:
+              "Comprehensive training on emergency equipment including aircraft rescue and firefighting vehicles, foam systems, and specialized rescue tools.",
+          },
+          {
+            answer:
+              "Analyzed historical data to predict congestion times at security checkpoints and suggested optimal staff scheduling and queue management strategies to improve passenger flow and reduce delays.",
+            documentName: "API Agent",
+            page: 3,
+          },
+        ],
+        agents: ["API Agent"],
+        answerFormat: "Text",
+        type: "internal",
+        rfiName: "Emergency Response",
+        project: "AEP",
+      },
+      {
+        id: "cat1-temp2-q3",
+        domain: "Airport",
+        department: "Airport Operations",
+        template: "AEP (Airport Emergency Preparedness)",
+        customAnswers: false,
+        question: "What are the aircraft rescue and firefighting requirements?",
+        searchedCategory: "AEP",
+        docGen: [
+          {
+            name: "ADFAP (Airport)",
+            type: ["PDF"],
+          },
+        ],
+        category: "ARFF Operations",
+        startDate: "2025-06-17T18:30:00.000Z",
+        completionDate: "2025-07-16T18:30:00.000Z",
+        contentLibrary: "Data Governance Framework",
+        scheduleDateTime: {
+          date: "2025-07-14T18:30:00.000Z",
+          time: "2025-07-15T12:30:00.000Z",
+          repeat: "Daily",
+        },
+        answers: [
+          {
+            documentName: "ARFF Operations Manual",
+            page: "Page 35",
+            answer:
+              "Aircraft rescue and firefighting operations require specialized vehicles, trained personnel, and rapid response capabilities based on airport category.",
+          },
+          {
+            documentName: "Equipment Specifications",
+            page: "Page 71",
+            answer:
+              "ARFF vehicles must meet specific performance criteria including water capacity, foam concentrate, and response time requirements.",
+          },
+          {
+            documentName: "Response Time Standards",
+            page: "Page 19",
+            answer:
+              "Emergency response times must not exceed 3 minutes to any point on the runway or 4 minutes to any point within the airport perimeter.",
+          },
+          {
+            answer:
+              "Analyzed historical data to predict congestion times at security checkpoints and suggested optimal staff scheduling and queue management strategies to improve passenger flow and reduce delays.",
+            documentName: "API Agent",
+            page: 3,
+          },
+        ],
+        agents: ["API Agent"],
+        answerFormat: "Text",
+        type: "internal",
+        rfiName: "Emergency Response",
+        project: "AEP",
+      },
+      {
+        id: "cat1-temp2-q4",
+        domain: "Airport",
+        department: "Airport Operations",
+        template: "AEP (Airport Emergency Preparedness)",
+        customAnswers: false,
+        question: "How are emergency communications managed?",
+        searchedCategory: "AEP",
+        docGen: [
+          {
+            name: "ADFAP (Airport)",
+            type: ["PDF"],
+          },
+        ],
+        category: "Communications",
+        startDate: "2025-06-17T18:30:00.000Z",
+        completionDate: "2025-07-16T18:30:00.000Z",
+        contentLibrary: "Data Governance Framework",
+        scheduleDateTime: {
+          date: "2025-07-14T18:30:00.000Z",
+          time: "2025-07-15T12:30:00.000Z",
+          repeat: "Daily",
+        },
+        answers: [
+          {
+            documentName: "Emergency Communications Protocol",
+            page: "Page 26",
+            answer:
+              "Emergency communications utilize dedicated frequencies, backup systems, and coordination with air traffic control and external agencies.",
+          },
+          {
+            documentName: "Communication Equipment Standards",
+            page: "Page 48",
+            answer:
+              "Redundant communication systems ensure reliable connectivity during emergencies including radio, telephone, and digital communication platforms.",
+          },
+          {
+            documentName: "Multi-Agency Coordination",
+            page: "Page 33",
+            answer:
+              "Established communication protocols for coordination with police, fire department, medical services, and other emergency responders.",
+          },
+          {
+            answer:
+              "Analyzed historical data to predict congestion times at security checkpoints and suggested optimal staff scheduling and queue management strategies to improve passenger flow and reduce delays.",
+            documentName: "API Agent",
+            page: 3,
+          },
+        ],
+        agents: ["API Agent"],
+        answerFormat: "Text",
+        type: "internal",
+        rfiName: "Emergency Response",
+        project: "AEP",
+      },
+      {
+        id: "cat1-temp2-q5",
+        domain: "Airport",
+        department: "Airport Operations",
+        template: "AEP (Airport Emergency Preparedness)",
+        customAnswers: false,
+        question: "What medical emergency facilities are required?",
+        searchedCategory: "AEP",
+        docGen: [
+          {
+            name: "ADFAP (Airport)",
+            type: ["PDF"],
+          },
+        ],
+        category: "Medical Emergency",
+        startDate: "2025-06-17T18:30:00.000Z",
+        completionDate: "2025-07-16T18:30:00.000Z",
+        contentLibrary: "Data Governance Framework",
+        scheduleDateTime: {
+          date: "2025-07-14T18:30:00.000Z",
+          time: "2025-07-15T12:30:00.000Z",
+          repeat: "Daily",
+        },
+        answers: [
+          {
+            documentName: "Medical Emergency Procedures",
+            page: "Page 41",
+            answer:
+              "Airport medical facilities must include first aid stations, emergency medical equipment, and coordination with local hospitals and emergency medical services.",
+          },
+          {
+            documentName: "Medical Equipment Standards",
+            page: "Page 29",
+            answer:
+              "Required medical equipment includes defibrillators, oxygen supplies, trauma kits, and specialized equipment for aircraft-related injuries.",
+          },
+          {
+            documentName: "Medical Personnel Requirements",
+            page: "Page 16",
+            answer:
+              "Medical emergency response requires trained medical personnel or arrangements with local emergency medical services for immediate response.",
+          },
+          {
+            answer:
+              "Analyzed historical data to predict congestion times at security checkpoints and suggested optimal staff scheduling and queue management strategies to improve passenger flow and reduce delays.",
+            documentName: "API Agent",
+            page: 3,
+          },
+        ],
+        agents: ["API Agent"],
+        answerFormat: "Text",
+        type: "internal",
+        rfiName: "Emergency Response",
+        project: "AEP",
+      },
+    ],
+  },
+];
+
+export const tableHeader = [
+  "RFI Name",
+  "Project",
+  "Domain",
+  "Category",
+  "Content Library",
+  "Agents",
+  "Start Date",
+  "Completion Date",
+  "Ask AI",
+  "Action",
+  "Assign"
+];
 
 
-export const chartImage = "http://res.cloudinary.com/dakddv1pm/image/upload/v1750859132/posts/ejf3gcglf47l8bksm2it.webp"
-export const chartImageSecond ="http://res.cloudinary.com/dakddv1pm/image/upload/v1750859295/posts/qtsegloqspheh7hljmap.jpg"
+export const uploadTableHeader = [
+  "RFI Template Name",
+  "Description",
+  "Domain",
+    "Department",
+  "Category",
+  "Template File",
+  "Question",
+  "Ask AI",
+  "Action",
+];

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,8 +10,9 @@ import {
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { CalendarIcon, Clock, Check, ArrowLeft } from "lucide-react";
+import { CalendarIcon, Clock, Check, ArrowLeft, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { RequestInfoContext } from "../context/RequestInfoContext";
 
 export default function ScheduleDateTime() {
   const [selectedDate, setSelectedDate] = useState();
@@ -20,6 +21,9 @@ export default function ScheduleDateTime() {
   const [showTimeSelection, setShowTimeSelection] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [selectedFrequency, setSelectedFrequency] = useState("Once");
+  const [isFrequencyOpen, setIsFrequencyOpen] = useState(false);
+  const { scheduleDate, setScheduleDate } = useContext(RequestInfoContext);
 
   // Update current time every second
   useEffect(() => {
@@ -47,8 +51,13 @@ export default function ScheduleDateTime() {
   // Handle date selection
   const handleDateSelect = (date) => {
     setSelectedDate(date);
+    setScheduleDate((prev)=>({
+      ...prev,
+      date: date
+    }))
     if (date) {
       setShowTimeSelection(true);
+      console.log(scheduleDate);
     }
   };
 
@@ -68,6 +77,11 @@ export default function ScheduleDateTime() {
     }
   };
 
+    const handleFrequencySelect = (frequency) => {
+    setSelectedFrequency(frequency);
+    setIsFrequencyOpen(false);
+  };
+
   // Go back to date selection
   const goBackToDate = () => {
     setShowTimeSelection(false);
@@ -77,6 +91,13 @@ export default function ScheduleDateTime() {
   const confirmSelection = () => {
     setIsOpen(false);
     setShowTimeSelection(false);
+    const now = new Date(selectedDate);
+    now.setHours(selectedHour, selectedMinute, 0, 0)
+    setScheduleDate((prev)=>({
+      ...prev,
+      time: now,
+      repeat: selectedFrequency
+    }))
   };
 
   // Reset when popover closes
@@ -154,10 +175,29 @@ export default function ScheduleDateTime() {
                     <Clock className="h-4 w-4" />
                     <span className="font-medium">Select Time</span>
                   </div>
-                  <Badge variant="secondary" className="text-xs">
-                    <Check className="h-3 w-3 mr-1" />
-                    Date Set
-                  </Badge>
+                   <Popover open={isFrequencyOpen} onOpenChange={setIsFrequencyOpen}>
+                    <PopoverTrigger asChild>
+                      <Menu/>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-32 p-2 mr-10">
+                      <div className="space-y-1">
+                        {["Once", "Daily", "Weekly"].map((item) => (
+                          <Button
+                            key={item}
+                            size="sm"
+                            variant="default"
+                            className={`w-full justify-start text-xs ${selectedFrequency === item && "bg-blue-600"}`}
+                            onClick={() => handleFrequencySelect(item)}
+                          >
+                            {selectedFrequency === item && (
+                              <Check className="h-3 w-3 mr-1" />
+                            )}
+                            {item}
+                          </Button>
+                        ))}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </div>
 
                 {/* Selected Date Display */}
