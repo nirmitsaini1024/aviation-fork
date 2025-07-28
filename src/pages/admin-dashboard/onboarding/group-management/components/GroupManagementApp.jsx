@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, PaginationEllipsis } from "@/components/ui/pagination";
 
 import { Table, TableBody, TableHeader, TableCell, TableRow } from "./Table";
 import { GroupForm } from "./GroupForm";
@@ -22,6 +23,10 @@ export function GroupManagementApp({ showAddForm, onToggleForm }) {
   const [showMembersSearch, setShowMembersSearch] = useState(false);
   const [showDescriptionSearch, setShowDescriptionSearch] = useState(false);
   const [showReminderSearch, setShowReminderSearch] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(6);
 
   const columns = [
     {
@@ -111,6 +116,24 @@ export function GroupManagementApp({ showAddForm, onToggleForm }) {
     return filtered;
   };
 
+  // Get paginated data
+  const allFilteredData = sortedAndFilteredGroups();
+  const totalPages = Math.ceil(allFilteredData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedData = allFilteredData.slice(startIndex, endIndex);
+
+  // Page change handler
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  // Reset page when search changes
+  // const handleSearchChange = (value) => {
+  //   setSearchTerm(value);
+  //   setCurrentPage(1);
+  // };
+
   const requestSort = (key) => {
     let direction = "ascending";
     if (
@@ -164,11 +187,13 @@ export function GroupManagementApp({ showAddForm, onToggleForm }) {
     };
 
     setters[type](value);
+    setCurrentPage(1);
   };
 
   const handleSearchClear = (type) => {
     handleSearchChange(type, "");
     handleSearchToggle(type, false);
+    setCurrentPage(1);
   };
 
   const handleDeleteGroup = (groupId) => {
@@ -224,7 +249,7 @@ export function GroupManagementApp({ showAddForm, onToggleForm }) {
             placeholder="Search groups..."
             className="pl-8"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
           />
         </div>
       </div>
@@ -242,14 +267,14 @@ export function GroupManagementApp({ showAddForm, onToggleForm }) {
             />
           </TableHeader>
           <TableBody>
-            {sortedAndFilteredGroups().length === 0 ? (
+            {paginatedData.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="text-center">
                   No groups found
                 </TableCell>
               </TableRow>
             ) : (
-              sortedAndFilteredGroups().map((group) => (
+              paginatedData.map((group) => (
                 <GroupTableRow
                   key={group.id}
                   group={group}
@@ -264,6 +289,68 @@ export function GroupManagementApp({ showAddForm, onToggleForm }) {
           </TableBody>
         </Table>
       </div>
+      
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4">
+          <div className="text-sm text-gray-600">
+            Showing {Math.min((currentPage - 1) * itemsPerPage + 1, allFilteredData.length)} to{' '}
+            {Math.min(currentPage * itemsPerPage, allFilteredData.length)} of {allFilteredData.length} entries
+          </div>
+          
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className={`${currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-blue-50"} transition-colors`}
+                />
+              </PaginationItem>
+              
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                if (
+                  page === 1 ||
+                  page === totalPages ||
+                  (page >= currentPage - 1 && page <= currentPage + 1)
+                ) {
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        onClick={() => handlePageChange(page)}
+                        isActive={currentPage === page}
+                        className={`cursor-pointer transition-colors ${
+                          currentPage === page 
+                            ? "bg-blue-600 text-white hover:bg-blue-700" 
+                            : "hover:bg-blue-50"
+                        }`}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                } else if (
+                  page === currentPage - 2 ||
+                  page === currentPage + 2
+                ) {
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  );
+                }
+                return null;
+              })}
+              
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className={`${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-blue-50"} transition-colors`}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 }

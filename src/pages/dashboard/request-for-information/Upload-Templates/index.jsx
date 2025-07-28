@@ -14,7 +14,7 @@ export const UploadTemplatesMain = () => {
     <div className="space-y-6">
       <div className="space-y-4">
         <h3 className="text-2xl font-semibold text-gray-800 mb-6 tracking-tight">
-          Upload <span className="text-blue-600">— Templates</span>
+          Upload Questionnaire <span className="text-blue-600">— Templates</span>
         </h3>
 
         <UploadTemplateFilter

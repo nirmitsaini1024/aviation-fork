@@ -6,7 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { tableHeader, uploadTableHeader } from "../../mock-data/constant";
+import { tableHeader, uploadDocGenTableHeader } from "../../mock-data/constant";
 import {
   ArrowDown,
   ArrowUp,
@@ -35,18 +35,19 @@ import EmailSender from "../../component/SendEmail";
 import handleDownloadFile from "../../utils/DownloadFile";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import DeleteConfirmation from "./DeleteConfirmation";
+import DeleteConfirmation from "../../Upload-Templates/components/DeleteConfirmation";
+import { Badge } from "@/components/ui/badge";
 
-export default function TableTemplates({
+export default function DocGenTableTemplates({
   setShowTemplate,
   setShowUploadFile,
 }) {
-  const { isBotOpen, setIsBotOpen, tableData } = useContext(GlobalContext);
+  const { tableData } = useContext(GlobalContext);
   const {
-    rfiDetailsForUploadTemplate,
-    setRfiDetailsForUploadTemplate,
-    editTemplateData,
-    setEditTemplateData,
+    docGenForUploadTemplate,
+    setDocGenForUploadTemplate,
+    setEditDocGenData,
+    setDocGenTemplateDataList,
   } = useContext(RequestInfoContext);
   const [showEmailSender, setShowEmailSender] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -60,8 +61,16 @@ export default function TableTemplates({
   };
 
   const handleDeleteRow = () => {
-    console.log("Clicked on delete: ", deleteRow, rfiDetailsForUploadTemplate);
-    setRfiDetailsForUploadTemplate((prev) =>
+    console.log("Clicked on delete: ", deleteRow, docGenForUploadTemplate);
+    setDocGenForUploadTemplate((prev) =>
+      prev.filter((item) => {
+        if (item.id !== deleteRow) {
+          return item;
+        }
+      })
+    );
+
+    setDocGenTemplateDataList((prev) =>
       prev.filter((item) => {
         if (item.id !== deleteRow) {
           return item;
@@ -73,32 +82,15 @@ export default function TableTemplates({
   };
 
   const handleEditRow = (rfi) => {
-    setEditTemplateData(rfi);
-    console.log("RFI for edit is: ", rfi);
-    if (rfi.files && rfi.data[0]?.question) {
-      setShowTemplate(false);
-      return;
-    }
-
-    if (!rfi.files) {
-      setShowTemplate(false);
-      return;
-    }
-
-    if (rfi.files) {
-      setShowTemplate(false);
-      setShowUploadFile(true);
-      return;
-    }
+    setEditDocGenData(rfi);
+    console.log("DocGen for edit is: ", rfi);
+    setShowTemplate(false);
+    setShowUploadFile(true);
   };
 
   useEffect(() => {
-    console.log(rfiDetailsForUploadTemplate);
-  }, [rfiDetailsForUploadTemplate]);
-
-  // useEffect(() => {
-  //   setRfiDetailsForUploadTemplate(tableData);
-  // }, [tableData]);
+    console.log(docGenForUploadTemplate);
+  }, [docGenForUploadTemplate]);
 
   const handleSort = () => {
     if (sortOrder === "none") {
@@ -122,22 +114,22 @@ export default function TableTemplates({
   };
 
   const filteredData = useMemo(() => {
-    if (!rfiDetailsForUploadTemplate) return [];
+    if (!docGenForUploadTemplate) return [];
 
-    let filtered = [...rfiDetailsForUploadTemplate];
+    let filtered = [...docGenForUploadTemplate];
 
     if (searchValue.trim()) {
       filtered = filtered.filter(
         (rfi) =>
-          rfi.rfiName &&
-          rfi.rfiName.toLowerCase().includes(searchValue.toLowerCase().trim())
+          rfi.name &&
+          rfi.name.toLowerCase().includes(searchValue.toLowerCase().trim())
       );
     }
 
     if (sortOrder !== "none") {
       filtered.sort((a, b) => {
-        const nameA = a.rfiName || "";
-        const nameB = b.rfiName || "";
+        const nameA = a.name || "";
+        const nameB = b.name || "";
         const firstCharA = nameA.charAt(0).toLowerCase();
         const firstCharB = nameB.charAt(0).toLowerCase();
 
@@ -149,7 +141,7 @@ export default function TableTemplates({
       });
     }
     return filtered;
-  }, [rfiDetailsForUploadTemplate, searchValue, sortOrder, tableData]);
+  }, [docGenForUploadTemplate, searchValue, sortOrder, tableData]);
 
   return (
     <div className="pt-6">
@@ -157,11 +149,11 @@ export default function TableTemplates({
         <Table>
           <TableHeader>
             <TableRow className="bg-blue-700 hover:bg-blue-700">
-              {uploadTableHeader.map((item, index) => (
+              {uploadDocGenTableHeader.map((item, index) => (
                 <TableHead className="text-white font-semibold" key={index}>
                   <span className={`flex gap-x-2 items-center`}>
                     {item}
-                    {item === "RFI Template Name" && (
+                    {item === "DocGen Template Name" && (
                       <>
                         <Popover open={isOpen} onOpenChange={setIsOpen}>
                           <PopoverTrigger asChild>
@@ -208,7 +200,7 @@ export default function TableTemplates({
                           }`}
                         >
                           {getSortIcon()}
-                          <span className="sr-only">Sort RFI Name</span>
+                          <span className="sr-only">Sort DocGen Name</span>
                         </Button>
                       </>
                     )}
@@ -222,15 +214,15 @@ export default function TableTemplates({
               filteredData.map((rfi, index) => (
                 <TableRow key={index}>
                   <TableCell className="font-medium text-blue-600 hover:cursor-pointer">
-                    {rfi.rfiName ? rfi.rfiName : "N/A"}
+                    {rfi.name ? rfi.name : "N/A"}
                   </TableCell>
                   <TableCell className="text-sm flex gap-x-2 max-w-36  hover:cursor-pointer">
                     <Popover>
                       <PopoverTrigger asChild>
                         <div className="flex items-start gap-x-2 cursor-pointer">
                           <p className="line-clamp-3 flex-1 min-w-0">
-                            {rfi.rfiTemplateDescription
-                              ? rfi.rfiTemplateDescription
+                            {rfi.docGenTemplateDescription
+                              ? rfi.docGenTemplateDescription
                               : "N/A"}
                           </p>
                           <Info className="w-3 h-3 text-blue-600 hover:cursor-pointer flex-shrink-0 mt-1" />
@@ -242,19 +234,17 @@ export default function TableTemplates({
                             Full Description
                           </h4>
                           <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                            {rfi.rfiTemplateDescription
-                              ? rfi.rfiTemplateDescription
+                            {rfi.docGenTemplateDescription
+                              ? rfi.docGenTemplateDescription
                               : "No description available"}
                           </p>
                         </div>
                       </PopoverContent>
                     </Popover>
                   </TableCell>
-                  <TableCell>{rfi.data[0]?.domain || "N/A"}</TableCell>
-                  <TableCell>{rfi.data[0]?.department || "N/A"}</TableCell>
-                  <TableCell>
-                    {rfi.data[0]?.searchedCategory || "N/A"}
-                  </TableCell>
+                  <TableCell>{rfi.domain || "N/A"}</TableCell>
+                  <TableCell>{rfi.department || "N/A"}</TableCell>
+                  <TableCell>{rfi.searchedCategory || "N/A"}</TableCell>
                   <TableCell>
                     {rfi.files ? (
                       <div
@@ -273,59 +263,24 @@ export default function TableTemplates({
                       <span className="text-gray-400 text-sm">No files</span>
                     )}
                   </TableCell>
+
                   <TableCell>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-8 px-3">
-                          {rfi.data && (
-                            <Info className="w-4 h-4 text-blue-600" />
-                          )}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="w-96 max-h-80 overflow-y-auto p-4 scroll-container"
-                        side="left"
-                      >
-                        <div className="space-y-3">
-                          <div className="font-semibold text-sm text-gray-900 border-b pb-2">
-                            {rfi.data[0]?.question ? (
-                              <span className="text-sm font-medium">
-                                {rfi.data?.length || 0} Questions
-                              </span>
-                            ) : (
-                              <span className="text-sm font-medium">
-                                0 Questions
-                              </span>
-                            )}
-                          </div>
-                          {rfi.data &&
-                          rfi.data.length > 0 &&
-                          rfi.data[0]?.question ? (
-                            rfi.data.map((item, questionIndex) => (
-                              <div
-                                key={questionIndex}
-                                className="border-l-2 border-blue-200 pl-3 py-2"
-                              >
-                                <div className="flex items-start gap-2">
-                                  <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-blue-600 bg-blue-100 rounded-full flex-shrink-0 mt-0.5">
-                                    {questionIndex + 1}
-                                  </span>
-                                  <p className="text-sm text-gray-700 leading-relaxed">
-                                    {item.question}
-                                  </p>
-                                </div>
-                              </div>
-                            ))
-                          ) : (
-                            <div className="text-center py-4 text-gray-500 text-sm">
-                              No questions available
-                            </div>
-                          )}
-                        </div>
-                      </PopoverContent>
-                    </Popover>
+                    {rfi.type ? (
+                      <div className="flex items-center flex-wrap gap-y-3 py-1 gap-x-3">
+                        {rfi.type.map((agent, index) => (
+                          <Badge
+                            key={index}
+                            className="px-2 py-1 text-xs bg-blue-100 text-blue-800 hover:bg-blue-200"
+                          >
+                            {agent}
+                          </Badge>
+                        ))}
+                      </div>
+                    ) : (
+                      "N/A"
+                    )}
                   </TableCell>
-                  
+
                   <TableCell>
                     <Popover
                       open={openActionButtons === rfi.id}
@@ -350,19 +305,13 @@ export default function TableTemplates({
                               className="justify-start gap-2 h-auto p-3"
                               onClick={() =>
                                 handleDownloadFile(
-                                  rfi.rfiName ? rfi.rfiName : "document"
+                                  rfi.name ? rfi.name : "document"
                                 )
                               }
                             >
                               <FileText className="h-4 text-blue-700 w-4" />
                               <span className="text-gray-800">
-                                {new Date(rfi.data[0]?.completionDate) >
-                                new Date() ? (
-                                  <span>Download</span>
-                                ) : (
-                                  <span>Download</span>
-                                )}{" "}
-                                Template File
+                                Download Template File
                               </span>
                             </Button>
                             <Button
@@ -392,7 +341,7 @@ export default function TableTemplates({
                   colSpan={tableHeader.length}
                   className="h-24 text-center"
                 >
-                  No RFIs found for this category.
+                  No Templates found for this category.
                 </TableCell>
               </TableRow>
             )}

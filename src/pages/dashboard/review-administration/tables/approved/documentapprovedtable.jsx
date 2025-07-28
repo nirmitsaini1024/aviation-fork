@@ -6,6 +6,7 @@ import { Button } from "../../../../../components/ui/button";
 import { documentData } from "@/mock-data/review-adm-approved-table";
 import { Popover, PopoverContent, PopoverTrigger } from "../../../../../components/ui/popover";
 import { SearchableColumnHeader } from "../components/searchable-column-header";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, PaginationEllipsis } from "@/components/ui/pagination";
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../../../../components/ui/tooltip";
 
@@ -65,6 +66,10 @@ const DocumentApprovedTable = ({
   const [selectedDoc, setSelectedDoc] = useState(null);
   const [documentReferences, setDocumentReferences] = useState(mockDocumentReferences);
   const [referencePopovers, setReferencePopovers] = useState({});
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(6);
 
   // Filter and sort documents
   const filteredAndSortedDocuments = useMemo(() => {
@@ -150,6 +155,17 @@ const DocumentApprovedTable = ({
     return filteredDocs;
   }, [documents, columnFilters, sortColumn, sortDirection]);
 
+  // Pagination logic
+  const totalPages = Math.ceil(filteredAndSortedDocuments.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedData = filteredAndSortedDocuments.slice(startIndex, endIndex);
+
+  // Pagination handler
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   // Event handlers using helper functions
   const onWebViewerLoad = () => handleWebViewerLoad(setIsWebViewerLoaded);
 
@@ -189,7 +205,7 @@ const DocumentApprovedTable = ({
       case 'final':
         return '/sample-table-no-comments.pdf'; // Final copy without comments
       case 'commented':
-        return '/sample-table-comments.pdf'; // ← Change this line!
+        return '/commented-copy.pdf'; // ← Change this line!
       default:
         return '/sample.pdf';
     }
@@ -201,7 +217,7 @@ const DocumentApprovedTable = ({
 
   return (
     <div className="border-1 border-gray-400 rounded-md w-full overflow-hidden">
-      {filteredAndSortedDocuments.length === 0 ? (
+      {paginatedData.length === 0 ? (
         <div className="text-center text-gray-500">
           <table className="min-w-full text-sm">
             <thead className="bg-blue-600 text-left ">
@@ -268,6 +284,7 @@ const DocumentApprovedTable = ({
             : "No approved documents found."}
         </div>
       ) : (
+        <>
         <table className="min-w-full text-sm">
           <thead className="bg-blue-600 text-left ">
             <tr>
@@ -328,7 +345,7 @@ const DocumentApprovedTable = ({
             </tr>
           </thead>
           <tbody>
-            {filteredAndSortedDocuments.map((doc) => (
+            {paginatedData.map((doc) => (
               <React.Fragment key={doc.id}>
                 <tr className="border-t-[1px] border-t-gray-400">
                   <td className="">
@@ -639,6 +656,69 @@ const DocumentApprovedTable = ({
             ))}
           </tbody>
         </table>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border-t border-gray-200">
+            <div className="text-sm text-gray-600">
+              Showing {Math.min((currentPage - 1) * itemsPerPage + 1, filteredAndSortedDocuments.length)} to{' '}
+              {Math.min(currentPage * itemsPerPage, filteredAndSortedDocuments.length)} of {filteredAndSortedDocuments.length} entries
+            </div>
+            
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    className={`${currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-blue-50"} transition-colors`}
+                  />
+                </PaginationItem>
+                
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                  if (
+                    page === 1 ||
+                    page === totalPages ||
+                    (page >= currentPage - 1 && page <= currentPage + 1)
+                  ) {
+                    return (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          onClick={() => handlePageChange(page)}
+                          isActive={currentPage === page}
+                          className={`cursor-pointer transition-colors ${
+                            currentPage === page 
+                              ? "bg-blue-600 text-white hover:bg-blue-700" 
+                              : "hover:bg-blue-50"
+                          }`}
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  } else if (
+                    page === currentPage - 2 ||
+                    page === currentPage + 2
+                  ) {
+                    return (
+                      <PaginationItem key={page}>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    );
+                  }
+                  return null;
+                })}
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    className={`${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-blue-50"} transition-colors`}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
+        </>
       )}
 
       {/* All Popup Modals - UPDATED to use UniversalDocumentViewer */}

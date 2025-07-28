@@ -67,6 +67,10 @@ export const DocumentTableProvider = ({ children, ...props }) => {
   const [selectedDocForRef, setSelectedDocForRef] = useState(null);
   const [documentReferences, setDocumentReferences] = useState({});
   const [referencePopovers, setReferencePopovers] = useState({});
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(6);
 
   // Effects
   useEffect(() => {
@@ -385,7 +389,7 @@ export const DocumentTableProvider = ({ children, ...props }) => {
     return true;
   });
 
-  const sortedData = [...filteredData].sort((a, b) => {
+  const allSortedData = [...filteredData].sort((a, b) => {
     if (!sortColumn || !sortDirection) return 0;
 
     let aValue, bValue;
@@ -423,6 +427,12 @@ export const DocumentTableProvider = ({ children, ...props }) => {
       return bValue.localeCompare(aValue);
     }
   });
+
+  // Pagination logic
+  const totalPages = Math.ceil(allSortedData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const sortedData = allSortedData.slice(startIndex, endIndex);
 
   // Utility functions
   const truncate = (text, length) => {
@@ -659,6 +669,11 @@ export const DocumentTableProvider = ({ children, ...props }) => {
     }));
   };
 
+  // Pagination handler
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   const contextValue = {
     // State
     sortColumn,
@@ -703,6 +718,10 @@ export const DocumentTableProvider = ({ children, ...props }) => {
     setDocumentReferences,
     referencePopovers,
     setReferencePopovers,
+    currentPage,
+    setCurrentPage,
+    itemsPerPage,
+    totalPages,
 
     // Props
     globalFilter,
@@ -725,6 +744,7 @@ export const DocumentTableProvider = ({ children, ...props }) => {
     isFiltered,
     filteredData,
     sortedData,
+    allSortedData,
 
     // Utility functions
     truncate,
@@ -751,6 +771,7 @@ export const DocumentTableProvider = ({ children, ...props }) => {
     handleRemoveReferenceDocument,
     getReferenceDocuments,
     toggleReferencePopover,
+    handlePageChange,
 
     // Constants
     approvalNodes,

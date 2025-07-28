@@ -3,7 +3,6 @@ import {
   aiAgents,
   AirportDocuments,
   categoryOptions,
-  docGenTemplateData,
   domains,
   mockCategories,
 } from "../mock-data/constant";
@@ -72,6 +71,7 @@ const Filter = () => {
     setSelectedDocGenTypes,
     selectedDepartment,
     setSelectedDepartment,
+    docGenTemplateDataList
   } = useContext(RequestInfoContext);
   const disabledSearchButton =
     domain.length === 0 || category.length === 0 || templates.length === 0;
@@ -417,7 +417,7 @@ const Filter = () => {
       {showAdvancedFilters && (
         <>
           <hr className="my-4 bg-blue-700" />
-          <div className="grid grid-cols-1 lg:grid-cols-6 gap-x-10 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-6 gap-y-5 gap-x-10 w-full">
             {/* Content Library */}
             <div className="space-y-2">
               <label
@@ -438,13 +438,13 @@ const Filter = () => {
                       className="h-10 bg-white border-blue-200 shadow-sm w-full hover:border-blue-300 focus:ring-blue-300 justify-start"
                     >
                       <div className="flex items-center">
-                        <Menu className="mr-2 h-4 w-4 text-muted-foreground" />
                         {multiSelectContentLibrary.length === 0 ? (
-                          <span className="text-muted-foreground font-normal">
+                          <span className="text-muted-foreground flex items-center gap-x-2 font-normal">
+                            <Menu className="h-4 w-4 text-muted-foreground" />
                             Select Content Libraries
                           </span>
                         ) : (
-                          <div className="flex flex-wrap gap-1 flex-1">
+                          <div className="flex flex-wrap gap-1">
                             {multiSelectContentLibrary
                               .slice(0, 1)
                               .map((library) => (
@@ -457,14 +457,14 @@ const Filter = () => {
                                     {library}
                                   </span>
                                   <button
-                                    className="ml-1 hover:bg-blue-300 rounded-full p-0.5"
+                                    className=" hover:bg-blue-300 rounded-full"
                                     onClick={(e) => {
                                       e.preventDefault();
                                       e.stopPropagation();
                                       handleRemoveFromContentLibrary(library);
                                     }}
                                   >
-                                    <X className="h-3 w-3" />
+                                    <X className="h-1 w-1" />
                                   </button>
                                 </Badge>
                               ))}
@@ -539,7 +539,7 @@ const Filter = () => {
                 htmlFor="aiagents"
                 className="block text-sm font-medium text-blue-700"
               >
-                AI Agents/Orchestration
+                AI Agents / Orchestration
               </label>
               <div className="w-full overflow-x-hidden">
                 <Popover
@@ -553,14 +553,14 @@ const Filter = () => {
                       className="h-auto min-h-10  bg-white border-blue-200 shadow-sm w-full hover:border-blue-300 focus:ring-blue-300 justify-start p-2"
                     >
                       <div className="flex items-center flex-wrap gap-1 w-full">
-                        <Menu className="mr-2 h-4 w-4 text-muted-foreground flex-shrink-0" />
 
                         {selectedAgents.length === 0 ? (
-                          <span className="text-muted-foreground font-normal">
+                          <span className="text-muted-foreground flex items-center gap-x-2 font-normal">
+                            <Menu className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                             Select AI Agents
                           </span>
                         ) : (
-                          <div className="flex flex-wrap gap-1 flex-1">
+                          <div className="flex flex-wrap gap-1">
                             {selectedAgents.slice(0, 1).map((agentName) => (
                               <Badge
                                 key={agentName}
@@ -569,14 +569,14 @@ const Filter = () => {
                               >
                                 {agentName}
                                 <button
-                                  className="ml-1 hover:bg-blue-300 rounded-full p-0.5"
+                                  className=" hover:bg-blue-300 rounded-full "
                                   onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
                                     handleRemove(agentName);
                                   }}
                                 >
-                                  <X className="h-3 w-3" />
+                                  <X className="h-1 w-1" />
                                 </button>
                               </Badge>
                             ))}
@@ -662,14 +662,14 @@ const Filter = () => {
                       className="h-auto min-h-10 bg-white border-blue-200 shadow-sm w-full hover:border-blue-300 focus:ring-blue-300 justify-start p-2"
                     >
                       <div className="flex items-center flex-wrap gap-1 w-full">
-                        <Menu className="mr-2 h-4 w-4 text-muted-foreground flex-shrink-0" />
 
                         {selectedDocGenTypes.length === 0 ? (
-                          <span className="text-muted-foreground font-normal">
+                          <span className="text-muted-foreground font-normal flex items-center gap-x-2">
+                            <Menu className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                             Select DocGen Template
                           </span>
                         ) : (
-                          <div className="flex flex-wrap gap-1 flex-1">
+                          <div className="flex flex-wrap gap-1">
                             {selectedDocGenTypes.slice(0, 1).map((template) => (
                               <Badge
                                 key={template.name}
@@ -727,7 +727,7 @@ const Filter = () => {
                           )}
 
                           <Accordion type="multiple" className="w-full">
-                            {docGenTemplateData.map((template) => (
+                            {docGenTemplateDataList.map((template) => (
                               <AccordionItem
                                 key={template.id}
                                 value={`item-${template.id}`}

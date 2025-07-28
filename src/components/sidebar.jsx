@@ -47,7 +47,9 @@ import {
   Database,
   FilePlus2,
   ListCollapse,
-  MonitorUp
+  MonitorUp,
+  ChartBarStacked,
+  Network
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -98,27 +100,33 @@ export default function Sidebar({ collapsed, setCollapsed, user }) {
           type: "single",
         },
         {
-          name: "R.F.I",
+          name: "Knowledger",
           key: "request-for-info",
           icon: <Info className="h-5 w-5" />,
           type: "group",
           items: [
             {
-              name: "Create R.F.I",
+              name: "Create Knowledger",
               path: "/create-rfi",
               icon: <FilePlus2 className="h-5 w-5" />,
               type: "single",
             },
             {
-              name: "R.F.I Details",
+              name: "Knowledger Details",
               path: "/rfi-details",
               icon: <ListCollapse className="h-5 w-5" />,
               type: "single",
             },
             {
-              name: "Upload Templates",
+              name: "Upload Q - Templates",
               path: "/upload-templates",
               icon: <MonitorUp className="h-5 w-5" />,
+              type: "single",
+            },
+            {
+              name: "Upload R - Templates",
+              path: "/report-templates",
+              icon: <ChartBarStacked className="h-5 w-5" />,
               type: "single",
             },
           ],
@@ -166,6 +174,12 @@ export default function Sidebar({ collapsed, setCollapsed, user }) {
               name: "DocComparison Studio",
               path: "/doc-diff-center",
               icon: <BookOpenCheck className="h-5 w-5" />,
+              type: "single",
+            },
+            {
+              name: "Version Graph",
+              path: "/version",
+              icon: <Network className="h-5 w-5" />,
               type: "single",
             },
           ],

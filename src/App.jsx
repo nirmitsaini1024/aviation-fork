@@ -42,6 +42,8 @@ import { GlobalContext } from "./GlobalContext/GlobalProvider";
 import RequestForInfoContent from "./pages/dashboard/request-for-information";
 import RequestInfoProvider from "./pages/dashboard/request-for-information/context/RequestInfoContext";
 import UploadTemplatesMain from "./pages/dashboard/request-for-information/Upload-Templates";
+import ReportTemplate from "./pages/dashboard/request-for-information/Report-Template";
+import DocumentVersionTree from "./pages/dashboard/versioning/version";
 
 function App() {
   const [user, setUser] = useState({
@@ -58,6 +60,7 @@ function App() {
         <Route path="/" element={<LoginPage setUser={setUser} />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/refdoc" element={<RefDocPage />} />
+        
 
         {/* Protected routes with sidebar */}
         <Route
@@ -73,6 +76,7 @@ function App() {
             path="/doc-center"
             element={<DocCenter setIsBotOpen={setIsBotOpen} />}
           />
+          <Route path="/version" element={<DocumentVersionTree />} />
           <Route
             path="/doc-diff-center"
             element={<CustomPDFTextDiffViewer />}
@@ -100,6 +104,14 @@ function App() {
             element={
               <RequestInfoProvider>
                 <UploadTemplatesMain />
+              </RequestInfoProvider>
+            }
+          />
+          <Route
+            path="/report-templates"
+            element={
+              <RequestInfoProvider>
+                <ReportTemplate />
               </RequestInfoProvider>
             }
           />

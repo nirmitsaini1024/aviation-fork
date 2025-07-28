@@ -73,11 +73,11 @@ const MenuBar = ({
 
     console.log({ json, text, html, markdown });
     editor.commands.clearContent();
-    setChapterDescription("");
     setShowAllChapters((prev) => [
       ...prev,
       {
         title: chapterDescription,
+        titleWithHtmlTag: `<h1>${chapterDescription}</h1>`,
         id: showAllChapters.length + 1,
         json,
         text,
@@ -85,6 +85,7 @@ const MenuBar = ({
         markdown,
       },
     ]);
+    setChapterDescription("");
   };
 
   const handleSaveAfterEdit = () => {

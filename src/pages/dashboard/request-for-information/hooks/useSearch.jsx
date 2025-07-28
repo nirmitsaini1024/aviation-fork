@@ -25,7 +25,7 @@ export const useAviationSearch = () => {
       ContentLibrary = "",
       completionDate = null,
       scheduleDate = null,
-      selectedDepartment = ""
+      selectedDepartment = "",
     } = filters;
     let results = [];
 
@@ -172,7 +172,7 @@ export const useSearchForCustomQuestion = () => {
     ContentLibrary = "",
     completionDate = null,
     scheduleDate = null,
-    selectedDepartment = ""
+    selectedDepartment = "",
   } = useContext(RequestInfoContext);
   const searchCustomQuestion = useCallback(
     (question, customCategory) => {

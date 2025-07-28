@@ -1403,6 +1403,25 @@ export const aiAgents = [
     description:
       "Constitutional AI assistant focused on being helpful, harmless, and honest",
   },
+   {
+    id: 102,
+    name: "Risk Agent",
+    company: "Anthropic",
+    type: "Conversational AI",
+    capabilities: [
+      "text generation",
+      "analysis",
+      "coding",
+      "math",
+      "creative writing",
+    ],
+    modality: ["text"],
+    pricing: "freemium",
+    apiAvailable: true,
+    launchYear: 2022,
+    description:
+      "Constitutional AI assistant focused on being helpful, harmless, and honest",
+  },
 ];
 
 // Extracted document names from the mockCategories data
@@ -3464,6 +3483,40 @@ export const tableAllData = [
   },
 ];
 
+
+export const docGenUploadFileData = [
+  {
+    id: 1,
+    name: "ASP (Airport Safety Program)",
+    domain: "Airport",
+    searchedCategory: "ASP",
+    department: "TSA",
+    docGenTemplateDescription: "Comprehensive aircraft safety protocols covering runway operations, ground handling procedures, and apron safety management for airport environments.",
+    type: ["Word", "PDF", "CSV"],
+    files: "aircraft-landing-analysis",
+  },
+  {
+    id: 2,
+    name: "AEP",
+    domain: "Airline",
+    searchedCategory: "ADFP",
+    department: "Airport Security",
+    docGenTemplateDescription: "Detailed maritime shipping regulations and cargo handling procedures for port operations, vessel safety inspections, and dock management protocols.",
+    type: ["Word", "PDF", "CSV"],
+    files: "maritime-cargo-manifest",
+  },
+  {
+    id: 3,
+    name: "ADFAP (Airport)",
+     domain: "Airport",
+    searchedCategory: "SMS",
+    department: "Airport Operations",
+    docGenTemplateDescription: "Complete construction site safety guidelines including equipment operation standards, worker protection protocols, and project timeline management.",
+    type: ["Word", "PDF", "CSV"],
+    files: "construction-safety-audit",
+  }
+]
+
 export const tableHeader = [
   "RFI Name",
   "Project",
@@ -3487,6 +3540,19 @@ export const uploadTableHeader = [
   "Category",
   "Template File",
   "Question",
-  "Ask AI",
   "Action",
 ];
+
+
+export const uploadDocGenTableHeader = [
+  "DocGen Template Name",
+  "Description",
+  "Domain",
+    "Department",
+  "Category",
+  "Template File",
+  "File Types",
+  "Action",
+];
+
+export const docGenType = ["Word", "PDF", "CSV"];

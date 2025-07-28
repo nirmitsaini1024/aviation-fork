@@ -11,6 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, PaginationEllipsis } from "@/components/ui/pagination"
 import { Badge } from "@/components/ui/badge"
 import { DocumentCategoryForm } from "@/components/document-category-form"
 
@@ -110,16 +111,15 @@ export function DocumentCategoryTable() {
   const [descriptionSearchTerm, setDescriptionSearchTerm] = useState("")
   const [domainSearchTerm, setDomainSearchTerm] = useState("")
   const [departmentSearchTerm, setDepartmentSearchTerm] = useState("")
-  const [showCategorySearch, setShowCategorySearch] = useState(false)
-  const [showDescriptionSearch, setShowDescriptionSearch] = useState(false)
-  const [showDomainSearch, setShowDomainSearch] = useState(false)
-  const [showDepartmentSearch, setShowDepartmentSearch] = useState(false)
+  const [categorySearchOpen, setCategorySearchOpen] = useState(false)
+  const [descriptionSearchOpen, setDescriptionSearchOpen] = useState(false)
+  const [domainSearchOpen, setDomainSearchOpen] = useState(false)
+  const [departmentSearchOpen, setDepartmentSearchOpen] = useState(false)
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage] = useState(6)
 
-  // Refs for search popups
-  const categoryPopupRef = useRef(null)
-  const descriptionPopupRef = useRef(null)
-  const domainPopupRef = useRef(null)
-  const departmentPopupRef = useRef(null)
 
   // Columns configuration
   const columns = [
@@ -145,35 +145,6 @@ export function DocumentCategoryTable() {
     },
   ]
 
-  // Effect to handle clicks outside search popups
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (categoryPopupRef.current && !categoryPopupRef.current.contains(event.target)) {
-        setShowCategorySearch(false)
-        setCategorySearchTerm("")
-      }
-      if (descriptionPopupRef.current && !descriptionPopupRef.current.contains(event.target)) {
-        setShowDescriptionSearch(false)
-        setDescriptionSearchTerm("")
-      }
-      if (domainPopupRef.current && !domainPopupRef.current.contains(event.target)) {
-        setShowDomainSearch(false)
-        setDomainSearchTerm("")
-      }
-      if (departmentPopupRef.current && !departmentPopupRef.current.contains(event.target)) {
-        setShowDepartmentSearch(false)
-        setDepartmentSearchTerm("")
-      }
-    }
-
-    if (showCategorySearch || showDescriptionSearch || showDomainSearch || showDepartmentSearch) {
-      document.addEventListener('mousedown', handleClickOutside)
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [showCategorySearch, showDescriptionSearch, showDomainSearch, showDepartmentSearch])
 
   const sortedAndFilteredCategories = () => {
     const filtered = categories.filter((category) => {
@@ -216,6 +187,24 @@ export function DocumentCategoryTable() {
     }
 
     return filtered
+  }
+
+  // Get paginated data
+  const allFilteredData = sortedAndFilteredCategories()
+  const totalPages = Math.ceil(allFilteredData.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const paginatedData = allFilteredData.slice(startIndex, endIndex)
+
+  // Page change handler
+  const handlePageChange = (page) => {
+    setCurrentPage(page)
+  }
+
+  // Reset page when search changes
+  const handleSearchChange = (value) => {
+    setSearchTerm(value)
+    setCurrentPage(1)
   }
 
   const requestSort = (key) => {
@@ -267,54 +256,30 @@ export function DocumentCategoryTable() {
     setEditingCategory(null)
   }
 
-  // Search toggle handlers
-  const handleCategorySearchToggle = () => {
-    setShowCategorySearch(!showCategorySearch)
-    if (showCategorySearch) {
-      setCategorySearchTerm("")
-    }
-  }
-
-  const handleDescriptionSearchToggle = () => {
-    setShowDescriptionSearch(!showDescriptionSearch)
-    if (showDescriptionSearch) {
-      setDescriptionSearchTerm("")
-    }
-  }
-
-  const handleDomainSearchToggle = () => {
-    setShowDomainSearch(!showDomainSearch)
-    if (showDomainSearch) {
-      setDomainSearchTerm("")
-    }
-  }
-
-  const handleDepartmentSearchToggle = () => {
-    setShowDepartmentSearch(!showDepartmentSearch)
-    if (showDepartmentSearch) {
-      setDepartmentSearchTerm("")
-    }
-  }
 
   // Clear search handlers  
   const clearCategorySearch = () => {
     setCategorySearchTerm("")
-    setShowCategorySearch(false)
+    setCategorySearchOpen(false)
+    setCurrentPage(1)
   }
 
   const clearDescriptionSearch = () => {
     setDescriptionSearchTerm("")
-    setShowDescriptionSearch(false)
+    setDescriptionSearchOpen(false)
+    setCurrentPage(1)
   }
 
   const clearDomainSearch = () => {
     setDomainSearchTerm("")
-    setShowDomainSearch(false)
+    setDomainSearchOpen(false)
+    setCurrentPage(1)
   }
 
   const clearDepartmentSearch = () => {
     setDepartmentSearchTerm("")
-    setShowDepartmentSearch(false)
+    setDepartmentSearchOpen(false)
+    setCurrentPage(1)
   }
 
   const getReceiveModeBadge = (mode) => {
@@ -340,7 +305,7 @@ export function DocumentCategoryTable() {
             placeholder="Search categories..."
             className="pl-8"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
           />
         </div>
       </div>
@@ -361,49 +326,41 @@ export function DocumentCategoryTable() {
                     >
                       <ArrowUpDown className="h-3 w-3" />
                     </Button>
-                    <div className="relative">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className={`h-6 w-6 p-0 text-white hover:bg-blue-700 ${showCategorySearch ? 'bg-blue-700' : ''}`}
-                        onClick={handleCategorySearchToggle}
-                        title="Search by category name"
-                      >
-                        <Search className="h-3 w-3" />
-                      </Button>
-
-                      {/* Category search popup */}
-                      {showCategorySearch && (
-                        <div
-                          ref={categoryPopupRef}
-                          className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 z-50"
+                    <Popover open={categorySearchOpen} onOpenChange={setCategorySearchOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className={`h-6 w-6 p-0 text-white hover:bg-blue-700 ${categorySearchOpen ? 'bg-blue-700' : ''}`}
+                          title="Search by category name"
                         >
-                          <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[250px]">
-                            <div className="relative">
-                              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                              <Input
-                                type="search"
-                                placeholder="Search by category..."
-                                className="pl-8 pr-8 border-blue-500 focus:border-blue-600 text-gray-900 placeholder-gray-500"
-                                value={categorySearchTerm}
-                                onChange={(e) => setCategorySearchTerm(e.target.value)}
-                                autoFocus
-                                style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                              />
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="absolute right-1 top-1 h-6 w-6 p-0 hover:bg-gray-100"
-                                onClick={clearCategorySearch}
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </div>
-                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-white"></div>
+                          <Search className="h-3 w-3" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-64 p-3" side="top" align="center">
+                        <div className="space-y-2">
+                          <div className="relative">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+                            <Input
+                              type="search"
+                              placeholder="Search by category..."
+                              className="pl-8 pr-8 border-blue-500 focus:border-blue-600"
+                              value={categorySearchTerm}
+                              onChange={(e) => { setCategorySearchTerm(e.target.value); setCurrentPage(1); }}
+                              autoFocus
+                            />
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="absolute right-1 top-1 h-6 w-6 p-0 hover:bg-gray-100"
+                              onClick={clearCategorySearch}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
                           </div>
                         </div>
-                      )}
-                    </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   {getSortIcon("categoryName")}
                 </div>
@@ -422,49 +379,41 @@ export function DocumentCategoryTable() {
                     >
                       <ArrowUpDown className="h-3 w-3" />
                     </Button>
-                    <div className="relative">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className={`h-6 w-6 p-0 text-white hover:bg-blue-700 ${showDescriptionSearch ? 'bg-blue-700' : ''}`}
-                        onClick={handleDescriptionSearchToggle}
-                        title="Search by description"
-                      >
-                        <Search className="h-3 w-3" />
-                      </Button>
-
-                      {/* Description search popup */}
-                      {showDescriptionSearch && (
-                        <div
-                          ref={descriptionPopupRef}
-                          className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 z-50"
+                    <Popover open={descriptionSearchOpen} onOpenChange={setDescriptionSearchOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className={`h-6 w-6 p-0 text-white hover:bg-blue-700 ${descriptionSearchOpen ? 'bg-blue-700' : ''}`}
+                          title="Search by description"
                         >
-                          <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[250px]">
-                            <div className="relative">
-                              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                              <Input
-                                type="search"
-                                placeholder="Search by description..."
-                                className="pl-8 pr-8 border-blue-500 focus:border-blue-600 text-gray-900 placeholder-gray-500"
-                                value={descriptionSearchTerm}
-                                onChange={(e) => setDescriptionSearchTerm(e.target.value)}
-                                autoFocus
-                                style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                              />
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="absolute right-1 top-1 h-6 w-6 p-0 hover:bg-gray-100"
-                                onClick={clearDescriptionSearch}
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </div>
-                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-white"></div>
+                          <Search className="h-3 w-3" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-64 p-3" side="top" align="center">
+                        <div className="space-y-2">
+                          <div className="relative">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+                            <Input
+                              type="search"
+                              placeholder="Search by description..."
+                              className="pl-8 pr-8 border-blue-500 focus:border-blue-600"
+                              value={descriptionSearchTerm}
+                              onChange={(e) => { setDescriptionSearchTerm(e.target.value); setCurrentPage(1); }}
+                              autoFocus
+                            />
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="absolute right-1 top-1 h-6 w-6 p-0 hover:bg-gray-100"
+                              onClick={clearDescriptionSearch}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
                           </div>
                         </div>
-                      )}
-                    </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   {getSortIcon("description")}
                 </div>
@@ -483,49 +432,41 @@ export function DocumentCategoryTable() {
                     >
                       <ArrowUpDown className="h-3 w-3" />
                     </Button>
-                    <div className="relative">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className={`h-6 w-6 p-0 text-white hover:bg-blue-700 ${showDomainSearch ? 'bg-blue-700' : ''}`}
-                        onClick={handleDomainSearchToggle}
-                        title="Search by domain name"
-                      >
-                        <Search className="h-3 w-3" />
-                      </Button>
-
-                      {/* Domain search popup */}
-                      {showDomainSearch && (
-                        <div
-                          ref={domainPopupRef}
-                          className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 z-50"
+                    <Popover open={domainSearchOpen} onOpenChange={setDomainSearchOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className={`h-6 w-6 p-0 text-white hover:bg-blue-700 ${domainSearchOpen ? 'bg-blue-700' : ''}`}
+                          title="Search by domain name"
                         >
-                          <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[250px]">
-                            <div className="relative">
-                              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                              <Input
-                                type="search"
-                                placeholder="Search by domain..."
-                                className="pl-8 pr-8 border-blue-500 focus:border-blue-600 text-gray-900 placeholder-gray-500"
-                                value={domainSearchTerm}
-                                onChange={(e) => setDomainSearchTerm(e.target.value)}
-                                autoFocus
-                                style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                              />
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="absolute right-1 top-1 h-6 w-6 p-0 hover:bg-gray-100"
-                                onClick={clearDomainSearch}
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </div>
-                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-white"></div>
+                          <Search className="h-3 w-3" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-64 p-3" side="top" align="center">
+                        <div className="space-y-2">
+                          <div className="relative">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+                            <Input
+                              type="search"
+                              placeholder="Search by domain..."
+                              className="pl-8 pr-8 border-blue-500 focus:border-blue-600"
+                              value={domainSearchTerm}
+                              onChange={(e) => { setDomainSearchTerm(e.target.value); setCurrentPage(1); }}
+                              autoFocus
+                            />
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="absolute right-1 top-1 h-6 w-6 p-0 hover:bg-gray-100"
+                              onClick={clearDomainSearch}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
                           </div>
                         </div>
-                      )}
-                    </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   {getSortIcon("domainName")}
                 </div>
@@ -544,49 +485,41 @@ export function DocumentCategoryTable() {
                     >
                       <ArrowUpDown className="h-3 w-3" />
                     </Button>
-                    <div className="relative">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className={`h-6 w-6 p-0 text-white hover:bg-blue-700 ${showDepartmentSearch ? 'bg-blue-700' : ''}`}
-                        onClick={handleDepartmentSearchToggle}
-                        title="Search by department name"
-                      >
-                        <Search className="h-3 w-3" />
-                      </Button>
-
-                      {/* Department search popup */}
-                      {showDepartmentSearch && (
-                        <div
-                          ref={departmentPopupRef}
-                          className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 z-50"
+                    <Popover open={departmentSearchOpen} onOpenChange={setDepartmentSearchOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className={`h-6 w-6 p-0 text-white hover:bg-blue-700 ${departmentSearchOpen ? 'bg-blue-700' : ''}`}
+                          title="Search by department name"
                         >
-                          <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[250px]">
-                            <div className="relative">
-                              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                              <Input
-                                type="search"
-                                placeholder="Search by department..."
-                                className="pl-8 pr-8 border-blue-500 focus:border-blue-600 text-gray-900 placeholder-gray-500"
-                                value={departmentSearchTerm}
-                                onChange={(e) => setDepartmentSearchTerm(e.target.value)}
-                                autoFocus
-                                style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                              />
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="absolute right-1 top-1 h-6 w-6 p-0 hover:bg-gray-100"
-                                onClick={clearDepartmentSearch}
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </div>
-                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-white"></div>
+                          <Search className="h-3 w-3" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-64 p-3" side="top" align="center">
+                        <div className="space-y-2">
+                          <div className="relative">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+                            <Input
+                              type="search"
+                              placeholder="Search by department..."
+                              className="pl-8 pr-8 border-blue-500 focus:border-blue-600"
+                              value={departmentSearchTerm}
+                              onChange={(e) => { setDepartmentSearchTerm(e.target.value); setCurrentPage(1); }}
+                              autoFocus
+                            />
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="absolute right-1 top-1 h-6 w-6 p-0 hover:bg-gray-100"
+                              onClick={clearDepartmentSearch}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
                           </div>
                         </div>
-                      )}
-                    </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   {getSortIcon("departmentName")}
                 </div>
@@ -597,14 +530,14 @@ export function DocumentCategoryTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sortedAndFilteredCategories().length === 0 ? (
+            {paginatedData.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center">
                   No categories found
                 </TableCell>
               </TableRow>
             ) : (
-              sortedAndFilteredCategories().map((category) =>
+              paginatedData.map((category) =>
                 editingCategory === category.id ? (
                   <TableRow key={category.id}>
                     <TableCell colSpan={6}>
@@ -681,6 +614,64 @@ export function DocumentCategoryTable() {
           </TableBody>
         </Table>
       </div>
+      
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4">
+          <div className="text-sm text-gray-600">
+            Showing {Math.min((currentPage - 1) * itemsPerPage + 1, allFilteredData.length)} to{' '}
+            {Math.min(currentPage * itemsPerPage, allFilteredData.length)} of {allFilteredData.length} entries
+          </div>
+          
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-blue-50"} transition-colors
+                />
+              </PaginationItem>
+              
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                if (
+                  page === 1 ||
+                  page === totalPages ||
+                  (page >= currentPage - 1 && page <= currentPage + 1)
+                ) {
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        onClick={() => handlePageChange(page)}
+                        isActive={currentPage === page}
+                        className={`cursor-pointer transition-colors ${currentPage === page ? "bg-blue-600 text-white hover:bg-blue-700" : "hover:bg-blue-50"}`}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  )
+                } else if (
+                  page === currentPage - 2 ||
+                  page === currentPage + 2
+                ) {
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  )
+                }
+                return null
+              })}
+              
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-blue-50"} transition-colors
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   )
 }

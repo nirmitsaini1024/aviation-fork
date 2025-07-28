@@ -11,7 +11,7 @@ import '@react-pdf-viewer/search/lib/styles/index.css';
 
 const CommentedCopyPDFViewer = ({ onSetSearchPluginInstance }) => {
   // Replace with the correct URL or path to your PDF file
-  const fileUrl = '/sample-table-comments.pdf';
+  const fileUrl = '/commented-copy.pdf';
 
   // Create the search plugin instance
   const searchPluginInstance = searchPlugin({

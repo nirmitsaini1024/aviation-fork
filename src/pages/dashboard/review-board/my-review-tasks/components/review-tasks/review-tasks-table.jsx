@@ -147,7 +147,7 @@ export function ReviewTasksTable({
               <PaginationItem>
                 <PaginationPrevious 
                   onClick={() => handlePageChange(currentPage - 1)}
-                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  className={`${currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-blue-50"} transition-colors`}
                 />
               </PaginationItem>
               
@@ -162,7 +162,11 @@ export function ReviewTasksTable({
                       <PaginationLink
                         onClick={() => handlePageChange(page)}
                         isActive={currentPage === page}
-                        className="cursor-pointer"
+                        className={`cursor-pointer transition-colors ${
+                          currentPage === page 
+                            ? "bg-blue-600 text-white hover:bg-blue-700" 
+                            : "hover:bg-blue-50"
+                        }`}
                       >
                         {page}
                       </PaginationLink>
@@ -184,7 +188,7 @@ export function ReviewTasksTable({
               <PaginationItem>
                 <PaginationNext 
                   onClick={() => handlePageChange(currentPage + 1)}
-                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  className={`${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-blue-50"} transition-colors`}
                 />
               </PaginationItem>
             </PaginationContent>

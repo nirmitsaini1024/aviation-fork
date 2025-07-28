@@ -88,13 +88,31 @@ function RoleForm({ role, onSave, onCancel }) {
 
   // Handle permission level change
   const handlePermissionLevelChange = (permissionId, level) => {
-    setFormData((prev) => ({
-      ...prev,
-      permissions: {
+    setFormData((prev) => {
+      const updatedPermissions = {
         ...prev.permissions,
         [permissionId]: level,
-      },
-    }));
+      };
+
+      // Update sub-items based on parent permission change
+      permissions.forEach((permission) => {
+        if (permission.subItemOf === permissionId) {
+          if (level === "no_access") {
+            // If parent is "no_access", set all sub-items to "no_access"
+            updatedPermissions[permission.id] = "no_access";
+          } else {
+            // Otherwise, inherit appropriate permission based on parent level
+            const inheritedPermission = getInheritedPermission(level, permission.allowedLevels);
+            updatedPermissions[permission.id] = inheritedPermission;
+          }
+        }
+      });
+
+      return {
+        ...prev,
+        permissions: updatedPermissions,
+      };
+    });
   };
 
   // Toggle expanded state for an item
@@ -144,6 +162,65 @@ function RoleForm({ role, onSave, onCancel }) {
     );
   };
 
+  // Check if parent permission has no_access
+  const isParentNoAccess = (parentId) => {
+    const parentPermission = formData.permissions[parentId];
+    return parentPermission === "no_access";
+  };
+
+  // Check if sub-item should be disabled based on parent permission
+  const shouldDisableSubItem = (subItemOf) => {
+    if (!subItemOf) return false;
+    return isParentNoAccess(subItemOf);
+  };
+
+  // Get the appropriate permission level for a sub-item based on parent permission
+  const getInheritedPermission = (parentPermission, subItemAllowedLevels) => {
+    if (!subItemAllowedLevels || subItemAllowedLevels.length === 0) {
+      return "no_access";
+    }
+
+    // Priority order for inheritance
+    const priorityOrder = ["admin_access", "write_access", "view_access", "read_access"];
+    
+    switch (parentPermission) {
+      case "admin_access":
+        // Give the highest available permission to sub-items
+        for (const level of priorityOrder) {
+          if (subItemAllowedLevels.includes(level)) {
+            return level;
+          }
+        }
+        break;
+      case "write_access":
+        // Give write_access or the highest available permission below admin
+        const writeOrder = ["write_access", "view_access", "read_access"];
+        for (const level of writeOrder) {
+          if (subItemAllowedLevels.includes(level)) {
+            return level;
+          }
+        }
+        break;
+      case "view_access":
+        // Give view_access or read_access if available
+        const viewOrder = ["view_access", "read_access"];
+        for (const level of viewOrder) {
+          if (subItemAllowedLevels.includes(level)) {
+            return level;
+          }
+        }
+        break;
+      case "read_access":
+        // Give read_access if available
+        if (subItemAllowedLevels.includes("read_access")) {
+          return "read_access";
+        }
+        break;
+    }
+    
+    return "no_access";
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -182,17 +259,18 @@ function RoleForm({ role, onSave, onCancel }) {
     }
   };
 
-  const renderPermissionSelect = (permission, permissionLevel, availableLevels) => (
+  const renderPermissionSelect = (permission, permissionLevel, availableLevels, disabled = false) => (
     <Select
       value={permissionLevel}
       onValueChange={(value) =>
         handlePermissionLevelChange(permission.id, value)
       }
+      disabled={disabled}
     >
       <SelectTrigger
         className={`w-[168px] border-2 font-medium ${getPermissionLevelColor(
           permissionLevel
-        )}`}
+        )} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         <SelectValue />
       </SelectTrigger>
@@ -455,7 +533,7 @@ function RoleForm({ role, onSave, onCancel }) {
                                     </p>
                                   </div>
                                 </div>
-                                {renderPermissionSelect(subItem, subItemPermissionLevel, subItemAvailableLevels)}
+                                {renderPermissionSelect(subItem, subItemPermissionLevel, subItemAvailableLevels, shouldDisableSubItem(subItem.subItemOf))}
                               </div>
                             );
                           })}
@@ -557,7 +635,7 @@ function RoleForm({ role, onSave, onCancel }) {
                                             <p className="text-sm text-gray-500">{subItem.description}</p>
                                           </div>
                                         </div>
-                                        {renderPermissionSelect(subItem, subItemPermissionLevel, subItemAvailableLevels)}
+                                        {renderPermissionSelect(subItem, subItemPermissionLevel, subItemAvailableLevels, shouldDisableSubItem(subItem.subItemOf))}
                                       </div>
                                     );
                                   })}
@@ -688,7 +766,7 @@ function RoleForm({ role, onSave, onCancel }) {
                                             <p className="text-sm text-gray-500">{subItem.description}</p>
                                           </div>
                                         </div>
-                                        {renderPermissionSelect(subItem, subItemPermissionLevel, subItemAvailableLevels)}
+                                        {renderPermissionSelect(subItem, subItemPermissionLevel, subItemAvailableLevels, shouldDisableSubItem(subItem.subItemOf))}
                                       </div>
                                     );
                                   })}
@@ -761,7 +839,7 @@ function RoleForm({ role, onSave, onCancel }) {
                                   <p className="text-sm text-gray-500">{permission.description}</p>
                                 </div>
                               </div>
-                              {renderPermissionSelect(permission, permissionLevel, availableLevels)}
+                              {renderPermissionSelect(permission, permissionLevel, availableLevels, shouldDisableSubItem(permission.subItemOf))}
                             </div>
                           );
                         })}
@@ -851,7 +929,7 @@ function RoleForm({ role, onSave, onCancel }) {
                                               <p className="text-sm text-gray-500">{subItem.description}</p>
                                             </div>
                                           </div>
-                                          {renderPermissionSelect(subItem, subItemPermissionLevel, subItemAvailableLevels)}
+                                          {renderPermissionSelect(subItem, subItemPermissionLevel, subItemAvailableLevels, shouldDisableSubItem(subItem.subItemOf))}
                                         </div>
                                       );
                                     })}

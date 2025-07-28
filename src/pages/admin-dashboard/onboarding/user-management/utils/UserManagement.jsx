@@ -16,6 +16,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, PaginationEllipsis } from "@/components/ui/pagination";
 
 // Import components and data
 import {
@@ -49,6 +50,10 @@ export function UserManagementApp({ showAddForm, onToggleForm }) {
   const [showEmailSearch, setShowEmailSearch] = useState(false);
   const [showTitleSearch, setShowTitleSearch] = useState(false);
   const [showReminderSearch, setShowReminderSearch] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(6);
 
   // Refs for the search popups to detect clicks outside
   const searchPopupRef = useRef(null);
@@ -144,6 +149,24 @@ export function UserManagementApp({ showAddForm, onToggleForm }) {
     return filtered;
   };
 
+  // Get paginated data
+  const allFilteredData = sortedAndFilteredUsers();
+  const totalPages = Math.ceil(allFilteredData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedData = allFilteredData.slice(startIndex, endIndex);
+
+  // Page change handler
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  // Reset page when search changes
+  const handleSearchChange = (value) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
   const requestSort = (key) => {
     let direction = "ascending";
     if (
@@ -177,6 +200,7 @@ export function UserManagementApp({ showAddForm, onToggleForm }) {
   const clearNameSearch = () => {
     setNameSearchTerm("");
     setShowNameSearch(false);
+    setCurrentPage(1);
   };
 
   // Handle email search
@@ -190,6 +214,7 @@ export function UserManagementApp({ showAddForm, onToggleForm }) {
   const clearEmailSearch = () => {
     setEmailSearchTerm("");
     setShowEmailSearch(false);
+    setCurrentPage(1);
   };
 
   // Handle title search
@@ -203,6 +228,7 @@ export function UserManagementApp({ showAddForm, onToggleForm }) {
   const clearTitleSearch = () => {
     setTitleSearchTerm("");
     setShowTitleSearch(false);
+    setCurrentPage(1);
   };
 
   // Handle reminder search
@@ -216,6 +242,7 @@ export function UserManagementApp({ showAddForm, onToggleForm }) {
   const clearReminderSearch = () => {
     setReminderSearchTerm("");
     setShowReminderSearch(false);
+    setCurrentPage(1);
   };
 
   const handleDeleteUser = (userId) => {
@@ -261,7 +288,7 @@ export function UserManagementApp({ showAddForm, onToggleForm }) {
             placeholder="Search users..."
             className="pl-8"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
           />
         </div>
       </div>
@@ -308,7 +335,7 @@ export function UserManagementApp({ showAddForm, onToggleForm }) {
                                 placeholder="Search by name or tags..."
                                 className="pl-8 pr-8 border-blue-500 focus:border-blue-600 text-gray-900 placeholder-gray-500"
                                 value={nameSearchTerm}
-                                onChange={(e) => setNameSearchTerm(e.target.value)}
+                                onChange={(e) => { setNameSearchTerm(e.target.value); setCurrentPage(1); }}
                                 autoFocus
                                 style={{ color: '#111827', backgroundColor: '#ffffff' }}
                               />
@@ -378,7 +405,7 @@ export function UserManagementApp({ showAddForm, onToggleForm }) {
                                   placeholder="Search by email..."
                                   className="pl-8 pr-8 border-blue-500 focus:border-blue-600 text-gray-900 placeholder-gray-500"
                                   value={emailSearchTerm}
-                                  onChange={(e) => setEmailSearchTerm(e.target.value)}
+                                  onChange={(e) => { setEmailSearchTerm(e.target.value); setCurrentPage(1); }}
                                   autoFocus
                                   style={{ color: '#111827', backgroundColor: '#ffffff' }}
                                 />
@@ -410,7 +437,7 @@ export function UserManagementApp({ showAddForm, onToggleForm }) {
                                   placeholder="Search by title..."
                                   className="pl-8 pr-8 border-blue-500 focus:border-blue-600 text-gray-900 placeholder-gray-500"
                                   value={titleSearchTerm}
-                                  onChange={(e) => setTitleSearchTerm(e.target.value)}
+                                  onChange={(e) => { setTitleSearchTerm(e.target.value); setCurrentPage(1); }}
                                   autoFocus
                                   style={{ color: '#111827', backgroundColor: '#ffffff' }}
                                 />
@@ -442,7 +469,7 @@ export function UserManagementApp({ showAddForm, onToggleForm }) {
                                   placeholder="Search by reminder..."
                                   className="pl-8 pr-8 border-blue-500 focus:border-blue-600 text-gray-900 placeholder-gray-500"
                                   value={reminderSearchTerm}
-                                  onChange={(e) => setReminderSearchTerm(e.target.value)}
+                                  onChange={(e) => { setReminderSearchTerm(e.target.value); setCurrentPage(1); }}
                                   autoFocus
                                   style={{ color: '#111827', backgroundColor: '#ffffff' }}
                                 />
@@ -469,14 +496,14 @@ export function UserManagementApp({ showAddForm, onToggleForm }) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sortedAndFilteredUsers().length === 0 ? (
+            {paginatedData.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="text-center">
                   No users found
                 </TableCell>
               </TableRow>
             ) : (
-              sortedAndFilteredUsers().map((user) =>
+              paginatedData.map((user) =>
                 editingUser === user.id ? (
                   <TableRow key={user.id}>
                     <TableCell colSpan={5}>
@@ -569,6 +596,68 @@ export function UserManagementApp({ showAddForm, onToggleForm }) {
           </TableBody>
         </Table>
       </div>
+      
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4">
+          <div className="text-sm text-gray-600">
+            Showing {Math.min((currentPage - 1) * itemsPerPage + 1, allFilteredData.length)} to{' '}
+            {Math.min(currentPage * itemsPerPage, allFilteredData.length)} of {allFilteredData.length} entries
+          </div>
+          
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className={`${currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-blue-50"} transition-colors`}
+                />
+              </PaginationItem>
+              
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                if (
+                  page === 1 ||
+                  page === totalPages ||
+                  (page >= currentPage - 1 && page <= currentPage + 1)
+                ) {
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        onClick={() => handlePageChange(page)}
+                        isActive={currentPage === page}
+                        className={`cursor-pointer transition-colors ${
+                          currentPage === page 
+                            ? "bg-blue-600 text-white hover:bg-blue-700" 
+                            : "hover:bg-blue-50"
+                        }`}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                } else if (
+                  page === currentPage - 2 ||
+                  page === currentPage + 2
+                ) {
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  );
+                }
+                return null;
+              })}
+              
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className={`${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-blue-50"} transition-colors`}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 }

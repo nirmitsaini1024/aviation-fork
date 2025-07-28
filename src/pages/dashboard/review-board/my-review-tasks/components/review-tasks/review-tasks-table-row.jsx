@@ -75,7 +75,7 @@ export function ReviewTasksTableRow({
         </TableCell>
         
         {/* Review Details */}
-        <TableCell className="w-[250px]">
+        <TableCell className="w-[320px]">
           <div className="flex flex-col">
             <div className="text-xs text-gray-500 font-medium mb-1">
               <Badge className="bg-blue-200 text-blue-700">Modifications</Badge>
@@ -132,11 +132,11 @@ export function ReviewTasksTableRow({
           </div>
         </TableCell>
 
-        <TableCell className="w-[180px]">
+        <TableCell className="w-[150px]">
           <TimestampDisplay timestamp={doc.createdAt} size="sm" />
         </TableCell>
 
-        <TableCell className="w-[180px]">
+        <TableCell className="w-[150px]">
           <TimestampDisplay timestamp={doc.lastUpdated} size="sm" />
         </TableCell>
 

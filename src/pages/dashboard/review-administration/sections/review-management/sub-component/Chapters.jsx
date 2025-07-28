@@ -55,6 +55,7 @@ const Chapters = ({ entireDocumentSelected }) => {
       return showAllChapters.map((chapter) => {
         if (chapter.id === renameChapterId) {
           chapter.title = renameChapter;
+          chapter.titleWithHtmlTag = `<h1>${renameChapter}</h1>`;
           return chapter;
         }
         return chapter;

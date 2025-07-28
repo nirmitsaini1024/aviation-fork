@@ -4,6 +4,7 @@ import { FullPagePopup } from "../../common/shared-utils";
 import DocumentPendingRow from "./documentPendingRow";
 import { sampleData, sampleSummaryData } from "../mock-data/review";
 import { mockReferenceDocuments } from "../mock-data/review";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, PaginationEllipsis } from "@/components/ui/pagination";
 
 // Import helper functions
 import {
@@ -58,6 +59,10 @@ function DocumentPendingTable({
   const [description, setDescription] = useState("");
   const [localSampleData, setLocalSampleData] = useState(sampleData);
   const [summaryData, setSummaryData] = useState(sampleSummaryData);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(6);
 
   const status = "pending";
 
@@ -132,6 +137,11 @@ function DocumentPendingTable({
       deactivateDocument(doc.id);
     }
     setDeletePopoverOpen(false);
+  };
+
+  // Pagination handlers
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
   // Computed values using helper functions
@@ -241,6 +251,12 @@ function DocumentPendingTable({
     return checkHasDocumentsInReview(sortedData);
   }, [sortedData]);
 
+  // Pagination logic
+  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedData = sortedData.slice(startIndex, endIndex);
+
   // Render document row using the separate DocumentPendingRow component
   const renderDocumentRow = (doc) => {
     return (
@@ -331,7 +347,7 @@ function DocumentPendingTable({
         </div>
       </div>
 
-      {sortedData.length === 0 ? (
+      {paginatedData.length === 0 ? (
         <div className="text-center text-gray-500">
           <table className="min-w-full text-sm border-collapse">
             <thead className="bg-gray-50 text-left">
@@ -390,13 +406,13 @@ function DocumentPendingTable({
                   Compare
                 </th>
                 {/* Conditionally show Actions header based on documents */}
-                {sortedData.some((doc) => shouldShowActionsColumn(doc, selectedTab, isSubmitted)) && (
+                {paginatedData.some((doc) => shouldShowActionsColumn(doc, selectedTab, isSubmitted)) && (
                   <th className="px-4 py-3 font-semibold text-gray-50">
                     Actions
                   </th>
                 )}
                 {/* Conditionally show Review Panel header */}
-                {sortedData.some((doc) => shouldShowActionsColumn(doc, selectedTab, isSubmitted)) && (
+                {paginatedData.some((doc) => shouldShowActionsColumn(doc, selectedTab, isSubmitted)) && (
                   <th className="px-4 py-3 font-semibold text-gray-50 text-center w-32">
                     Review Panel
                   </th>
@@ -471,21 +487,83 @@ function DocumentPendingTable({
                   Compare
                 </th>
                 {/* Conditionally show Actions header based on documents */}
-                {sortedData.some((doc) => shouldShowActionsColumn(doc, selectedTab, isSubmitted)) && (
+                {paginatedData.some((doc) => shouldShowActionsColumn(doc, selectedTab, isSubmitted)) && (
                   <th className="px-4 py-3 font-semibold text-gray-50">
                     Actions
                   </th>
                 )}
                 {/* Conditionally show Review Panel header */}
-                {sortedData.some((doc) => shouldShowActionsColumn(doc, selectedTab, isSubmitted)) && (
+                {paginatedData.some((doc) => shouldShowActionsColumn(doc, selectedTab, isSubmitted)) && (
                   <th className="px-4 py-3 font-semibold text-gray-50 text-center w-32">
                     Review Panel
                   </th>
                 )}
               </tr>
             </thead>
-            <tbody>{sortedData.map(renderDocumentRow)}</tbody>
+            <tbody>{paginatedData.map(renderDocumentRow)}</tbody>
           </table>
+        </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border-t border-gray-200">
+          <div className="text-sm text-gray-600">
+            Showing {Math.min((currentPage - 1) * itemsPerPage + 1, sortedData.length)} to{' '}
+            {Math.min(currentPage * itemsPerPage, sortedData.length)} of {sortedData.length} entries
+          </div>
+          
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className={`${currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-blue-50"} transition-colors`}
+                />
+              </PaginationItem>
+              
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                if (
+                  page === 1 ||
+                  page === totalPages ||
+                  (page >= currentPage - 1 && page <= currentPage + 1)
+                ) {
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        onClick={() => handlePageChange(page)}
+                        isActive={currentPage === page}
+                        className={`cursor-pointer transition-colors ${
+                          currentPage === page 
+                            ? "bg-blue-600 text-white hover:bg-blue-700" 
+                            : "hover:bg-blue-50"
+                        }`}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                } else if (
+                  page === currentPage - 2 ||
+                  page === currentPage + 2
+                ) {
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  );
+                }
+                return null;
+              })}
+              
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className={`${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-blue-50"} transition-colors`}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </div>
       )}
 

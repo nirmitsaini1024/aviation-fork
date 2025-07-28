@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
 import { useAviationSearch } from "../hooks/useSearch";
-import { projectNameList, rfiNamesList, tableAllData } from "../mock-data/constant";
+import { docGenTemplateData, docGenUploadFileData, projectNameList, rfiNamesList, tableAllData } from "../mock-data/constant";
 
 export const RequestInfoContext = createContext();
 
@@ -35,6 +35,9 @@ const RequestInfoProvider = ({ children }) => {
   const [searchRFIDetails, setSearchRFIDetails] = useState(tableAllData);
   const [rfiDetailsForUploadTemplate, setRfiDetailsForUploadTemplate] = useState(tableAllData);
   const [editTemplateData, setEditTemplateData] = useState(null);
+  const [docGenForUploadTemplate, setDocGenForUploadTemplate] = useState(docGenUploadFileData);
+  const [editDocGenData, setEditDocGenData] = useState(null);
+  const [docGenTemplateDataList, setDocGenTemplateDataList] = useState(docGenTemplateData);
   const [scheduleDate, setScheduleDate] = useState({
     date: null,
     time: null,
@@ -71,8 +74,13 @@ const RequestInfoProvider = ({ children }) => {
     ContentLibrary,
     completionDate,
     scheduleDate,
-    selectedDepartment
+    selectedDepartment,
   ]);
+
+
+  useEffect(()=>{
+    console.log(docGenTemplateDataList, docGenForUploadTemplate);
+  }, [docGenTemplateDataList, docGenForUploadTemplate])
 
 
 
@@ -129,7 +137,10 @@ const RequestInfoProvider = ({ children }) => {
     searchRFIDetails, setSearchRFIDetails,
     selectedDepartment, setSelectedDepartment,
     rfiDetailsForUploadTemplate, setRfiDetailsForUploadTemplate,
-    editTemplateData, setEditTemplateData
+    editTemplateData, setEditTemplateData,
+    docGenTemplateDataList, setDocGenTemplateDataList,
+    docGenForUploadTemplate, setDocGenForUploadTemplate,
+    editDocGenData, setEditDocGenData
   };
 
   return (

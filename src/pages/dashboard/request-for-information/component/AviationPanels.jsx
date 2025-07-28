@@ -1095,37 +1095,41 @@ const AviationSearchResults = () => {
                                           </div>
                                         )}
                                       </div>
-                                      <div className="ml-3">
-                                        <Button
-                                          variant="ghost"
-                                          size="sm"
-                                          onClick={() => {
-                                            setShowRiskAnalysis(
-                                              showRiskANalysis ===
-                                                answerItem.answer
-                                                ? null
-                                                : answerItem.answer
-                                            );
-                                            loaderForRiskCalCulate === false
-                                              ? setLoaderForRiskCalculate(true)
-                                              : setTimeout(() => {
-                                                  setLoaderForRiskCalculate(
-                                                    false
-                                                  );
-                                                }, 1000);
-                                          }}
-                                          className="text-blue-600 hover:text-blue-800 p-0 h-auto font-medium"
-                                        >
-                                          <ChartPie className="w-3 h-3" />
-                                          Calculate Risk
-                                          {showRiskANalysis ===
-                                          answerItem.answer ? (
-                                            <ChevronUp className="w-4 h-4 ml-2" />
-                                          ) : (
-                                            <ChevronDown className="w-4 h-4 ml-2" />
-                                          )}
-                                        </Button>
-                                      </div>
+                                      {selectedResult.agents.includes("Risk Agent") && (
+                                        <div className="ml-3">
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => {
+                                              setShowRiskAnalysis(
+                                                showRiskANalysis ===
+                                                  answerItem.answer
+                                                  ? null
+                                                  : answerItem.answer
+                                              );
+                                              loaderForRiskCalCulate === false
+                                                ? setLoaderForRiskCalculate(
+                                                    true
+                                                  )
+                                                : setTimeout(() => {
+                                                    setLoaderForRiskCalculate(
+                                                      false
+                                                    );
+                                                  }, 1000);
+                                            }}
+                                            className="text-blue-600 hover:text-blue-800 p-0 h-auto font-medium"
+                                          >
+                                            <ChartPie className="w-3 h-3" />
+                                            Calculate Risk
+                                            {showRiskANalysis ===
+                                            answerItem.answer ? (
+                                              <ChevronUp className="w-4 h-4 ml-2" />
+                                            ) : (
+                                              <ChevronDown className="w-4 h-4 ml-2" />
+                                            )}
+                                          </Button>
+                                        </div>
+                                      )}
                                     </div>
                                   </span>
                                 </div>
@@ -1185,14 +1189,16 @@ const AviationSearchResults = () => {
                                     </div>
                                     <div className="flex justify-end items-center gap-2">
                                       <span className="text-xs flex gap-x-2">
-                                        <RefreshCcw onClick={() => {
+                                        <RefreshCcw
+                                          onClick={() => {
                                             setLoaderForRiskCalculate(true);
                                             setTimeout(() => {
-                                                  setLoaderForRiskCalculate(
-                                                    false
-                                                  );
-                                                }, 1000); 
-                                          }} className="w-4 h-4 text-blue-600" />Risk Score
+                                              setLoaderForRiskCalculate(false);
+                                            }, 1000);
+                                          }}
+                                          className="w-4 h-4 text-blue-600"
+                                        />
+                                        Risk Score
                                       </span>
                                       <Badge
                                         variant="outline"

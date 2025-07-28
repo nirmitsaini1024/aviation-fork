@@ -74,7 +74,7 @@ export const permissions = [
     section: "review-administration",
     isSubItem: true,
     subItemOf: "review-administration-access",
-    allowedLevels: ["admin_access", "write_access", "view_access", "no_access"],
+    allowedLevels: ["admin_access", "write_access", "no_access"],
   },
   {
     id: "upload-working-copy",
@@ -84,7 +84,7 @@ export const permissions = [
     section: "review-administration",
     isSubItem: true,
     subItemOf: "upload",
-    allowedLevels: ["admin_access", "write_access", "view_access", "no_access"],
+    allowedLevels: ["admin_access", "write_access", "no_access"],
   },
   {
     id: "upload-reference-document",
@@ -94,7 +94,7 @@ export const permissions = [
     section: "review-administration",
     isSubItem: true,
     subItemOf: "upload",
-    allowedLevels: ["admin_access", "write_access", "view_access", "no_access"],
+    allowedLevels: ["admin_access", "write_access", "no_access"],
   },
   {
     id: "sign-off",
@@ -230,7 +230,7 @@ export const permissions = [
     section: "tasks",
     isSubItem: true,
     subItemOf: "group-level",
-    allowedLevels: ["view_access", "no_access"],
+    allowedLevels: ["no_access"],
   },
   {
     id: "write-approval",
@@ -278,7 +278,7 @@ export const permissions = [
     section: "tasks",
     isSubItem: true,
     subItemOf: "user-level",
-    allowedLevels: ["view_access", "no_access"],
+    allowedLevels: ["no_access"],
   },
   {
     id: "user-write-approval",

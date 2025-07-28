@@ -16,6 +16,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, PaginationEllipsis } from "@/components/ui/pagination";
 import { DepartmentForm } from "@/components/department-form";
 
 // Mock initial departments data with domains
@@ -75,40 +76,14 @@ export function DepartmentTable() {
   const [domainSearchTerm, setDomainSearchTerm] = useState("");
   const [nameSearchTerm, setNameSearchTerm] = useState("");
   const [descriptionSearchTerm, setDescriptionSearchTerm] = useState("");
-  const [showDomainSearch, setShowDomainSearch] = useState(false);
-  const [showNameSearch, setShowNameSearch] = useState(false);
-  const [showDescriptionSearch, setShowDescriptionSearch] = useState(false);
+  const [domainSearchOpen, setDomainSearchOpen] = useState(false);
+  const [nameSearchOpen, setNameSearchOpen] = useState(false);
+  const [descriptionSearchOpen, setDescriptionSearchOpen] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(6);
 
-  // Refs for search popups
-  const domainPopupRef = useRef(null);
-  const namePopupRef = useRef(null);
-  const descriptionPopupRef = useRef(null);
-
-  // Effect to handle clicks outside search popups
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (domainPopupRef.current && !domainPopupRef.current.contains(event.target)) {
-        setShowDomainSearch(false);
-        setDomainSearchTerm("");
-      }
-      if (namePopupRef.current && !namePopupRef.current.contains(event.target)) {
-        setShowNameSearch(false);
-        setNameSearchTerm("");
-      }
-      if (descriptionPopupRef.current && !descriptionPopupRef.current.contains(event.target)) {
-        setShowDescriptionSearch(false);
-        setDescriptionSearchTerm("");
-      }
-    };
-
-    if (showDomainSearch || showNameSearch || showDescriptionSearch) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showDomainSearch, showNameSearch, showDescriptionSearch]);
 
   const columns = [
     {
@@ -166,6 +141,24 @@ export function DepartmentTable() {
     return filtered;
   };
 
+  // Get paginated data
+  const allFilteredData = sortedAndFilteredDepartments();
+  const totalPages = Math.ceil(allFilteredData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedData = allFilteredData.slice(startIndex, endIndex);
+
+  // Page change handler
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  // Reset page when search changes
+  const handleSearchChange = (value) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
   const requestSort = (key) => {
     let direction = "ascending";
     if (sortConfig && sortConfig.key === key && sortConfig.direction === "ascending") {
@@ -211,42 +204,24 @@ export function DepartmentTable() {
     setEditingDepartment(null);
   };
 
-  // Search toggle handlers
-  const handleDomainSearchToggle = () => {
-    setShowDomainSearch(!showDomainSearch);
-    if (showDomainSearch) {
-      setDomainSearchTerm("");
-    }
-  };
-
-  const handleNameSearchToggle = () => {
-    setShowNameSearch(!showNameSearch);
-    if (showNameSearch) {
-      setNameSearchTerm("");
-    }
-  };
-
-  const handleDescriptionSearchToggle = () => {
-    setShowDescriptionSearch(!showDescriptionSearch);
-    if (showDescriptionSearch) {
-      setDescriptionSearchTerm("");
-    }
-  };
 
   // Clear search handlers  
   const clearDomainSearch = () => {
     setDomainSearchTerm("");
-    setShowDomainSearch(false);
+    setDomainSearchOpen(false);
+    setCurrentPage(1);
   };
 
   const clearNameSearch = () => {
     setNameSearchTerm("");
-    setShowNameSearch(false);
+    setNameSearchOpen(false);
+    setCurrentPage(1);
   };
 
   const clearDescriptionSearch = () => {
     setDescriptionSearchTerm("");
-    setShowDescriptionSearch(false);
+    setDescriptionSearchOpen(false);
+    setCurrentPage(1);
   };
 
   return (
@@ -259,7 +234,7 @@ export function DepartmentTable() {
             placeholder="Search departments..."
             className="pl-8"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
           />
         </div>
       </div>
@@ -280,49 +255,41 @@ export function DepartmentTable() {
                     >
                       <ArrowUpDown className="h-3 w-3" />
                     </Button>
-                    <div className="relative">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className={`h-6 w-6 p-0 text-white hover:bg-blue-700 ${showDomainSearch ? 'bg-blue-700' : ''}`}
-                        onClick={handleDomainSearchToggle}
-                        title="Search by domain"
-                      >
-                        <Search className="h-3 w-3" />
-                      </Button>
-
-                      {/* Domain search popup */}
-                      {showDomainSearch && (
-                        <div
-                          ref={domainPopupRef}
-                          className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 z-50"
+                    <Popover open={domainSearchOpen} onOpenChange={setDomainSearchOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className={`h-6 w-6 p-0 text-white hover:bg-blue-700 ${domainSearchOpen ? 'bg-blue-700' : ''}`}
+                          title="Search by domain"
                         >
-                          <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[250px]">
-                            <div className="relative">
-                              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                              <Input
-                                type="search"
-                                placeholder="Search by domain..."
-                                className="pl-8 pr-8 border-blue-500 focus:border-blue-600 text-gray-900 placeholder-gray-500"
-                                value={domainSearchTerm}
-                                onChange={(e) => setDomainSearchTerm(e.target.value)}
-                                autoFocus
-                                style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                              />
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="absolute right-1 top-1 h-6 w-6 p-0 hover:bg-gray-100"
-                                onClick={clearDomainSearch}
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </div>
-                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-white"></div>
+                          <Search className="h-3 w-3" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-64 p-3" side="top" align="center">
+                        <div className="space-y-2">
+                          <div className="relative">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+                            <Input
+                              type="search"
+                              placeholder="Search by domain..."
+                              className="pl-8 pr-8 border-blue-500 focus:border-blue-600"
+                              value={domainSearchTerm}
+                              onChange={(e) => { setDomainSearchTerm(e.target.value); setCurrentPage(1); }}
+                              autoFocus
+                            />
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="absolute right-1 top-1 h-6 w-6 p-0 hover:bg-gray-100"
+                              onClick={clearDomainSearch}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
                           </div>
                         </div>
-                      )}
-                    </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   {getSortIcon("domain")}
                 </div>
@@ -341,49 +308,41 @@ export function DepartmentTable() {
                     >
                       <ArrowUpDown className="h-3 w-3" />
                     </Button>
-                    <div className="relative">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className={`h-6 w-6 p-0 text-white hover:bg-blue-700 ${showNameSearch ? 'bg-blue-700' : ''}`}
-                        onClick={handleNameSearchToggle}
-                        title="Search by name"
-                      >
-                        <Search className="h-3 w-3" />
-                      </Button>
-
-                      {/* Name search popup */}
-                      {showNameSearch && (
-                        <div
-                          ref={namePopupRef}
-                          className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 z-50"
+                    <Popover open={nameSearchOpen} onOpenChange={setNameSearchOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className={`h-6 w-6 p-0 text-white hover:bg-blue-700 ${nameSearchOpen ? 'bg-blue-700' : ''}`}
+                          title="Search by name"
                         >
-                          <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[250px]">
-                            <div className="relative">
-                              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                              <Input
-                                type="search"
-                                placeholder="Search by name..."
-                                className="pl-8 pr-8 border-blue-500 focus:border-blue-600 text-gray-900 placeholder-gray-500"
-                                value={nameSearchTerm}
-                                onChange={(e) => setNameSearchTerm(e.target.value)}
-                                autoFocus
-                                style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                              />
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="absolute right-1 top-1 h-6 w-6 p-0 hover:bg-gray-100"
-                                onClick={clearNameSearch}
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </div>
-                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-white"></div>
+                          <Search className="h-3 w-3" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-64 p-3" side="top" align="center">
+                        <div className="space-y-2">
+                          <div className="relative">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+                            <Input
+                              type="search"
+                              placeholder="Search by name..."
+                              className="pl-8 pr-8 border-blue-500 focus:border-blue-600"
+                              value={nameSearchTerm}
+                              onChange={(e) => { setNameSearchTerm(e.target.value); setCurrentPage(1); }}
+                              autoFocus
+                            />
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="absolute right-1 top-1 h-6 w-6 p-0 hover:bg-gray-100"
+                              onClick={clearNameSearch}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
                           </div>
                         </div>
-                      )}
-                    </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   {getSortIcon("name")}
                 </div>
@@ -402,49 +361,41 @@ export function DepartmentTable() {
                     >
                       <ArrowUpDown className="h-3 w-3" />
                     </Button>
-                    <div className="relative">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className={`h-6 w-6 p-0 text-white hover:bg-blue-700 ${showDescriptionSearch ? 'bg-blue-700' : ''}`}
-                        onClick={handleDescriptionSearchToggle}
-                        title="Search by description"
-                      >
-                        <Search className="h-3 w-3" />
-                      </Button>
-
-                      {/* Description search popup */}
-                      {showDescriptionSearch && (
-                        <div
-                          ref={descriptionPopupRef}
-                          className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 z-50"
+                    <Popover open={descriptionSearchOpen} onOpenChange={setDescriptionSearchOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className={`h-6 w-6 p-0 text-white hover:bg-blue-700 ${descriptionSearchOpen ? 'bg-blue-700' : ''}`}
+                          title="Search by description"
                         >
-                          <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[250px]">
-                            <div className="relative">
-                              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                              <Input
-                                type="search"
-                                placeholder="Search by description..."
-                                className="pl-8 pr-8 border-blue-500 focus:border-blue-600 text-gray-900 placeholder-gray-500"
-                                value={descriptionSearchTerm}
-                                onChange={(e) => setDescriptionSearchTerm(e.target.value)}
-                                autoFocus
-                                style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                              />
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="absolute right-1 top-1 h-6 w-6 p-0 hover:bg-gray-100"
-                                onClick={clearDescriptionSearch}
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </div>
-                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-white"></div>
+                          <Search className="h-3 w-3" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-64 p-3" side="top" align="center">
+                        <div className="space-y-2">
+                          <div className="relative">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+                            <Input
+                              type="search"
+                              placeholder="Search by description..."
+                              className="pl-8 pr-8 border-blue-500 focus:border-blue-600"
+                              value={descriptionSearchTerm}
+                              onChange={(e) => { setDescriptionSearchTerm(e.target.value); setCurrentPage(1); }}
+                              autoFocus
+                            />
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="absolute right-1 top-1 h-6 w-6 p-0 hover:bg-gray-100"
+                              onClick={clearDescriptionSearch}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
                           </div>
                         </div>
-                      )}
-                    </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   {getSortIcon("description")}
                 </div>
@@ -454,14 +405,14 @@ export function DepartmentTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sortedAndFilteredDepartments().length === 0 ? (
+            {paginatedData.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={columns.length + 1} className="text-center">
                   No departments found
                 </TableCell>
               </TableRow>
             ) : (
-              sortedAndFilteredDepartments().map((dept) =>
+              paginatedData.map((dept) =>
                 editingDepartment === dept.id ? (
                   <TableRow key={dept.id}>
                     <TableCell colSpan={columns.length + 1}>
@@ -542,6 +493,64 @@ export function DepartmentTable() {
           </TableBody>
         </Table>
       </div>
+      
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4">
+          <div className="text-sm text-gray-600">
+            Showing {Math.min((currentPage - 1) * itemsPerPage + 1, allFilteredData.length)} to{' '}
+            {Math.min(currentPage * itemsPerPage, allFilteredData.length)} of {allFilteredData.length} entries
+          </div>
+          
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-blue-50"} transition-colors
+                />
+              </PaginationItem>
+              
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                if (
+                  page === 1 ||
+                  page === totalPages ||
+                  (page >= currentPage - 1 && page <= currentPage + 1)
+                ) {
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        onClick={() => handlePageChange(page)}
+                        isActive={currentPage === page}
+                        className={`cursor-pointer transition-colors ${currentPage === page ? "bg-blue-600 text-white hover:bg-blue-700" : "hover:bg-blue-50"}`}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                } else if (
+                  page === currentPage - 2 ||
+                  page === currentPage + 2
+                ) {
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  );
+                }
+                return null;
+              })}
+              
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-blue-50"} transition-colors
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 }

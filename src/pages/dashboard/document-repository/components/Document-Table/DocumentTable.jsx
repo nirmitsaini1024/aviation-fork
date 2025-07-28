@@ -2,6 +2,7 @@ import { Table } from "@/components/ui/table";
 import { DocumentTableProvider } from "../../context/DocumentTableContext";
 import { DocumentTableHeader } from "./sub-component/Document-Table-Header";
 import { DocumentTableBody } from "./sub-component/Document-Table-Body";
+import { DocumentTablePagination } from "./sub-component/Document-Table-Pagination";
 
 export function DocumentTable(props) {
   return (
@@ -12,6 +13,7 @@ export function DocumentTable(props) {
             <DocumentTableHeader />
             <DocumentTableBody />
           </Table>
+          <DocumentTablePagination />
         </div>
       </div>
     </DocumentTableProvider>

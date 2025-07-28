@@ -31,7 +31,7 @@ export function ReviewTasksTableHeader({
         <SearchableColumnHeader
           title="Review Details"
           column="name"
-          width="w-[250px]"
+          width="w-[320px]"
           handleSort={handleSort}
           sortColumn={sortColumn}
           sortDirection={sortDirection}
@@ -53,7 +53,7 @@ export function ReviewTasksTableHeader({
         <SearchableColumnHeader
           title="Assigned TS"
           column="createdAt"
-          width="w-[180px]"
+          width="w-[150px]"
           handleSort={handleSort}
           sortColumn={sortColumn}
           sortDirection={sortDirection}
@@ -64,7 +64,7 @@ export function ReviewTasksTableHeader({
         <SearchableColumnHeader
           title="Last Updated"
           column="lastUpdated"
-          width="w-[180px]"
+          width="w-[150px]"
           handleSort={handleSort}
           sortColumn={sortColumn}
           sortDirection={sortDirection}

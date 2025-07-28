@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, PaginationEllipsis } from "@/components/ui/pagination";
 
 import { useRoleContext } from "../../context/RoleContext";
 import { useState, useRef, useEffect } from "react";
@@ -68,46 +69,15 @@ function RoleManagementApp({ showAddForm, onToggleForm }) {
   const [descriptionSearchTerm, setDescriptionSearchTerm] = useState("");
   const [domainSearchTerm, setDomainSearchTerm] = useState("");
   const [departmentSearchTerm, setDepartmentSearchTerm] = useState("");
-  const [showNameSearch, setShowNameSearch] = useState(false);
-  const [showDescriptionSearch, setShowDescriptionSearch] = useState(false);
-  const [showDomainSearch, setShowDomainSearch] = useState(false);
-  const [showDepartmentSearch, setShowDepartmentSearch] = useState(false);
+  const [nameSearchOpen, setNameSearchOpen] = useState(false);
+  const [descriptionSearchOpen, setDescriptionSearchOpen] = useState(false);
+  const [domainSearchOpen, setDomainSearchOpen] = useState(false);
+  const [departmentSearchOpen, setDepartmentSearchOpen] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(6);
 
-  // Refs for search popups
-  const namePopupRef = useRef(null);
-  const descriptionPopupRef = useRef(null);
-  const domainPopupRef = useRef(null);
-  const departmentPopupRef = useRef(null);
-
-  // Effect to handle clicks outside search popups
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (namePopupRef.current && !namePopupRef.current.contains(event.target)) {
-        setShowNameSearch(false);
-        setNameSearchTerm("");
-      }
-      if (descriptionPopupRef.current && !descriptionPopupRef.current.contains(event.target)) {
-        setShowDescriptionSearch(false);
-        setDescriptionSearchTerm("");
-      }
-      if (domainPopupRef.current && !domainPopupRef.current.contains(event.target)) {
-        setShowDomainSearch(false);
-        setDomainSearchTerm("");
-      }
-      if (departmentPopupRef.current && !departmentPopupRef.current.contains(event.target)) {
-        setShowDepartmentSearch(false);
-        setDepartmentSearchTerm("");
-      }
-    };
-
-    if (showNameSearch || showDescriptionSearch || showDomainSearch || showDepartmentSearch) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showNameSearch, showDescriptionSearch, showDomainSearch, showDepartmentSearch]);
 
   // Sort and filter logic
   const sortedAndFilteredRoles = () => {
@@ -156,6 +126,24 @@ function RoleManagementApp({ showAddForm, onToggleForm }) {
     return filtered;
   };
 
+  // Get paginated data
+  const allFilteredData = sortedAndFilteredRoles();
+  const totalPages = Math.ceil(allFilteredData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedData = allFilteredData.slice(startIndex, endIndex);
+
+  // Page change handler
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  // Reset page when search changes
+  const handleSearchChange = (value) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
   const requestSort = (key) => {
     let direction = "ascending";
     if (
@@ -177,54 +165,30 @@ function RoleManagementApp({ showAddForm, onToggleForm }) {
     );
   };
 
-  // Search toggle handlers
-  const handleNameSearchToggle = () => {
-    setShowNameSearch(!showNameSearch);
-    if (showNameSearch) {
-      setNameSearchTerm("");
-    }
-  };
-
-  const handleDescriptionSearchToggle = () => {
-    setShowDescriptionSearch(!showDescriptionSearch);
-    if (showDescriptionSearch) {
-      setDescriptionSearchTerm("");
-    }
-  };
-
-  const handleDomainSearchToggle = () => {
-    setShowDomainSearch(!showDomainSearch);
-    if (showDomainSearch) {
-      setDomainSearchTerm("");
-    }
-  };
-
-  const handleDepartmentSearchToggle = () => {
-    setShowDepartmentSearch(!showDepartmentSearch);
-    if (showDepartmentSearch) {
-      setDepartmentSearchTerm("");
-    }
-  };
 
   // Clear search handlers  
   const clearNameSearch = () => {
     setNameSearchTerm("");
-    setShowNameSearch(false);
+    setNameSearchOpen(false);
+    setCurrentPage(1);
   };
 
   const clearDescriptionSearch = () => {
     setDescriptionSearchTerm("");
-    setShowDescriptionSearch(false);
+    setDescriptionSearchOpen(false);
+    setCurrentPage(1);
   };
 
   const clearDomainSearch = () => {
     setDomainSearchTerm("");
-    setShowDomainSearch(false);
+    setDomainSearchOpen(false);
+    setCurrentPage(1);
   };
 
   const clearDepartmentSearch = () => {
     setDepartmentSearchTerm("");
-    setShowDepartmentSearch(false);
+    setDepartmentSearchOpen(false);
+    setCurrentPage(1);
   };
 
   const handleDeleteRole = (roleId) => {
@@ -267,7 +231,7 @@ function RoleManagementApp({ showAddForm, onToggleForm }) {
             placeholder="Search roles..."
             className="pl-8"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
           />
         </div>
       </div>
@@ -276,7 +240,7 @@ function RoleManagementApp({ showAddForm, onToggleForm }) {
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-blue-600">
-              <TableHead className="text-white relative">
+              <TableHead className="text-white">
                 <div className="flex items-center gap-2">
                   <span>Role Name</span>
                   <div className="flex items-center gap-1">
@@ -289,55 +253,39 @@ function RoleManagementApp({ showAddForm, onToggleForm }) {
                     >
                       <ArrowUpDown className="h-3 w-3" />
                     </Button>
-                    <div className="relative">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className={`h-6 w-6 p-0 text-white hover:bg-blue-700 ${showNameSearch ? 'bg-blue-700' : ''}`}
-                        onClick={handleNameSearchToggle}
-                        title="Search by name"
-                      >
-                        <Search className="h-3 w-3" />
-                      </Button>
-
-                      {/* Name search popup */}
-                      {showNameSearch && (
-                        <div
-                          ref={namePopupRef}
-                          className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 z-50"
+                    <Popover open={nameSearchOpen} onOpenChange={setNameSearchOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className={`h-6 w-6 p-0 text-white hover:bg-blue-700 ${nameSearchOpen ? 'bg-blue-700' : ''}`}
+                          title="Search by name"
                         >
-                          <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[250px]">
-                            <div className="relative">
-                              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                              <Input
-                                type="search"
-                                placeholder="Search by name..."
-                                className="pl-8 pr-8 border-blue-500 focus:border-blue-600 text-gray-900 placeholder-gray-500"
-                                value={nameSearchTerm}
-                                onChange={(e) => setNameSearchTerm(e.target.value)}
-                                autoFocus
-                                style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                              />
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="absolute right-1 top-1 h-6 w-6 p-0 hover:bg-gray-100"
-                                onClick={clearNameSearch}
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </div>
-                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-white"></div>
+                          <Search className="h-3 w-3" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-64 p-3" side="top" align="center">
+                        <div className="space-y-2">
+                          <div className="relative">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+                            <Input
+                              type="search"
+                              placeholder="Search by name..."
+                              className="pl-8 pr-8 border-blue-500 focus:border-blue-600"
+                              value={nameSearchTerm}
+                              onChange={(e) => { setNameSearchTerm(e.target.value); setCurrentPage(1); }}
+                              autoFocus
+                            />
                           </div>
                         </div>
-                      )}
-                    </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   {getSortIcon("name")}
                 </div>
               </TableHead>
 
-              <TableHead className="text-white relative">
+              <TableHead className="text-white">
                 <div className="flex items-center gap-2">
                   <span>Description</span>
                   <div className="flex items-center gap-1">
@@ -350,49 +298,41 @@ function RoleManagementApp({ showAddForm, onToggleForm }) {
                     >
                       <ArrowUpDown className="h-3 w-3" />
                     </Button>
-                    <div className="relative">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className={`h-6 w-6 p-0 text-white hover:bg-blue-700 ${showDescriptionSearch ? 'bg-blue-700' : ''}`}
-                        onClick={handleDescriptionSearchToggle}
-                        title="Search by description"
-                      >
-                        <Search className="h-3 w-3" />
-                      </Button>
-
-                      {/* Description search popup */}
-                      {showDescriptionSearch && (
-                        <div
-                          ref={descriptionPopupRef}
-                          className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 z-50"
+                    <Popover open={descriptionSearchOpen} onOpenChange={setDescriptionSearchOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className={`h-6 w-6 p-0 text-white hover:bg-blue-700 ${descriptionSearchOpen ? 'bg-blue-700' : ''}`}
+                          title="Search by description"
                         >
-                          <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[250px]">
-                            <div className="relative">
-                              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                              <Input
-                                type="search"
-                                placeholder="Search by description..."
-                                className="pl-8 pr-8 border-blue-500 focus:border-blue-600 text-gray-900 placeholder-gray-500"
-                                value={descriptionSearchTerm}
-                                onChange={(e) => setDescriptionSearchTerm(e.target.value)}
-                                autoFocus
-                                style={{ color: '#111827', backgroundColor: '#ffffff' }}
-                              />
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="absolute right-1 top-1 h-6 w-6 p-0 hover:bg-gray-100"
-                                onClick={clearDescriptionSearch}
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </div>
-                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-white"></div>
+                          <Search className="h-3 w-3" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-64 p-3" side="top" align="center">
+                        <div className="space-y-2">
+                          <div className="relative">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+                            <Input
+                              type="search"
+                              placeholder="Search by description..."
+                              className="pl-8 pr-8 border-blue-500 focus:border-blue-600"
+                              value={descriptionSearchTerm}
+                              onChange={(e) => { setDescriptionSearchTerm(e.target.value); setCurrentPage(1); }}
+                              autoFocus
+                            />
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="absolute right-1 top-1 h-6 w-6 p-0 hover:bg-gray-100"
+                              onClick={clearDescriptionSearch}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
                           </div>
                         </div>
-                      )}
-                    </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   {getSortIcon("description")}
                 </div>
@@ -403,14 +343,14 @@ function RoleManagementApp({ showAddForm, onToggleForm }) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sortedAndFilteredRoles().length === 0 ? (
+            {paginatedData.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={4} className="text-center">
                   No roles found
                 </TableCell>
               </TableRow>
             ) : (
-              sortedAndFilteredRoles().map((role) =>
+              paginatedData.map((role) =>
                 editingRole === role.id ? (
                   <TableRow key={role.id}>
                     <TableCell colSpan={4}>
@@ -555,6 +495,68 @@ function RoleManagementApp({ showAddForm, onToggleForm }) {
           </TableBody>
         </Table>
       </div>
+      
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4">
+          <div className="text-sm text-gray-600">
+            Showing {Math.min((currentPage - 1) * itemsPerPage + 1, allFilteredData.length)} to{' '}
+            {Math.min(currentPage * itemsPerPage, allFilteredData.length)} of {allFilteredData.length} entries
+          </div>
+          
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className={`${currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-blue-50"} transition-colors`}
+                />
+              </PaginationItem>
+              
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                if (
+                  page === 1 ||
+                  page === totalPages ||
+                  (page >= currentPage - 1 && page <= currentPage + 1)
+                ) {
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        onClick={() => handlePageChange(page)}
+                        isActive={currentPage === page}
+                        className={`cursor-pointer transition-colors ${
+                          currentPage === page 
+                            ? "bg-blue-600 text-white hover:bg-blue-700" 
+                            : "hover:bg-blue-50"
+                        }`}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                } else if (
+                  page === currentPage - 2 ||
+                  page === currentPage + 2
+                ) {
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  );
+                }
+                return null;
+              })}
+              
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className={`${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-blue-50"} transition-colors`}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 }
